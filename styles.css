@@ -199,7 +199,9 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .action-card:hover:not(:disabled) { border-color: rgba(217,164,65,.52); background: rgba(217,164,65,.07); transform: translateY(-2px); }
 .action-card:disabled { opacity: .38; cursor: not-allowed; }
 .action-key { position: absolute; right: 7px; top: 6px; color: #514a41; font: 700 8px var(--sans); }
-.action-icon { width: 35px; height: 35px; display: grid; place-items: center; background: rgba(217,164,65,.08); color: var(--gold); border: 1px solid rgba(217,164,65,.16); font-size: 18px; }
+.action-icon { width: 35px; height: 35px; display: grid; place-items: center; overflow: hidden; background: rgba(217,164,65,.08); color: var(--gold); border: 1px solid rgba(217,164,65,.16); font-size: 18px; }
+.action-icon.has-art { border-color: rgba(217,164,65,.45); background: #17100e; }
+.action-icon-art { display: block; width: 100%; height: 100%; object-fit: cover; }
 .action-copy b, .action-copy small { display: block; }
 .action-copy b { font-size: 12px; }
 .action-copy small { color: #817667; font-size: 9px; margin-top: 5px; line-height: 1.45; }
@@ -235,6 +237,8 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .boss-card .side-title b { color: var(--red); }
 .boss-name { margin: 11px 0 4px; font: 900 16px var(--serif); }
 .boss-tagline { color: #7d7262; font-size: 9px; margin: 0 0 9px; }
+.boss-preview-portrait { height: 112px; margin: 10px 0 12px; overflow: hidden; border: 1px solid rgba(190,48,40,.36); background: rgba(190,48,40,.08); }
+.boss-preview-image { display: block; width: 100%; height: 100%; object-fit: cover; }
 .req-list { display: grid; gap: 5px; }
 .req { display: flex; justify-content: space-between; color: #887d6c; font-size: 8px; }
 .req.ok { color: var(--jade); }
@@ -343,7 +347,9 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .mission-progress span { display: flex; justify-content: space-between; gap: 8px; color: #817667; font-size: 10px; }
 .mission-progress span.ok { color: var(--jade); }
 .mission-progress b { font-weight: 700; white-space: nowrap; }
-.item-icon { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid rgba(217,164,65,.2); background: rgba(217,164,65,.08); font-size: 18px; }
+.item-icon { width: 38px; height: 38px; display: grid; place-items: center; overflow: hidden; border: 1px solid rgba(217,164,65,.2); background: rgba(217,164,65,.08); font-size: 18px; }
+.item-icon.has-art { border-color: rgba(217,164,65,.45); background: #17100e; }
+.mission-portrait { display: block; width: 100%; height: 100%; object-fit: cover; }
 .shop-item h4 { margin: 0; font-size: 11px; }
 .shop-item p { color: #7d7262; font-size: 9px; margin: 4px 0 7px; }
 .buy-button { border: 1px solid rgba(217,164,65,.3); background: transparent; color: var(--gold); font-size: 9px; padding: 5px 8px; cursor: pointer; }

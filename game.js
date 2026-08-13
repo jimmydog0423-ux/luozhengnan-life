@@ -36,11 +36,16 @@
     nl: { src:'小師妹nl.png', name:'糖汶銨', focus:'50% 18%' },
     vivi: { src:'夏侯芝.png', name:'夏侯芝', focus:'50% 18%' },
     tangxi: { src:'糖喜.png', name:'糖喜', focus:'50% 15%' },
-    longgeng: { src:'龍耿.png', name:'龍耿', focus:'50% 20%' }
+    longgeng: { src:'龍耿.png', name:'龍耿', focus:'50% 20%' },
+    mit: { src:'米特阿姨.png', name:'米特阿姨', focus:'50% 18%' },
+    crab: { src:'蟹老闆.png', name:'蟹老闆', focus:'50% 20%' },
+    feng: { src:'峰哥.png', name:'峰哥說書人', focus:'50% 16%' },
+    taishan: { src:'泰山.png', name:'泰山', focus:'50% 22%' }
   };
   const CAST_ART = {
     '糖之漢':'master', '糖虧皮':'krapy', '糖偉健':'toyz', '糖政銘':'eason', '糖負荷':'overload',
-    '糖汶銨':'nl', '夏侯芝':'vivi', '糖喜':'tangxi', '龍耿':'longgeng'
+    '糖汶銨':'nl', '夏侯芝':'vivi', '糖喜':'tangxi', '龍耿':'longgeng', '米特姨':'mit',
+    '蟹老闆':'crab', '峰哥說書人':'feng', '泰山':'taishan'
   };
 
   const LOCATIONS = {
@@ -225,7 +230,7 @@
       ]
     },
     {
-      id: 'taishan', name: '最終大 Boss・泰山', icon: '⛰️', title: '沒有捷徑的萬丈問心', hp: 360, attack: 33,
+      id: 'taishan', art:'taishan', name: '最終大 Boss・泰山', icon: '⛰️', title: '沒有捷徑的萬丈問心', hp: 360, attack: 33,
       mechanic: '泰山拒絕極端配點。四維失衡時完全無法造成傷害，每三回合還會降下無視防禦的問心天劫。',
       combatRule: '四維最高值與最低值相差不得超過 12，否則所有傷害為 0。每第 3 回合至少造成 20% 最大氣血傷害，防禦只能減少 35%；心印仍會提高你的輸出。',
       combatCheck: s => Math.max(...Object.keys(STAT_NAMES).map(k=>stat(s,k)))-Math.min(...Object.keys(STAT_NAMES).map(k=>stat(s,k))) <= 12,
@@ -311,7 +316,7 @@
       {label:'擊敗野怪',check:s=>s.metrics.wins>=3,value:s=>`${s.metrics.wins}/3`}
     ], run: s => { s.coins -= 55; s.stats.insight += 2; addItem(s,'mirror'); s.routes.integrity += 2; } },
 
-    { id: 'ledger', chapter:1, name: '蟹老闆的帳', description: '把戰隊總投資、私人欠款與那些說不清的承諾逐筆對完。', reward: '老蟹帳本、信義 +3、俠名 +5', can: s => s.routes.integrity >= 5, reason: '需要信義 5', requirements:[
+    { id: 'ledger', art:'crab', chapter:1, name: '蟹老闆的帳', description: '把戰隊總投資、私人欠款與那些說不清的承諾逐筆對完。', reward: '老蟹帳本、信義 +3、俠名 +5', can: s => s.routes.integrity >= 5, reason: '需要信義 5', requirements:[
       {label:'已完成四十包試煉',check:s=>s.completedMissions.includes('packs'),value:s=>s.completedMissions.includes('packs')?'完成':'未完成'}
     ],
       run: s => { addItem(s,'ledger'); s.routes.integrity += 3; s.fame += 5; } },
@@ -343,7 +348,7 @@
       {label:'人情',check:s=>s.routes.ties>=14,value:s=>`${s.routes.ties}/14`}
     ], run:s=>addItem(s,'crowpin') },
 
-    { id: 'identity', chapter:3, name: '我不是高金生', description: '整理官方帳號、發言時間與證據，對抗冒名分身。', reward: '信義 +4、心眼 +2、俠名 +8', can: s => hasItem(s,'ledger'), reason: '需要老蟹帳本', requirements:[
+    { id: 'identity', art:'feng', chapter:3, name: '我不是高金生', description: '跟著峰哥整理官方帳號、發言時間與證據，對抗冒名分身。', reward: '信義 +4、心眼 +2、俠名 +8', can: s => hasItem(s,'ledger'), reason: '需要老蟹帳本', requirements:[
       {label:'俠名',check:s=>s.fame>=22,value:s=>`${s.fame}/22`}
     ], run: s => { s.routes.integrity += 4; s.stats.insight += 2; s.fame += 8; } },
     { id:'archive', chapter:3, name:'平台舊檔案', description:'找回被演算法壓下去的原始影片、時間戳與完整上下文。', reward:'心眼 +2、信義 +3、俠名 +7', can:()=>true, requirements:[
@@ -365,7 +370,7 @@
     { id:'seal_council', chapter:4, name:'糖門心印會盟', description:'讓三枚心印各自說出代價，不能只挑最好聽的答案。', reward:'心眼 +2、人情 +3、信義 +3', can:s=>s.vows.length>=3, reason:'需要三枚心印', requirements:[
       {label:'前四位守關者',check:s=>s.defeatedBosses.length>=4,value:s=>`${s.defeatedBosses.length}/4`}
     ], run:s=>{s.stats.insight+=2;s.routes.ties+=3;s.routes.integrity+=3;} },
-    { id:'taishan_route', chapter:4, name:'泰山路引', description:'集結十五張主線江湖帖與二十五場實戰，換取最後登山路引。', reward:'泰山路引、俠名 +12、自律 +4', can:()=>true, requirements:[
+    { id:'taishan_route', art:'taishan', chapter:4, name:'泰山路引', description:'集結十五張主線江湖帖與二十五場實戰，換取最後登山路引。', reward:'泰山路引、俠名 +12、自律 +4', can:()=>true, requirements:[
       {label:'已完成主線江湖帖',check:s=>s.completedMissions.length>=15,value:s=>`${s.completedMissions.length}/15`}, {label:'累積擊敗野怪',check:s=>s.metrics.wins>=25,value:s=>`${s.metrics.wins}/25`}, {label:'存活日數',check:s=>s.day>=20,value:s=>`第 ${s.day} 日 / 20`}
     ], run:s=>{s.fame+=12;s.routes.discipline+=4;addItem(s,'taishanpass');} },
     { id:'secret_taishan', chapter:4, secret:true, name:'路引背面守夜', description:'依前世殘影持路引回到斷腿崖，不登山，只等晨光把無字答案照出來。', reward:'無字山籤', unlock:s=>s.bossItemHints.includes('taishan'), can:s=>hasItem(s,'taishanpass'), reason:'需要泰山路引', requirements:[
@@ -862,8 +867,8 @@
         {icon:'息',name:'調息打坐',desc:'恢復真氣與氣血，稍微降低心火。',cost:'行動 -1',fn:restAction}, commonEnd
       ],
       home: [
-        {icon:'飯',name:'吃米特飯',desc:'大幅恢復氣血，這次先不要嫌外觀。',cost:'行動 -1',fn:homeMeal},
-        {icon:'心',name:'陪家人說話',desc:'提升人情與信義，降低心火。',cost:'行動 -1',fn:familyTalk},
+        {art:'mit',icon:'飯',name:'吃米特飯',desc:'米特阿姨已經把飯擺好；大幅恢復氣血，這次先不要嫌外觀。',cost:'行動 -1',fn:homeMeal},
+        {art:'mit',icon:'心',name:'陪家人說話',desc:'陪米特阿姨坐一下，提升人情與信義，降低心火。',cost:'行動 -1',fn:familyTalk},
         {icon:'省',name:'復盤今日',desc:'提升心眼與自律，但會增加一點心火。',cost:'行動 -1',fn:reviewAction},
         {icon:'囊',name:'整理行囊',desc:'查看、使用與裝備現有物品。',cost:'不耗行動',fn:openInventory}, commonEnd
       ],
@@ -876,7 +881,7 @@
       villa: [
         {icon:'影',name:'糖喜找碴',desc:'糖喜專堵門欺負主角；看穿她的絆腿，或當眾把路撞開。',cost:'選擇後行動 -1',fn:openTangXiEncounter},
         {icon:'獵',name:'山莊掃蕩',desc:'從盤踞山莊的怪物中選擇對手。',cost:'選擇後行動 -1',fn:openWildEncounter},
-        {icon:'帳',name:'整理老蟹帳本',desc:'提升信義、人情與少量糖錢。',cost:'行動 -1',fn:ledgerAction},
+        {art:'crab',icon:'帳',name:'整理老蟹帳本',desc:'蟹老闆盯著每一筆數字；提升信義、人情與少量糖錢。',cost:'行動 -1',fn:ledgerAction},
         {icon:'帖',name:'承接任務',desc:'山莊任務能解鎖關鍵道具。',cost:'依任務',fn:openMissions}, commonEnd
       ],
       market: [
@@ -888,7 +893,7 @@
         {icon:'囊',name:'整理行囊',desc:'使用消耗品或切換已購裝備。',cost:'不耗行動',fn:openInventory}, commonEnd
       ],
       cliff: [
-        {icon:'王',name:'挑戰守關 Boss',desc:'先檢查特殊素質，再自行決定是否上山。',cost:'行動 -1',fn:openBossChallenge,boss:true},
+        {art:currentBoss().art||'',icon:'王',name:'挑戰守關 Boss',desc:'先檢查特殊素質，再自行決定是否上山。',cost:'行動 -1',fn:openBossChallenge,boss:true},
         ...(state.bossIndex>=4?[{icon:'謎',name:'神秘挑戰',desc:'斷腿崖深處出現一條不在泰山路引上的長路；勝場可以保留並隨時退走。',cost:'進場行動 -1',fn:openMysteryChallenge,boss:true}]:[]),
         {icon:'悟',name:'斷腿崖悟道',desc:'大量經驗與隨機四維，失敗會受傷。',cost:'行動 -1',fn:cliffMeditate},
         {icon:'虎',name:'清理山路',desc:'從山路強敵中挑選對手，測試目前構築。',cost:'選擇後行動 -1',fn:openWildEncounter},
@@ -905,7 +910,9 @@
       const node = $('action-template').content.firstElementChild.cloneNode(true);
       node.classList.toggle('boss', !!action.boss); node.classList.toggle('shop', action.name.includes('商城'));
       node.querySelector('.action-key').textContent = index + 1;
-      node.querySelector('.action-icon').textContent = action.icon;
+      const actionIcon=node.querySelector('.action-icon');
+      if(action.art){actionIcon.classList.add('has-art');actionIcon.innerHTML=characterImage(action.art,'action-icon-art');}
+      else actionIcon.textContent = action.icon;
       node.querySelector('.action-copy b').textContent = action.name;
       node.querySelector('.action-copy small').textContent = action.desc;
       node.querySelector('.action-cost').textContent = action.cost;
@@ -926,7 +933,8 @@
     }
     $('boss-progress').textContent = `${state.defeatedBosses.length} / 5`;
     const learnedHint=state.bossItemHints.includes(boss.id)?`<div class="req combat blocked"><span>前世遺留線索</span><b>${esc(boss.itemHint)}</b></div>`:'';
-    $('boss-preview').innerHTML = `<h3 class="boss-name">${boss.icon} ${boss.name}</h3><p class="boss-tagline">${boss.title}</p><div class="req-list">${boss.requirements.map(req=>`<div class="req ${req.check(state)?'ok':''}"><span>${req.check(state)?'✓':'○'} ${req.label}</span><b>${req.value(state)}</b></div>`).join('')}<div class="req combat"><span>？ 守關異象</span><b>破解方式尚未明朗</b></div>${learnedHint}</div>`;
+    const bossPortrait=boss.art?`<div class="boss-preview-portrait">${characterImage(boss.art,'boss-preview-image')}</div>`:'';
+    $('boss-preview').innerHTML = `${bossPortrait}<h3 class="boss-name">${boss.icon} ${boss.name}</h3><p class="boss-tagline">${boss.title}</p><div class="req-list">${boss.requirements.map(req=>`<div class="req ${req.check(state)?'ok':''}"><span>${req.check(state)?'✓':'○'} ${req.label}</span><b>${req.value(state)}</b></div>`).join('')}<div class="req combat"><span>？ 守關異象</span><b>破解方式尚未明朗</b></div>${learnedHint}</div>`;
   }
 
   function missionReady(m) { return m.can(state) && (m.requirements||[]).every(req=>req.check(state)); }
@@ -1392,7 +1400,8 @@
     const list=availableMissions(), story=list.filter(m=>!m.repeat&&!m.secret), secrets=list.filter(m=>m.secret), daily=list.filter(m=>m.repeat);
     const missionCards = missions => missions.map(m=>{
       const ready=missionReady(m),chapterTag=m.repeat?'日常':m.secret?'跨世線索':CHAPTERS[m.chapter]?.number||'江湖';
-      return `<article class="shop-item mission-item ${m.secret?'secret-mission':''}"><div class="item-icon">${m.repeat?'日':m.secret?'秘':'帖'}</div><div><div class="mission-chapter-tag">${chapterTag}</div><h4>${esc(m.name)}${m.repeat?' · 可重複':''}</h4><p>${esc(m.description)}<br>報酬：${esc(m.reward)}</p>${missionProgressHtml(m)}<button class="buy-button" data-mission="${m.id}" ${ready&&state.ap>0?'':'disabled'}>${ready?(state.ap>0?'完成任務並領取':'今日無行動'):esc(missionBlocker(m))}</button></div></article>`;
+      const missionIcon=m.art?`<div class="item-icon has-art">${characterImage(m.art,'mission-portrait')}</div>`:`<div class="item-icon">${m.repeat?'日':m.secret?'秘':'帖'}</div>`;
+      return `<article class="shop-item mission-item ${m.secret?'secret-mission':''}">${missionIcon}<div><div class="mission-chapter-tag">${chapterTag}</div><h4>${esc(m.name)}${m.repeat?' · 可重複':''}</h4><p>${esc(m.description)}<br>報酬：${esc(m.reward)}</p>${missionProgressHtml(m)}<button class="buy-button" data-mission="${m.id}" ${ready&&state.ap>0?'':'disabled'}>${ready?(state.ap>0?'完成任務並領取':'今日無行動'):esc(missionBlocker(m))}</button></div></article>`;
     }).join('');
     const secretSection=secrets.length?`<h3 class="mission-group-title secret-title">死亡線索追索・不列入 15 張主線帖</h3><div class="item-grid">${missionCards(secrets)}</div>`:'';
     openModal({kicker:'糖門江湖帖',title:'不是按一下就算做完',body:`<div class="mission-note">主線江湖帖必須先完成下方實戰、修行或日數條件，達標後才能花 1 行動交付；完成後會從追蹤移除。日常與死亡線索追索都不計入泰山要求的 15 張主線帖。</div>${secretSection}<h3 class="mission-group-title">主線江湖帖・已完成 ${state.completedMissions.length} / 15</h3><div class="item-grid">${story.length?missionCards(story):'<p class="empty-state">目前可見的主線江湖帖已完成，推進小回目後會出現新委託。</p>'}</div><h3 class="mission-group-title">日常委託・可重複、不列入追蹤</h3><div class="item-grid">${missionCards(daily)}</div>`,afterOpen:()=>{
@@ -1478,7 +1487,8 @@
   function openBossChallenge() {
     const boss=currentBoss(),ready=bossReady(boss);
     const clue=state.bossItemHints.includes(boss.id)?`<div class="boss-clue"><b>前世留下的線索</b><p>${esc(boss.itemHint)}</p></div>`:'';
-    openModal({kicker:`守關試煉・${chapterDisplay()}`,title:`${boss.icon} ${boss.name}`,body:`<p>${boss.title}</p><div class="requirements-box"><h4>入場門檻</h4><ul>${boss.requirements.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><div class="boss-rule-preview"><h4>未知守關異象</h4><p>這名守關者藏著無法靠面板直接看穿的規則，也可能需要某件江湖物品。第一次交手前不會公布答案。</p></div>${clue}${ready?'<p class="warning">Boss 戰會消耗 1 行動。若準備不足，死亡後才會得到關鍵線索。</p>':'<p class="warning">必須先完成本章前三個小回目與全部入場門檻，無法靠運氣跳關。</p>'}`,actions:[{label:ready?'踢館・開始 Boss 戰':'條件不足',sub:ready?'接受未知機制與死亡風險':'先完成小回目、修行與江湖帖',primary:ready,disabled:!ready||state.ap<=0,onClick:()=>{forceCloseModal();startEncounter(true);}},{label:'再準備一下',sub:'保留進度，自己決定何時挑戰',onClick:forceCloseModal}]});
+    const bossIntro=boss.art?characterFeature(boss.art,'最終守關者',boss.title,'danger'):`<p>${esc(boss.title)}</p>`;
+    openModal({kicker:`守關試煉・${chapterDisplay()}`,title:`${boss.icon} ${boss.name}`,body:`${bossIntro}<div class="requirements-box"><h4>入場門檻</h4><ul>${boss.requirements.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><div class="boss-rule-preview"><h4>未知守關異象</h4><p>這名守關者藏著無法靠面板直接看穿的規則，也可能需要某件江湖物品。第一次交手前不會公布答案。</p></div>${clue}${ready?'<p class="warning">Boss 戰會消耗 1 行動。若準備不足，死亡後才會得到關鍵線索。</p>':'<p class="warning">必須先完成本章前三個小回目與全部入場門檻，無法靠運氣跳關。</p>'}`,actions:[{label:ready?'踢館・開始 Boss 戰':'條件不足',sub:ready?'接受未知機制與死亡風險':'先完成小回目、修行與江湖帖',primary:ready,disabled:!ready||state.ap<=0,onClick:()=>{forceCloseModal();startEncounter(true);}},{label:'再準備一下',sub:'保留進度，自己決定何時挑戰',onClick:forceCloseModal}]});
   }
 
   function openMysteryChallenge() {
@@ -1661,6 +1671,7 @@
     const learnedIds=['sugar_slash',...allLearned.filter(id=>id!=='sugar_slash').slice(-3)].filter((id,index,list)=>list.indexOf(id)===index);
     $('modal-body').innerHTML=`<div class="battle"><div class="battle-foes"><div class="fighter player"><div class="avatar">瘸</div><b>${esc(state.name)}</b><div class="battle-hp"><i style="width:${state.hp/maxHp(state)*100}%"></i></div><small>氣血 ${state.hp}/${maxHp(state)} · 真氣 ${state.qi}/${maxQi(state)}</small></div><div class="versus">對</div><div class="fighter"><div class="avatar">${foe.icon}</div><b>${foe.name}</b><div class="battle-hp"><i style="width:${b.foeHp/foe.hp*100}%"></i></div><small>氣血 ${Math.max(0,b.foeHp)}/${foe.hp}</small></div></div>${foe.boss?`<div class="boss-rule-box"><b>${foe.mystery?'異界法則':'守關異象'}</b><p>${foe.mystery?'每一名守衛都有自己的戰鬥機制。':'此戰藏有特殊破解條件。死亡後會留下線索。'}</p><strong>${esc(bossRuleState(b))}</strong></div>`:''}${foe.elite&&!foe.boss?'<div class="boss-rule-box elite-rule-box"><b>精英小 Boss 異象</b><p>這名敵人的反應不尋常，重複同一套打法可能會付出代價。</p></div>':''}<div class="intent-box"><i>${INTENTS[b.intent].icon}</i><div><b>敵方意圖：${INTENTS[b.intent].name}</b><small>${intentHint()}</small></div></div>${state.live?'<div class="poll-hint">實況提示：請觀眾刷數字，實況主用數字鍵執行聊天室的選擇。</div>':''}<div class="battle-log">${b.log.slice(-6).map(x=>`<div>${esc(x)}</div>`).join('')}</div><div class="battle-actions"><button class="battle-button" data-battle="attack"><b>1. 普通攻擊</b><small>穩定傷害；身法提供暴擊</small></button><button class="battle-button" data-battle="guard"><b>2. 防禦</b><small>可減傷，但部分攻勢會穿透</small></button>${learnedIds.map((id,index)=>{const art=MARTIAL_ARTS[id];return `<button class="battle-button" data-battle="martial:${id}" ${state.qi<art.qi?'disabled':''}><b>${index+3}. ${art.icon} ${art.name}</b><small>真氣 ${art.qi}・${esc(art.description)}</small></button>`;}).join('')}<button class="battle-button" data-battle="focus"><b>${learnedIds.length+3}. 看破</b><small>破解詭計；回復 7 真氣</small></button><button class="battle-button" data-battle="rice" ${(state.inventory.rice||0)<1?'disabled':''}><b>${learnedIds.length+4}. 米特飯盒</b><small>剩 ${state.inventory.rice||0}；恢復 38 氣血</small></button><button class="battle-button" data-battle="flee" ${foe.boss||foe.forced||foe.locked?'disabled':''}><b>${learnedIds.length+5}. 戰略撤退</b><small>${foe.boss||foe.forced||foe.locked?'此戰無法中途撤退':'保命；行動不退還'}</small></button></div></div>`;
     document.querySelector('.fighter.player .avatar').innerHTML=`<img class="battle-avatar" src="roger.png" alt="${esc(state.name)}">`;
+    if(foe.art)document.querySelector('.fighter:not(.player) .avatar').innerHTML=characterImage(foe.art,'battle-avatar');
     $('modal-actions').innerHTML='';$('modal').hidden=false;
     document.querySelectorAll('[data-battle]').forEach(btn=>btn.onclick=()=>battleTurn(btn.dataset.battle));
   }
