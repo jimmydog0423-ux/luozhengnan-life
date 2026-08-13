@@ -18,6 +18,8 @@
     insight: '每 1 點使真氣上限 +3、提高看破反擊；達 10 可看清詭計。'
   };
   const ROUTE_NAMES = { discipline: '自律', integrity: '信義', ties: '人情', show: '節目', chaos: '混沌' };
+  const METRIC_DEFAULTS = { actions:0, training:0, wins:0, missions:0, streams:0, purchases:0, oneHpWins:0, noHitBoss:0, masterSessions:0, mentorMeals:0, brotherTraining:0, mountainGoat:0 };
+  const MOUNTAIN_GOAT_RATE = .00001;
 
   const LOCATIONS = {
     outer: {
@@ -228,6 +230,31 @@
     taishanpass: { name: '泰山路引', icon: '🗺️', kind: 'key', price: 0, description: '十五張江湖帖與二十五場實戰換來的登頂資格。' }
   };
 
+  const MASTER_WORKOUTS = [
+    { id:'squat', icon:'🏋️', name:'巨石深蹲', focus:'根骨主修・力道機率成長', stat:'vitality', secondary:'strength', xp:28, stress:6, damage:[4,10], quote:'糖之漢把巨石往你肩上一放：「站不起來就不要說是糖門弟子。」' },
+    { id:'bench', icon:'🪨', name:'玄鐵臥推', focus:'力道主修・根骨機率成長', stat:'strength', secondary:'vitality', xp:30, stress:7, damage:[6,12], quote:'槓上沒有刻重量，只刻著一句：山羌比這個重。' },
+    { id:'sprint', icon:'🩼', name:'斷腿折返跑', focus:'身法主修・力道機率成長', stat:'agility', secondary:'strength', xp:27, stress:6, damage:[4,9], quote:'糖之漢騎車在後面追，你第一次發現瘸也能跑出殘影。' },
+    { id:'ropes', icon:'⛓️', name:'戰繩甩鍊', focus:'力道主修・身法機率成長', stat:'strength', secondary:'agility', xp:29, stress:8, damage:[5,11], quote:'兩條玄鐵戰繩像聊天室一樣永遠停不下來。' },
+    { id:'stance', icon:'🧘', name:'掌門核心馬步', focus:'心眼主修・根骨機率成長', stat:'insight', secondary:'vitality', xp:26, stress:4, damage:[2,7], quote:'糖之漢端著盤子坐在你腿上，並堅稱這叫核心穩定。' }
+  ];
+
+  const MASTER_FOODS = [
+    { id:'steak', icon:'🥩', name:'糖之漢煎牛排', effect:'大補氣血・35% 力道 +1', heal:55, stat:'strength', chance:.35, stress:-4, quote:'外焦內嫩，掌門說火候跟出拳一樣不能猶豫。' },
+    { id:'chicken', icon:'🍗', name:'蒜香雞腿排', effect:'恢復氣血・25% 身法 +1', heal:45, stat:'agility', chance:.25, stress:-5, quote:'雞腿才剛落盤，龍耿在門外忽然打了個噴嚏。' },
+    { id:'salmon', icon:'🐟', name:'鐵板鮭魚', effect:'回復真氣・35% 心眼 +1', heal:38, qi:24, stat:'insight', chance:.35, stress:-6, quote:'魚皮煎得會發出黃光，但糖偉健叫你先確認再吃。' },
+    { id:'burger', icon:'🍔', name:'巨無霸漢堡排', effect:'大量回血・35% 根骨 +1', heal:70, stat:'vitality', chance:.35, stress:4, quote:'份量大到像健身器材，吃完連呼吸都算負重訓練。' },
+    { id:'egg', icon:'🍳', name:'焦糖荷包蛋', effect:'降低心火・補充飯盒', heal:30, rice:1, stress:-12, quote:'掌門把糖撒成太極圖，你不敢問這算甜點還是蛋。' },
+    { id:'broccoli', icon:'🥦', name:'清燙花椰菜', effect:'自律 +1・20% 根骨 +1', heal:24, stat:'vitality', chance:.2, stress:-7, discipline:1, quote:'這是整桌最安靜的一盤，也是掌門最不想承認有煮的一盤。' }
+  ];
+
+  const BROTHER_SESSIONS = [
+    { id:'krapy', icon:'🗡️', role:'大師兄', name:'糖虧皮', title:'三招滑劍拆解', effect:'身法 +1・35% 心眼 +1', quote:'大師兄先笑你三次，第四次才把真正的步法教給你。' },
+    { id:'toyz', icon:'🧪', role:'二師兄', name:'糖偉健', title:'藥爐辨丹', effect:'心眼 +1・機率獲得回氣丹', quote:'桌上四十顆丹只有一顆是真的；這次不准看到亮光就吞。' },
+    { id:'eason', icon:'📋', role:'三師兄', name:'糖政銘', title:'門規晨操', effect:'力道或根骨 +1・自律 +2', quote:'他拿著點名簿站在旁邊，動作做錯可以重來，遲到不行。' },
+    { id:'overload', icon:'📦', role:'四師兄', name:'糖負荷', title:'黑心搬貨術', effect:'根骨 +1・賺糖錢・心火上升', quote:'箱子寫著易碎，他說真正易碎的是免費仔的錢包。' },
+    { id:'nl', icon:'🪭', role:'小師妹', name:'糖汶銨', title:'閃刀步法陪練', effect:'身法或心眼 +1・人情 +2', quote:'小師妹一句「再來一次」，比掌門吼十句都有用。' }
+  ];
+
   const MISSIONS = [
     { id: 'water', name: '外院挑水', description: '日常差事，可反覆完成，但不會算進十五張主線江湖帖。', repeat: true, reward: '糖錢 28、經驗 22、根骨機率 +1', can: () => true,
       run: s => { s.coins += missionReward(s, 28); gainXp(s, 22); if (Math.random() < .45) s.stats.vitality++; s.routes.discipline++; } },
@@ -335,6 +362,10 @@
   const ACHIEVEMENTS = [
     { id:'first', icon:'👣', name:'不是跑馬燈', description:'完成第一次自主行動。', test:s=>s.metrics.actions>=1 },
     { id:'train10', icon:'🥋', name:'有練真的有差', description:'修行 10 次。', test:s=>s.metrics.training>=10 },
+    { id:'master10', icon:'🏋️', name:'掌門的重量', description:'完成 10 次糖之漢健身特訓。', test:s=>s.metrics.masterSessions>=10 },
+    { id:'menu', icon:'🍽️', name:'掌門私房全餐', description:'吃過糖之漢煎的全部 6 種料理。', test:s=>s.mealsEaten.length>=MASTER_FOODS.length },
+    { id:'clan', icon:'🤜', name:'糖門全明星', description:'與五位師兄妹都完成一次互動訓練。', test:s=>s.trainingPartners.length>=BROTHER_SESSIONS.length },
+    { id:'goat', icon:'🦌', name:'十萬分之一大中計', description:'在掌門伙房抽中 0.001% 山羌事件。', test:s=>s.metrics.mountainGoat>=1 },
     { id:'hunt5', icon:'⚔️', name:'江湖不是點擊器', description:'擊敗 5 隻野怪。', test:s=>s.metrics.wins>=5 },
     { id:'mission5', icon:'📜', name:'糖門工具人', description:'完成 5 次任務。', test:s=>s.metrics.missions>=5 },
     { id:'rich', icon:'🪙', name:'不是免費仔', description:'同時持有 500 糖錢。', test:s=>s.coins>=500 },
@@ -418,7 +449,7 @@
       achievements: Array.isArray(legacy.achievements) ? [...legacy.achievements] : [],
       reincarnations: legacy.reincarnations || 0,
       legacyStats: legacy.legacyStats || { strength:0, agility:0, vitality:0, insight:0 },
-      metrics: { actions:0, training:0, wins:0, missions:0, streams:0, purchases:0, oneHpWins:0, noHitBoss:0 },
+      metrics: { ...METRIC_DEFAULTS }, trainingPartners: [], mealsEaten: [],
       log: [], live: true, fateDay: 0, buff: null, ended: false, finalChoice: null,
       pendingStory: null, pendingFinal: false
     };
@@ -440,7 +471,9 @@
     s.owned ||= [];
     s.inventory ||= {};
     s.equipped ||= { weapon:null, armor:null, charm:null };
-    s.metrics ||= { actions:0, training:0, wins:0, missions:0, streams:0, purchases:0, oneHpWins:0, noHitBoss:0 };
+    s.metrics = { ...METRIC_DEFAULTS, ...(s.metrics||{}) };
+    s.trainingPartners = Array.isArray(s.trainingPartners) ? s.trainingPartners : [];
+    s.mealsEaten = Array.isArray(s.mealsEaten) ? s.mealsEaten : [];
     s.buff ||= null;
     s.ended ||= false;
     s.pendingStory ||= null;
@@ -645,6 +678,7 @@
     const sets = {
       outer: [
         {icon:'修',name:'自主修行',desc:'選一項四維鍛鍊，穩定獲得經驗。',cost:'行動 -1',fn:openTraining},
+        {icon:'門',name:'糖門同門修行',desc:'找糖之漢健身、吃掌門料理，或與五位師兄妹互動陪練。',cost:'選擇後行動 -1',fn:openClanTraining},
         {icon:'獵',name:'外院打野怪',desc:'從多種外院野怪中挑一隻交手；不想打可以免費換一批。',cost:'選擇後行動 -1',fn:openWildEncounter},
         {icon:'帖',name:'承接任務',desc:'完成糖門委託，取得特殊物品與人情。',cost:'依任務',fn:openMissions},
         {icon:'息',name:'調息打坐',desc:'恢復真氣與氣血，稍微降低心火。',cost:'行動 -1',fn:restAction}, commonEnd
@@ -773,6 +807,107 @@
     });
   }
 
+  function clanCard({ id, icon, role='', name, title='', focus='', effect='' }, type) {
+    return `<button class="clan-card" data-clan-${type}="${id}" ${state.ap>0?'':'disabled'}><span class="clan-avatar">${icon}</span><span class="clan-card-copy">${role?`<small>${esc(role)}</small>`:''}<b>${esc(name)}</b>${title?`<em>${esc(title)}</em>`:''}<span>${esc(focus||effect)}</span></span><i>行動 -1</i></button>`;
+  }
+
+  function openClanTraining() {
+    openModal({
+      kicker:'糖門外院・同門修行堂',
+      title:'今天要跟誰練？',
+      body:`<div class="clan-summary"><span>掌門健身 <b>${state.metrics.masterSessions}</b></span><span>掌門料理 <b>${state.metrics.mentorMeals}</b></span><span>同門搭檔 <b>${state.trainingPartners.length}/${BROTHER_SESSIONS.length}</b></span></div><div class="goat-warning"><b>極稀有事件・糖之漢開山羌</b><span>每次請掌門做飯有 <strong>0.001%（十萬分之一）</strong>機率遭山羌突襲並立即死亡。這是真死亡，防禦與飯盒都擋不住。</span></div><h3 class="clan-section-title">掌門・糖之漢</h3><div class="clan-grid">${clanCard({id:'gym',icon:'🏋️',role:'師父',name:'糖之漢',title:'猛男健身房',effect:'五種器械訓練，專練不同四維'},'master')}${clanCard({id:'kitchen',icon:'🥩',role:'師父',name:'糖之漢',title:'掌門鐵板伙房',effect:'六種現煎料理，也可能開出山羌'},'master')}</div><h3 class="clan-section-title">師兄妹互動陪練</h3><div class="clan-grid">${BROTHER_SESSIONS.map(x=>clanCard(x,'partner')).join('')}</div>`,
+      actions:[{label:'先自己修行',sub:'返回糖門外院，不消耗行動',onClick:forceCloseModal}],
+      afterOpen:()=>{
+        document.querySelectorAll('[data-clan-master]').forEach(btn=>btn.onclick=()=>btn.dataset.clanMaster==='gym'?openMasterGym():openMasterKitchen());
+        document.querySelectorAll('[data-clan-partner]').forEach(btn=>btn.onclick=()=>runBrotherSession(btn.dataset.clanPartner));
+      }
+    });
+  }
+
+  function openMasterGym() {
+    openModal({
+      kicker:'糖之漢・猛男健身房',
+      title:'器械不會因為你瘸就變輕',
+      body:`<p>每項訓練主屬性必定成長，另有機率練到第二屬性；普通健身最多把你操到剩 1 點氣血，不會像山羌一樣直接送你轉生。</p><div class="clan-grid workout-grid">${MASTER_WORKOUTS.map(x=>clanCard({...x,role:'師父監督',effect:x.focus},'workout')).join('')}</div>`,
+      actions:[{label:'返回同門修行堂',sub:'改找師兄妹或去掌門伙房',onClick:openClanTraining}],
+      afterOpen:()=>document.querySelectorAll('[data-clan-workout]').forEach(btn=>btn.onclick=()=>runMasterWorkout(btn.dataset.clanWorkout))
+    });
+  }
+
+  function openMasterKitchen() {
+    openModal({
+      kicker:'糖之漢・掌門鐵板伙房',
+      title:'今天師父煎什麼？',
+      body:`<div class="goat-warning danger"><b>山羌機率：0.001%</b><span>每道料理各自擲一次十萬分之一。若觸發「開山羌」，料理取消、氣血歸零並進入轉生。</span></div><div class="clan-grid food-grid">${MASTER_FOODS.map(x=>clanCard({...x,role:'現點現煎',title:x.effect,effect:x.quote},'food')).join('')}</div>`,
+      actions:[{label:'返回同門修行堂',sub:'突然不餓也沒有關係',onClick:openClanTraining}],
+      afterOpen:()=>document.querySelectorAll('[data-clan-food]').forEach(btn=>btn.onclick=()=>runMasterMeal(btn.dataset.clanFood))
+    });
+  }
+
+  function showClanResult(result) {
+    openModal({
+      kicker:result.kicker,
+      title:result.title,
+      body:`<div class="training-result"><div class="training-result-icon">${result.icon}</div><p>${esc(result.quote)}</p><strong>${esc(result.delta)}</strong>${result.note?`<small>${esc(result.note)}</small>`:''}</div>`,
+      actions:[{label:'繼續找同門修行',sub:state.ap>0?`今日還有 ${state.ap} 行動`:'今日行動已耗盡，仍可查看項目',primary:state.ap>0,onClick:openClanTraining},{label:'收下成果',sub:'回到糖門外院',onClick:forceCloseModal}]
+    });
+  }
+
+  function runMasterWorkout(id) {
+    const workout=MASTER_WORKOUTS.find(x=>x.id===id);if(!workout||state.ap<=0)return;
+    forceCloseModal();runAction(()=>{
+      const primaryGain=Math.random()<.22?2:1,secondaryGain=Math.random()<.35?1:0;
+      state.stats[workout.stat]+=primaryGain;if(secondaryGain)state.stats[workout.secondary]++;
+      const damage=roll(...workout.damage);state.hp=Math.max(1,state.hp-damage);state.stress=clamp(state.stress+workout.stress,0,100);
+      state.routes.discipline++;state.metrics.training++;state.metrics.masterSessions++;
+      const xp=gainXp(state,workout.xp),delta=`${STAT_NAMES[workout.stat]} +${primaryGain}${secondaryGain?` · ${STAT_NAMES[workout.secondary]} +1`:''} · 經驗 +${xp} · 氣血 -${damage}`;
+      addLog('good',`掌門健身・${workout.name}`,workout.quote,delta);pushChat('',primaryGain>1?'掌門親傳！這組爆擊成長':'師父真的沒有在放水');
+      return {result:{kicker:'糖之漢・健身結算',title:`完成 ${workout.name}`,icon:workout.icon,quote:workout.quote,delta,note:`心火 +${workout.stress}・自律 +1`}};
+    });
+  }
+
+  function mountainGoatAppears(value) { return value < MOUNTAIN_GOAT_RATE; }
+
+  function runMasterMeal(id, goatRoll=Math.random()) {
+    const food=MASTER_FOODS.find(x=>x.id===id);if(!food||state.ap<=0)return;
+    forceCloseModal();runAction(()=>{
+      if(mountainGoatAppears(goatRoll)){
+        state.metrics.mountainGoat++;state.routes.chaos+=10;state.hp=0;
+        addLog('bad','0.001%・糖之漢開山羌','掌門掀開鐵板蓋，一頭山羌從伙房正面撞進來。這不是比喻，也沒有傷害計算。','氣血歸零 · 強制轉生');pushChat('hype','十萬分之一大中計！！！');
+        return {deathReason:'糖之漢正要把料理端上桌，卻開出了十萬分之一的山羌。牠無視防禦、護具與飯盒，把這一世直接撞進結算畫面。'};
+      }
+      let statGain=0;if(food.stat&&Math.random()<food.chance){state.stats[food.stat]++;statGain=1;}
+      if(food.rice)addItem(state,'rice',food.rice);if(food.qi)state.qi=Math.min(maxQi(state),state.qi+food.qi);if(food.discipline)state.routes.discipline+=food.discipline;
+      const heal=Math.min(food.heal,maxHp(state)-state.hp);state.hp=Math.min(maxHp(state),state.hp+food.heal);state.stress=clamp(state.stress+food.stress,0,100);state.routes.ties++;
+      state.metrics.mentorMeals++;if(!state.mealsEaten.includes(food.id))state.mealsEaten.push(food.id);
+      const xp=gainXp(state,16),extras=[`氣血 +${heal}`,`經驗 +${xp}`];if(statGain)extras.push(`${STAT_NAMES[food.stat]} +1`);if(food.qi)extras.push(`真氣 +${food.qi}`);if(food.rice)extras.push(`飯盒 +${food.rice}`);if(food.discipline)extras.push(`自律 +${food.discipline}`);
+      const delta=extras.join(' · ');addLog('good',`掌門料理・${food.name}`,food.quote,delta);pushChat('',food.id==='steak'?'師父牛排有料':'這桌是增肌餐還是流水席');
+      return {result:{kicker:'掌門鐵板伙房・平安出菜',title:food.name,icon:food.icon,quote:food.quote,delta,note:`山羌沒有出現・料理圖鑑 ${state.mealsEaten.length}/${MASTER_FOODS.length}`}};
+    });
+  }
+
+  function runBrotherSession(id) {
+    const partner=BROTHER_SESSIONS.find(x=>x.id===id);if(!partner||state.ap<=0)return;
+    forceCloseModal();runAction(()=>{
+      let xp=0,delta='',note='';
+      if(id==='krapy'){
+        state.stats.agility++;const insight=Math.random()<.35?1:0;if(insight)state.stats.insight++;
+        const damage=roll(4,9);state.hp=Math.max(1,state.hp-damage);state.routes.discipline++;xp=gainXp(state,30);delta=`身法 +1${insight?' · 心眼 +1':''} · 經驗 +${xp} · 氣血 -${damage}`;note='大師兄真正教的是第三招之後怎麼活下來。';
+      } else if(id==='toyz'){
+        state.stats.insight++;state.qi=maxQi(state);const pill=Math.random()<.35;if(pill)addItem(state,'pill');state.routes.chaos++;xp=gainXp(state,26);delta=`心眼 +1 · 真氣回滿 · 經驗 +${xp}${pill?' · 回氣丹 +1':''}`;note=pill?'四十顆裡真的有一顆能吃。':'本輪沒有成丹，但至少沒有按錯。';
+      } else if(id==='eason'){
+        const key=Math.random()<.5?'strength':'vitality';state.stats[key]++;state.routes.discipline+=2;state.routes.integrity++;state.stress=clamp(state.stress+2,0,100);xp=gainXp(state,28);delta=`${STAT_NAMES[key]} +1 · 自律 +2 · 信義 +1 · 經驗 +${xp}`;note='點名、暖身、收操，全程沒有一句明天一定。';
+      } else if(id==='overload'){
+        state.stats.vitality++;const gross=roll(24,58),fee=Math.random()<.18?15:0,coins=Math.max(0,gross-fee);state.coins+=coins;state.routes.show++;state.stress=clamp(state.stress+9,0,100);xp=gainXp(state,22);delta=`根骨 +1 · 糖錢 +${coins} · 節目 +1 · 經驗 +${xp}`;note=fee?'帳上被扣了 15 糖錢「搬運平台服務費」。':'這次搬貨居然沒有任何隱藏費用。';
+      } else {
+        const key=Math.random()<.5?'agility':'insight';state.stats[key]++;state.routes.ties+=2;state.stress=clamp(state.stress-10,0,100);const heal=Math.min(14,maxHp(state)-state.hp);state.hp=Math.min(maxHp(state),state.hp+14);xp=gainXp(state,24);delta=`${STAT_NAMES[key]} +1 · 人情 +2 · 心火 -10 · 氣血 +${heal} · 經驗 +${xp}`;note='小師妹沒有放水，只是在你跌倒時真的有伸手。';
+      }
+      state.metrics.training++;state.metrics.brotherTraining++;if(!state.trainingPartners.includes(id))state.trainingPartners.push(id);
+      addLog('good',`${partner.role}互動・${partner.title}`,partner.quote,delta);pushChat('',id==='overload'?'搬這個到底有沒有勞健保':'糖門團練，感情有料');
+      return {result:{kicker:`${partner.role}・互動訓練結算`,title:`${partner.name}｜${partner.title}`,icon:partner.icon,quote:partner.quote,delta,note:`${note}・同門圖鑑 ${state.trainingPartners.length}/${BROTHER_SESSIONS.length}`}};
+    });
+  }
+
   function restAction() {
     runAction(() => {
       const heal = 18 + stat(state,'vitality'); state.hp = Math.min(maxHp(state),state.hp+heal); state.qi=maxQi(state); state.stress=clamp(state.stress-8,0,100);
@@ -833,13 +968,14 @@
     busy = true; state.ap--; state.metrics.actions++; render();
     $('cooldown').hidden = false; const bar=$('cooldown').querySelector('i'); bar.style.animation='none'; void bar.offsetWidth; bar.style.animation='';
     setTimeout(()=>{
-      callback(); busy=false; $('cooldown').hidden=true;
+      const outcome=callback()||{}; busy=false; $('cooldown').hidden=true;
       checkAchievements();
       const transition=state.hp>0&&state.stress<100?advanceChapterStep():null;
       save(); render();
-      if(state.hp<=0) showDeath('你在修行途中倒下，糖門只來得及把遺物寄回北投。');
+      if(state.hp<=0) showDeath(outcome.deathReason||'你在修行途中倒下，糖門只來得及把遺物寄回北投。');
       else if(state.stress>=100) showDeath('心火攻心。畫面還在直播，人已經先離線。');
       else if(transition) showChapterTransition(transition);
+      else if(outcome.result)showClanResult(outcome.result);
       else if(state.ap<=0) pushChat('system','系統：今日行動耗盡，可以收功入夜。');
     }, 850);
   }

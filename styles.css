@@ -266,6 +266,31 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .choice-card span { color: var(--gold); font-size: 18px; margin-top: 4px; }
 .choice-card small { color: #7d7262; font-size: 9px; margin-top: 5px; }
 .choice-card em { display: block; margin-top: 8px; color: var(--gold); font: normal 700 11px/1.5 var(--sans); }
+.clan-summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-bottom: 12px; }
+.clan-summary span { padding: 9px 7px; border: 1px solid var(--line); background: rgba(255,255,255,.025); color: #817667; text-align: center; font-size: 11px; }
+.clan-summary b { display: block; margin-top: 2px; color: var(--gold); font-size: 16px; }
+.goat-warning { display: grid; gap: 4px; margin: 12px 0 18px; padding: 12px 14px; border: 1px solid rgba(190,48,40,.48); background: rgba(190,48,40,.09); }
+.goat-warning b, .goat-warning strong { color: #ef7b72; }
+.goat-warning span { color: #ad9e89; font-size: 12px; line-height: 1.6; }
+.goat-warning.danger { box-shadow: inset 3px 0 0 var(--red); }
+.clan-section-title { margin: 19px 0 9px; color: var(--cream); font: 900 15px var(--serif); }
+.clan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.clan-card { min-width: 0; position: relative; display: grid; grid-template-columns: 46px 1fr; gap: 11px; align-items: center; padding: 13px 12px 25px; border: 1px solid var(--line); background: rgba(255,255,255,.025); color: var(--cream); text-align: left; cursor: pointer; }
+.clan-card:hover:not(:disabled) { border-color: var(--gold); background: rgba(217,164,65,.07); }
+.clan-card:disabled { opacity: .38; cursor: not-allowed; }
+.clan-avatar { width: 46px; height: 46px; display: grid; place-items: center; border: 1px solid rgba(217,164,65,.25); background: rgba(217,164,65,.08); font-size: 23px; }
+.clan-card-copy { min-width: 0; }
+.clan-card-copy small, .clan-card-copy b, .clan-card-copy em, .clan-card-copy > span { display: block; }
+.clan-card-copy small { color: var(--red); font-size: 10px; font-weight: 900; }
+.clan-card-copy b { margin-top: 2px; font-size: 14px; }
+.clan-card-copy em { margin-top: 3px; color: var(--gold); font: normal 800 12px var(--sans); }
+.clan-card-copy > span { margin-top: 5px; color: #8d826f; font-size: 11px; line-height: 1.5; }
+.clan-card > i { position: absolute; right: 9px; bottom: 7px; color: #665d50; font: normal 800 9px var(--sans); }
+.training-result { text-align: center; }
+.training-result-icon { width: 78px; height: 78px; margin: 0 auto 14px; display: grid; place-items: center; border: 3px double var(--gold); background: rgba(217,164,65,.08); font-size: 39px; transform: rotate(-3deg); }
+.training-result p { max-width: 480px; margin: 0 auto; color: #b9ac97; font: 700 15px/1.8 var(--serif); }
+.training-result strong { display: block; margin-top: 16px; padding: 11px; border: 1px solid rgba(117,168,125,.35); background: rgba(117,168,125,.08); color: var(--jade); }
+.training-result small { display: block; margin-top: 9px; color: #817667; line-height: 1.55; }
 .allocation-guide, .mission-note { margin-bottom: 16px; padding: 13px 15px; border-left: 3px solid var(--gold); background: #100c0b; color: #c8bba4; }
 .allocation-guide b { color: var(--cream); }
 .allocation-guide p { margin: 4px 0 0; }
@@ -468,6 +493,10 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
   .modal { padding: 10px; }
   .modal-card { max-height: 92vh; padding: 26px 18px; }
   .choice-grid, .item-grid, .achievement-grid { grid-template-columns: 1fr; }
+  .clan-grid { grid-template-columns: 1fr; }
+  .clan-summary { grid-template-columns: 1fr 1fr 1fr; }
+  .clan-summary span { padding: 8px 3px; font-size: 9px; }
+  .clan-card { padding: 11px 10px 24px; }
   .battle-foes { grid-template-columns: 1fr 32px 1fr; gap: 5px; }
   .fighter { padding: 9px 6px; }
   .fighter .avatar { font-size: 29px; }
