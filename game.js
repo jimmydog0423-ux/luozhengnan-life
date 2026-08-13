@@ -365,7 +365,7 @@
     { id:'master10', icon:'🏋️', name:'掌門的重量', description:'完成 10 次糖之漢健身特訓。', test:s=>s.metrics.masterSessions>=10 },
     { id:'menu', icon:'🍽️', name:'掌門私房全餐', description:'吃過糖之漢煎的全部 6 種料理。', test:s=>s.mealsEaten.length>=MASTER_FOODS.length },
     { id:'clan', icon:'🤜', name:'糖門全明星', description:'與五位師兄妹都完成一次互動訓練。', test:s=>s.trainingPartners.length>=BROTHER_SESSIONS.length },
-    { id:'goat', icon:'🦌', name:'十萬分之一大中計', description:'與糖之漢互動時抽中 0.001%「糖之漢被開山羌」。', test:s=>s.metrics.mountainGoat>=1 },
+    { id:'goat', icon:'🦌', name:'掌門不在家', description:'親眼見證糖門最罕見的意外。', test:s=>s.metrics.mountainGoat>=1 },
     { id:'hunt5', icon:'⚔️', name:'江湖不是點擊器', description:'擊敗 5 隻野怪。', test:s=>s.metrics.wins>=5 },
     { id:'mission5', icon:'📜', name:'糖門工具人', description:'完成 5 次任務。', test:s=>s.metrics.missions>=5 },
     { id:'rich', icon:'🪙', name:'不是免費仔', description:'同時持有 500 糖錢。', test:s=>s.coins>=500 },
@@ -815,7 +815,7 @@
     openModal({
       kicker:'糖門外院・同門修行堂',
       title:'今天要跟誰練？',
-      body:`<div class="clan-summary"><span>掌門健身 <b>${state.metrics.masterSessions}</b></span><span>掌門料理 <b>${state.metrics.mentorMeals}</b></span><span>同門搭檔 <b>${state.trainingPartners.length}/${BROTHER_SESSIONS.length}</b></span></div><div class="goat-warning"><b>極稀有事件・糖之漢被開山羌</b><span>每次實際與糖之漢健身或吃他做的料理，都有 <strong>0.001%（十萬分之一）</strong>機率觸發山羌突襲。若命中，糖之漢死亡，本世立即 GAME OVER。</span></div><h3 class="clan-section-title">掌門・糖之漢</h3><div class="clan-grid">${clanCard({id:'gym',icon:'🏋️',role:'師父',name:'糖之漢',title:'猛男健身房',effect:'五種器械訓練；每次都有山羌風險'},'master')}${clanCard({id:'kitchen',icon:'🥩',role:'師父',name:'糖之漢',title:'掌門鐵板伙房',effect:'六種現煎料理；每次都有山羌風險'},'master')}</div><h3 class="clan-section-title">師兄妹互動陪練</h3><div class="clan-grid">${BROTHER_SESSIONS.map(x=>clanCard(x,'partner')).join('')}</div>`,
+      body:`<div class="clan-summary"><span>掌門健身 <b>${state.metrics.masterSessions}</b></span><span>掌門料理 <b>${state.metrics.mentorMeals}</b></span><span>同門搭檔 <b>${state.trainingPartners.length}/${BROTHER_SESSIONS.length}</b></span></div><h3 class="clan-section-title">掌門・糖之漢</h3><div class="clan-grid">${clanCard({id:'gym',icon:'🏋️',role:'師父',name:'糖之漢',title:'猛男健身房',effect:'五種器械訓練，各自鍛鍊不同能力'},'master')}${clanCard({id:'kitchen',icon:'🥩',role:'師父',name:'糖之漢',title:'掌門鐵板伙房',effect:'六種現煎料理，各有不同補養效果'},'master')}</div><h3 class="clan-section-title">師兄妹互動陪練</h3><div class="clan-grid">${BROTHER_SESSIONS.map(x=>clanCard(x,'partner')).join('')}</div>`,
       actions:[{label:'先自己修行',sub:'返回糖門外院，不消耗行動',onClick:forceCloseModal}],
       afterOpen:()=>{
         document.querySelectorAll('[data-clan-master]').forEach(btn=>btn.onclick=()=>btn.dataset.clanMaster==='gym'?openMasterGym():openMasterKitchen());
@@ -828,7 +828,7 @@
     openModal({
       kicker:'糖之漢・猛男健身房',
       title:'器械不會因為你瘸就變輕',
-      body:`<div class="goat-warning"><b>每次健身也會判定山羌：0.001%</b><span>普通訓練傷害最多讓你剩 1 點氣血；但若觸發「糖之漢被開山羌」，師父會死亡並使本世立即 GAME OVER。</span></div><p>每項訓練主屬性必定成長，另有機率練到第二屬性。</p><div class="clan-grid workout-grid">${MASTER_WORKOUTS.map(x=>clanCard({...x,role:'師父監督',effect:x.focus},'workout')).join('')}</div>`,
+      body:`<p>每項訓練主屬性必定成長，另有機率練到第二屬性。普通訓練傷害最多讓你剩 1 點氣血。</p><div class="clan-grid workout-grid">${MASTER_WORKOUTS.map(x=>clanCard({...x,role:'師父監督',effect:x.focus},'workout')).join('')}</div>`,
       actions:[{label:'返回同門修行堂',sub:'改找師兄妹或去掌門伙房',onClick:openClanTraining}],
       afterOpen:()=>document.querySelectorAll('[data-clan-workout]').forEach(btn=>btn.onclick=()=>runMasterWorkout(btn.dataset.clanWorkout))
     });
@@ -838,18 +838,25 @@
     openModal({
       kicker:'糖之漢・掌門鐵板伙房',
       title:'今天師父煎什麼？',
-      body:`<div class="goat-warning danger"><b>糖之漢被開山羌機率：0.001%</b><span>每道料理各自擲一次十萬分之一。若觸發，料理取消、糖之漢死亡，本世立即 GAME OVER。</span></div><div class="clan-grid food-grid">${MASTER_FOODS.map(x=>clanCard({...x,role:'現點現煎',title:x.effect,effect:x.quote},'food')).join('')}</div>`,
+      body:`<p>糖之漢親自掌鍋，每道料理都有不同的恢復、補給或養成效果。</p><div class="clan-grid food-grid">${MASTER_FOODS.map(x=>clanCard({...x,role:'現點現煎',title:x.effect,effect:x.quote},'food')).join('')}</div>`,
       actions:[{label:'返回同門修行堂',sub:'突然不餓也沒有關係',onClick:openClanTraining}],
       afterOpen:()=>document.querySelectorAll('[data-clan-food]').forEach(btn=>btn.onclick=()=>runMasterMeal(btn.dataset.clanFood))
     });
   }
 
-  function showClanResult(result) {
+  function showClanResult(result, before, next = null) {
+    const changes=actionChanges(before,state);
+    const unlocked=state.achievements.filter(id=>!before.achievements.includes(id)).map(id=>ACHIEVEMENTS.find(a=>a.id===id)?.name).filter(Boolean);
+    const changeHtml=changes.map(change=>`<div class="action-change ${change.tone}"><span>${esc(change.label)}</span><b>${esc(change.value)}</b></div>`).join('');
+    const actions = next
+      ? [{label:'查看新回目',sub:'本次成果已收下，接著查看推進的故事。',primary:true,onClick:()=>{forceCloseModal();next();}}]
+      : [{label:'繼續找同門修行',sub:state.ap>0?`今日還有 ${state.ap} 行動`:'今日行動已耗盡，仍可查看項目',primary:state.ap>0,onClick:openClanTraining},{label:'收下成果',sub:'回到糖門外院',onClick:forceCloseModal}];
     openModal({
       kicker:result.kicker,
       title:result.title,
-      body:`<div class="training-result"><div class="training-result-icon">${result.icon}</div><p>${esc(result.quote)}</p><strong>${esc(result.delta)}</strong>${result.note?`<small>${esc(result.note)}</small>`:''}</div>`,
-      actions:[{label:'繼續找同門修行',sub:state.ap>0?`今日還有 ${state.ap} 行動`:'今日行動已耗盡，仍可查看項目',primary:state.ap>0,onClick:openClanTraining},{label:'收下成果',sub:'回到糖門外院',onClick:forceCloseModal}]
+      body:`<div class="training-result"><div class="training-result-icon">${result.icon}</div><p>${esc(result.quote)}</p>${result.note?`<small>${esc(result.note)}</small>`:''}</div><div class="action-result clan-result-changes"><h3>本次變化</h3><div class="action-change-grid">${changeHtml}</div>${unlocked.length?`<div class="result-notice achievement-pop">新成就：${unlocked.map(esc).join('、')}</div>`:''}</div>`,
+      actions,
+      closable:false
     });
   }
 
@@ -887,7 +894,7 @@
       state.metrics.mentorMeals++;if(!state.mealsEaten.includes(food.id))state.mealsEaten.push(food.id);
       const xp=gainXp(state,16),extras=[`氣血 +${heal}`,`經驗 +${xp}`];if(statGain)extras.push(`${STAT_NAMES[food.stat]} +1`);if(food.qi)extras.push(`真氣 +${food.qi}`);if(food.rice)extras.push(`飯盒 +${food.rice}`);if(food.discipline)extras.push(`自律 +${food.discipline}`);
       const delta=extras.join(' · ');addLog('good',`掌門料理・${food.name}`,food.quote,delta);pushChat('',food.id==='steak'?'師父牛排有料':'這桌是增肌餐還是流水席');
-      return {result:{kicker:'掌門鐵板伙房・平安出菜',title:food.name,icon:food.icon,quote:food.quote,delta,note:`山羌沒有出現・料理圖鑑 ${state.mealsEaten.length}/${MASTER_FOODS.length}`}};
+      return {result:{kicker:'掌門鐵板伙房・出菜結算',title:food.name,icon:food.icon,quote:food.quote,delta,note:`料理圖鑑 ${state.mealsEaten.length}/${MASTER_FOODS.length}`}};
     });
   }
 
@@ -967,22 +974,77 @@
     });
   }
 
+  function actionSnapshot(s) {
+    return {
+      level:s.level, xp:s.xp, points:s.points, hp:s.hp, qi:s.qi, stress:s.stress,
+      coins:s.coins, fame:s.fame, ap:s.ap, stats:{...s.stats}, routes:{...s.routes},
+      inventory:{...s.inventory}, owned:[...s.owned], vows:[...s.vows],
+      completedMissions:[...s.completedMissions], achievements:[...s.achievements]
+    };
+  }
+
+  function xpBetween(before, after) {
+    let gained=after.xp-before.xp;
+    for(let level=before.level;level<after.level;level++)gained+=45+level*20;
+    return gained;
+  }
+
+  function actionChanges(before, after) {
+    const changes=[];
+    const add=(label,delta,tone='')=>{if(delta)changes.push({label,value:`${delta>0?'+':''}${delta}`,tone});};
+    Object.entries(STAT_NAMES).forEach(([key,label])=>add(label,after.stats[key]-before.stats[key],'good'));
+    add('經驗',xpBetween(before,after),'good');
+    add('等級',after.level-before.level,'good');add('可用配點',after.points-before.points,'good');
+    add('氣血',after.hp-before.hp,after.hp>=before.hp?'good':'bad');
+    add('真氣',after.qi-before.qi,after.qi>=before.qi?'good':'bad');
+    add('心火',after.stress-before.stress,after.stress<=before.stress?'good':'bad');
+    add('糖錢',after.coins-before.coins,after.coins>=before.coins?'good':'bad');
+    add('俠名',after.fame-before.fame,after.fame>=before.fame?'good':'bad');
+    Object.entries(ROUTE_NAMES).forEach(([key,label])=>{
+      const delta=after.routes[key]-before.routes[key];
+      add(label,delta,key==='chaos'?(delta>0?'bad':'good'):(delta>0?'good':'bad'));
+    });
+    const itemIds=new Set([...Object.keys(before.inventory),...Object.keys(after.inventory)]);
+    itemIds.forEach(id=>add(ITEMS[id]?.name||id,(after.inventory[id]||0)-(before.inventory[id]||0),(after.inventory[id]||0)>=(before.inventory[id]||0)?'good':'bad'));
+    after.owned.filter(id=>!before.owned.includes(id)).forEach(id=>changes.push({label:ITEMS[id]?.name||id,value:'獲得',tone:'good'}));
+    after.vows.filter(vow=>!before.vows.includes(vow)).forEach(vow=>changes.push({label:vow,value:'獲得',tone:'good'}));
+    add('主線江湖帖',after.completedMissions.length-before.completedMissions.length,'good');
+    add('行動',after.ap-before.ap,'cost');
+    return changes;
+  }
+
+  function showActionResult(before, entry, next = null) {
+    const changes=actionChanges(before,state);
+    const unlocked=state.achievements.filter(id=>!before.achievements.includes(id)).map(id=>ACHIEVEMENTS.find(a=>a.id===id)?.name).filter(Boolean);
+    const changeHtml=changes.length
+      ? changes.map(change=>`<div class="action-change ${change.tone}"><span>${esc(change.label)}</span><b>${esc(change.value)}</b></div>`).join('')
+      : '<div class="action-no-change">本次沒有產生數值變化</div>';
+    openModal({
+      kicker:'行動結算・收招完成',
+      title:entry?.title||'本次行動完成',
+      body:`<div class="action-result"><div class="action-result-seal">結</div>${entry?.text?`<p>${esc(entry.text)}</p>`:''}<h3>本次變化</h3><div class="action-change-grid">${changeHtml}</div>${unlocked.length?`<div class="result-notice achievement-pop">新成就：${unlocked.map(esc).join('、')}</div>`:''}</div>`,
+      closable:false,
+      actions:[{label:next?'查看新回目':'收下結果',sub:next?'本次成果已記錄，接著查看推進的故事。':state.ap>0?`今日還有 ${state.ap} 行動`:'今日行動已耗盡，可以收功入夜。',primary:true,onClick:()=>{forceCloseModal();next?.();}}]
+    });
+  }
+
   function runAction(callback) {
     if (busy || state.ended) return;
     if (state.ap <= 0) return toast('今天已經沒有行動力，收功入夜吧');
+    const before=actionSnapshot(state);
     busy = true; state.ap--; state.metrics.actions++; render();
     $('cooldown').hidden = false; const bar=$('cooldown').querySelector('i'); bar.style.animation='none'; void bar.offsetWidth; bar.style.animation='';
     setTimeout(()=>{
-      const outcome=callback()||{}; busy=false; $('cooldown').hidden=true;
+      const outcome=callback()||{},entry=state.log[0]; busy=false; $('cooldown').hidden=true;
       checkAchievements();
       const transition=!state.ended&&state.hp>0&&state.stress<100?advanceChapterStep():null;
       save(); render();
       if(outcome.gameOver)showMasterGoatEnding();
       else if(state.hp<=0) showDeath(outcome.deathReason||'你在修行途中倒下，糖門只來得及把遺物寄回北投。');
       else if(state.stress>=100) showDeath('心火攻心。畫面還在直播，人已經先離線。');
-      else if(transition) showChapterTransition(transition);
-      else if(outcome.result)showClanResult(outcome.result);
-      else if(state.ap<=0) pushChat('system','系統：今日行動耗盡，可以收功入夜。');
+      else if(outcome.result)showClanResult(outcome.result,before,transition?()=>showChapterTransition(transition):null);
+      else showActionResult(before,entry,transition?()=>showChapterTransition(transition):null);
+      if(state.ap<=0)pushChat('system','系統：今日行動耗盡，可以收功入夜。');
     }, 850);
   }
 

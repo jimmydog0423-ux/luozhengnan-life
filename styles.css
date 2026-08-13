@@ -269,10 +269,6 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .clan-summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-bottom: 12px; }
 .clan-summary span { padding: 9px 7px; border: 1px solid var(--line); background: rgba(255,255,255,.025); color: #817667; text-align: center; font-size: 11px; }
 .clan-summary b { display: block; margin-top: 2px; color: var(--gold); font-size: 16px; }
-.goat-warning { display: grid; gap: 4px; margin: 12px 0 18px; padding: 12px 14px; border: 1px solid rgba(190,48,40,.48); background: rgba(190,48,40,.09); }
-.goat-warning b, .goat-warning strong { color: #ef7b72; }
-.goat-warning span { color: #ad9e89; font-size: 12px; line-height: 1.6; }
-.goat-warning.danger { box-shadow: inset 3px 0 0 var(--red); }
 .clan-section-title { margin: 19px 0 9px; color: var(--cream); font: 900 15px var(--serif); }
 .clan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .clan-card { min-width: 0; position: relative; display: grid; grid-template-columns: 46px 1fr; gap: 11px; align-items: center; padding: 13px 12px 25px; border: 1px solid var(--line); background: rgba(255,255,255,.025); color: var(--cream); text-align: left; cursor: pointer; }
@@ -291,6 +287,21 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .training-result p { max-width: 480px; margin: 0 auto; color: #b9ac97; font: 700 15px/1.8 var(--serif); }
 .training-result strong { display: block; margin-top: 16px; padding: 11px; border: 1px solid rgba(117,168,125,.35); background: rgba(117,168,125,.08); color: var(--jade); }
 .training-result small { display: block; margin-top: 9px; color: #817667; line-height: 1.55; }
+.action-result { text-align: center; }
+.action-result-seal { width: 70px; height: 70px; margin: 0 auto 13px; display: grid; place-items: center; border: 4px double var(--gold); color: var(--gold); background: rgba(217,164,65,.06); font: 900 35px/1 var(--serif); transform: rotate(-3deg); }
+.action-result > p { max-width: 500px; margin: 0 auto 18px; color: #b9ac97; font: 700 14px/1.75 var(--serif); }
+.action-result h3 { margin: 0 0 9px; color: var(--cream); font: 900 14px var(--sans); text-align: left; }
+.clan-result-changes { margin-top: 18px; }
+.action-change-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+.action-change { display: flex; justify-content: space-between; gap: 10px; align-items: center; min-width: 0; padding: 11px 12px; border: 1px solid var(--line); background: #100c0b; text-align: left; }
+.action-change span { min-width: 0; color: #8f8371; font-size: 11px; }
+.action-change b { flex: 0 0 auto; color: var(--cream); font-size: 15px; }
+.action-change.good { border-color: rgba(117,168,125,.28); background: rgba(117,168,125,.07); }
+.action-change.good b { color: var(--jade); }
+.action-change.bad { border-color: rgba(190,48,40,.34); background: rgba(190,48,40,.08); }
+.action-change.bad b { color: #ef7b72; }
+.action-change.cost b { color: #b9aa91; }
+.action-no-change { grid-column: 1 / -1; padding: 14px; border: 1px solid var(--line); color: #8f8371; }
 .allocation-guide, .mission-note { margin-bottom: 16px; padding: 13px 15px; border-left: 3px solid var(--gold); background: #100c0b; color: #c8bba4; }
 .allocation-guide b { color: var(--cream); }
 .allocation-guide p { margin: 4px 0 0; }
@@ -502,6 +513,7 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
   .fighter { padding: 9px 6px; }
   .fighter .avatar { font-size: 29px; }
   .result-rewards { grid-template-columns: 1fr; }
+  .action-change-grid { grid-template-columns: 1fr 1fr; }
   .ending-stats { grid-template-columns: 1fr 1fr; }
   .chapter-roadmap { grid-template-columns: 1fr 1fr; }
 }
