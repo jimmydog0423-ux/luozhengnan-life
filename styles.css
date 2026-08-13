@@ -38,7 +38,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outl
 .start-shell { position: relative; z-index: 2; width: min(1160px, 100%); display: grid; grid-template-columns: 1.25fr .75fr; gap: clamp(36px, 7vw, 90px); align-items: center; }
 .start-copy { position: relative; padding: 30px 0; }
 .eyebrow { color: #c7b99e; font-size: 12px; letter-spacing: .14em; font-weight: 700; text-transform: uppercase; display: flex; gap: 9px; align-items: center; }
-.live-dot { width: 8px; height: 8px; display: inline-block; border-radius: 50%; background: #ef4238; box-shadow: 0 0 0 4px rgba(239,66,56,.12), 0 0 16px rgba(239,66,56,.75); animation: livePulse 1.8s ease infinite; flex: 0 0 auto; }
+.live-dot { width: 8px; height: 8px; display: inline-block; flex: 0 0 auto; padding: 0; border: 0; border-radius: 50%; background: #ef4238; box-shadow: 0 0 0 4px rgba(239,66,56,.12), 0 0 16px rgba(239,66,56,.75); animation: livePulse 1.8s ease infinite; cursor: default; }
 @keyframes livePulse { 50% { opacity: .55; transform: scale(.86); } }
 .seal { position: absolute; right: 5%; top: 8%; width: 128px; height: 128px; border: 4px double var(--red); color: var(--red); transform: rotate(8deg); display: grid; place-items: center; font: 900 62px/.9 var(--serif); opacity: .68; }
 .seal::before, .seal::after { content: ""; position: absolute; inset: 8px; border: 1px solid currentColor; }
@@ -257,6 +257,7 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .modal-close { position: absolute; z-index: 3; right: 13px; top: 12px; width: 32px; height: 32px; border: 1px solid var(--line); background: transparent; cursor: pointer; color: #8b806e; }
 .modal-card h2 { position: relative; margin: 4px 0 18px; font: 900 clamp(25px,4vw,36px) var(--serif); }
 .modal-body { position: relative; color: #aca08c; font-size: 12px; }
+.modal-body > input { width: 100%; padding: 13px 14px; border: 1px solid rgba(232,221,194,.22); border-radius: 2px; background: rgba(0,0,0,.26); color: var(--cream); font-size: 17px; }
 .modal-body > p { line-height: 1.8; }
 .modal-actions { position: relative; display: grid; gap: 8px; margin-top: 22px; }
 .modal-action { width: 100%; border: 1px solid var(--line); background: rgba(255,255,255,.03); padding: 12px 14px; text-align: left; cursor: pointer; }
