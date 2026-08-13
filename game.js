@@ -11,6 +11,12 @@
 
   const STAT_NAMES = { strength: '力道', agility: '身法', vitality: '根骨', insight: '心眼' };
   const STAT_ICONS = { strength: '力', agility: '影', vitality: '骨', insight: '眼' };
+  const STAT_EFFECTS = {
+    strength: '每 1 點使基礎攻擊 +2，直接提高普攻與糖門滑劍傷害。',
+    agility: '每 1 點使暴擊率 +1.2%，並提高普攻與糖門滑劍傷害。',
+    vitality: '每 1 點使氣血上限 +7，並逐步提高防禦。',
+    insight: '每 1 點使真氣上限 +3、提高看破反擊；達 10 可看清詭計。'
+  };
   const ROUTE_NAMES = { discipline: '自律', integrity: '信義', ties: '人情', show: '節目', chaos: '混沌' };
 
   const LOCATIONS = {
@@ -305,6 +311,14 @@
   }
   function addVow(s, vow) { if (!s.vows.includes(vow)) s.vows.push(vow); }
   function missionReward(s, amount) { return Math.round(amount * (s.location === 'villa' ? 1.2 : 1)); }
+  function statPreview(s, key) {
+    const next = { ...s, stats: { ...s.stats, [key]: (s.stats[key] || 0) + 1 } };
+    if (key === 'strength') return `攻擊 ${attackPower(s)} → ${attackPower(next)}`;
+    if (key === 'agility') return `暴擊率 ${(stat(s,key) * 1.2).toFixed(1)}% → ${(stat(next,key) * 1.2).toFixed(1)}%`;
+    if (key === 'vitality') return `氣血 ${maxHp(s)} → ${maxHp(next)}・防禦 ${defensePower(s)} → ${defensePower(next)}`;
+    const insightNote = stat(s,key) < 10 && stat(next,key) >= 10 ? '・解鎖看清詭計' : '';
+    return `真氣 ${maxQi(s)} → ${maxQi(next)}・看破傷害 +1.4${insightNote}`;
+  }
 
   function gainXp(s, amount) {
     let gained = amount;
@@ -404,7 +418,7 @@
     $('live-toggle').classList.toggle('off', !state.live); $('live-toggle').setAttribute('aria-pressed', String(state.live));
     $('live-toggle').innerHTML = `<span class="live-dot"></span> ${state.live ? '實況中' : '已關台'}`;
 
-    $('stats-grid').innerHTML = Object.entries(STAT_NAMES).map(([key,name]) => `<div class="stat-tile"><span>${name}</span><b>${stat(state,key)}</b></div>`).join('');
+    $('stats-grid').innerHTML = Object.entries(STAT_NAMES).map(([key,name]) => `<div class="stat-tile" title="${esc(STAT_EFFECTS[key])}"><span>${name}</span><b>${stat(state,key)}</b></div>`).join('');
     $('equipment-mini').innerHTML = ['weapon','armor','charm'].map(slot => {
       const id = state.equipped[slot], item = ITEMS[id];
       const slotName = {weapon:'兵器',armor:'護具',charm:'法器'}[slot];
@@ -494,7 +508,7 @@
   }
 
   function renderLog() {
-    $('log-list').innerHTML = state.log.slice(0,8).map(entry => `<article class="log-entry ${entry.type}"><time>第 ${entry.day} 日</time><div><b>${esc(entry.title)}</b><p>${esc(entry.text)}</p>${entry.delta?`<div class="delta-line">${esc(entry.delta)}</div>`:''}</div></article>`).join('');
+    $('log-list').innerHTML = state.log.slice(0,4).map(entry => `<article class="log-entry ${entry.type}"><time>第 ${entry.day} 日</time><div><b>${esc(entry.title)}</b><p>${esc(entry.text)}</p>${entry.delta?`<div class="delta-line">${esc(entry.delta)}</div>`:''}</div></article>`).join('');
   }
 
   function renderBossPreview() {
@@ -508,8 +522,10 @@
 
   function availableMissions() { return MISSIONS.filter(m => m.repeat || !state.completedMissions.includes(m.id)); }
   function renderQuestMini() {
-    const list = availableMissions().slice(0,3);
-    $('quest-mini').innerHTML = list.length ? list.map(m=>`<div class="mini-row ${m.can(state)?'':'done'}"><i></i><span>${esc(m.name)}${m.can(state)?'':' · 未達條件'}</span></div>`).join('') : '<div class="mini-row done"><i></i><span>本世委託已全數完成</span></div>';
+    const list = availableMissions().filter(m => !m.repeat).slice(0,2);
+    $('quest-mini').innerHTML = list.length
+      ? list.map(m=>`<div class="mini-row ${m.can(state)?'':'locked'}"><i></i><span>${esc(m.name)}${m.can(state)?' · 可承接':' · '+esc(m.reason||'未達條件')}</span></div>`).join('')
+      : '<div class="mini-row complete"><i></i><span>本世江湖帖已全數完成</span></div>';
   }
   function renderAchievementMini() {
     const latest = ACHIEVEMENTS.filter(a=>state.achievements.includes(a.id)).slice(-3).reverse();
@@ -533,7 +549,7 @@
 
   function openTraining() {
     const locNote = state.location === 'outer' ? '外院修行會多得 20% 經驗。' : state.location === 'villa' ? '山莊修身法會額外 +1。' : '不同場域會改變修行風險。';
-    openModal({ kicker:'自主修行', title:'今天磨哪一把刀？', body:`<p>${locNote}每次修行消耗 1 行動；升級後可再自由配點。</p><div class="choice-grid">${Object.entries(STAT_NAMES).map(([key,name])=>`<button class="choice-card" data-train="${key}"><b>${STAT_ICONS[key]}・${name}</b><span>${stat(state,key)}</span><small>${{strength:'提高攻擊與劍技傷害',agility:'提高暴擊、閃避與連招',vitality:'提高氣血、防禦與生存',insight:'提高真氣、看破與判定'}[key]}</small></button>`).join('')}</div>`, afterOpen:()=>{
+    openModal({ kicker:'自主修行', title:'今天磨哪一把刀？', body:`<p>${locNote}每次修行消耗 1 行動；升級後可再自由配點。</p><div class="choice-grid">${Object.entries(STAT_NAMES).map(([key,name])=>`<button class="choice-card" data-train="${key}"><b>${STAT_ICONS[key]}・${name}</b><span>${stat(state,key)}</span><small>${STAT_EFFECTS[key]}</small></button>`).join('')}</div>`, afterOpen:()=>{
       document.querySelectorAll('[data-train]').forEach(btn => btn.onclick = () => { forceCloseModal(); quickTrain(btn.dataset.train); });
     }});
   }
@@ -634,9 +650,10 @@
   }
 
   function openMissions() {
-    const list=availableMissions();
-    openModal({kicker:'糖門江湖帖',title:'今天替誰收拾問題？',body:`<div class="item-grid">${list.map(m=>`<article class="shop-item"><div class="item-icon">帖</div><div><h4>${esc(m.name)}${m.repeat?' · 可重複':''}</h4><p>${esc(m.description)}<br>報酬：${esc(m.reward)}</p><button class="buy-button" data-mission="${m.id}" ${m.can(state)&&state.ap>0?'':'disabled'}>${m.can(state)?(state.ap>0?'接下任務':'今日無行動'):(m.reason||'條件不足')}</button></div></article>`).join('')}</div>`,afterOpen:()=>{
-      document.querySelectorAll('[data-mission]').forEach(btn=>btn.onclick=()=>{const m=MISSIONS.find(x=>x.id===btn.dataset.mission);forceCloseModal();runAction(()=>{m.run(state);state.metrics.missions++;if(!m.repeat&&!state.completedMissions.includes(m.id))state.completedMissions.push(m.id);addLog('good',`完成委託・${m.name}`,m.description,m.reward);pushChat('','工具人有料');});});
+    const list=availableMissions(), story=list.filter(m=>!m.repeat), daily=list.filter(m=>m.repeat);
+    const missionCards = missions => missions.map(m=>`<article class="shop-item"><div class="item-icon">${m.repeat?'日':'帖'}</div><div><h4>${esc(m.name)}${m.repeat?' · 可重複':''}</h4><p>${esc(m.description)}<br>報酬：${esc(m.reward)}</p><button class="buy-button" data-mission="${m.id}" ${m.can(state)&&state.ap>0?'':'disabled'}>${m.can(state)?(state.ap>0?'接下任務':'今日無行動'):(m.reason||'條件不足')}</button></div></article>`).join('');
+    openModal({kicker:'糖門江湖帖',title:'今天替誰收拾問題？',body:`<div class="mission-note">右側只追蹤一次性江湖帖；日常委託完成後仍可再次承接，不是卡住。</div><h3 class="mission-group-title">江湖帖・完成後自追蹤移除</h3><div class="item-grid">${story.length?missionCards(story):'<p class="empty-state">本世江湖帖已全數完成。</p>'}</div><h3 class="mission-group-title">日常委託・可重複、不列入追蹤</h3><div class="item-grid">${missionCards(daily)}</div>`,afterOpen:()=>{
+      document.querySelectorAll('[data-mission]').forEach(btn=>btn.onclick=()=>{const m=MISSIONS.find(x=>x.id===btn.dataset.mission);forceCloseModal();runAction(()=>{m.run(state);state.metrics.missions++;if(!m.repeat&&!state.completedMissions.includes(m.id))state.completedMissions.push(m.id);addLog('good',`${m.repeat?'完成日常':'完成委託'}・${m.name}`,m.description,m.reward);if(m.repeat)toast('日常委託完成；可再次承接，不列入右側追蹤');pushChat('','工具人有料');});});
     }});
   }
 
@@ -664,7 +681,7 @@
   function useInventoryItem(id){if(id==='rice'&&consumeItem(state,id)){state.hp=Math.min(maxHp(state),state.hp+38);addLog('good','吃下米特飯盒','先吃再嫌，氣血總算回來了。','氣血 +38');}if(id==='pill'&&consumeItem(state,id)){state.qi=Math.min(maxQi(state),state.qi+24);addLog('good','服下回氣丹','甜得不太像藥，但確實有用。','真氣 +24');}save();render();forceCloseModal();openInventory();}
 
   function openAllocate() {
-    openModal({kicker:'升級配點',title:`尚有 ${state.points} 點`,body:`<p>每次升級獲得 2 點。Boss 的特殊素質是硬門檻，配錯可以繼續修行補回來。</p><div class="choice-grid">${Object.entries(STAT_NAMES).map(([key,name])=>`<button class="choice-card" data-point="${key}" ${state.points?'':'disabled'}><b>${name}</b><span>${stat(state,key)}</span><small>投入 1 點</small></button>`).join('')}</div>`,afterOpen:()=>{document.querySelectorAll('[data-point]').forEach(btn=>btn.onclick=()=>{if(!state.points)return;state.points--;state.stats[btn.dataset.point]++;state.hp=Math.min(maxHp(state),state.hp+5);state.qi=Math.min(maxQi(state),state.qi+3);save();render();forceCloseModal();openAllocate();});}});
+    openModal({kicker:'升級配點',title:`尚有 ${state.points} 點`,body:`<div class="allocation-guide"><b>怎麼選？</b><p>力道打得痛、身法拚暴擊、根骨撐生存、心眼管真氣與看破。每次升級獲得 2 點；Boss 的特殊素質是硬門檻。</p></div><div class="choice-grid">${Object.entries(STAT_NAMES).map(([key,name])=>`<button class="choice-card stat-choice" data-point="${key}" ${state.points?'':'disabled'}><b>${STAT_ICONS[key]}・${name}</b><span>${stat(state,key)} → ${stat(state,key)+1}</span><small>${STAT_EFFECTS[key]}</small><em>${statPreview(state,key)}</em></button>`).join('')}</div>`,afterOpen:()=>{document.querySelectorAll('[data-point]').forEach(btn=>btn.onclick=()=>{if(!state.points)return;const key=btn.dataset.point,beforeHp=maxHp(state),beforeQi=maxQi(state);state.points--;state.stats[key]++;if(key==='vitality')state.hp=Math.min(maxHp(state),state.hp+maxHp(state)-beforeHp);if(key==='insight')state.qi=Math.min(maxQi(state),state.qi+maxQi(state)-beforeQi);save();render();forceCloseModal();openAllocate();});}});
   }
 
   function openAchievements() {
@@ -713,6 +730,7 @@
     const b=currentBattle,foe=b.foe;
     modalClosable=false;$('modal-kicker').textContent=foe.boss?'守關 Boss 戰':'江湖遭遇';$('modal-title').textContent=foe.name;$('modal-close').hidden=true;
     $('modal-body').innerHTML=`<div class="battle"><div class="battle-foes"><div class="fighter player"><div class="avatar">瘸</div><b>${esc(state.name)}</b><div class="battle-hp"><i style="width:${state.hp/maxHp(state)*100}%"></i></div><small>氣血 ${state.hp}/${maxHp(state)} · 真氣 ${state.qi}/${maxQi(state)}</small></div><div class="versus">對</div><div class="fighter"><div class="avatar">${foe.icon}</div><b>${foe.name}</b><div class="battle-hp"><i style="width:${b.foeHp/foe.hp*100}%"></i></div><small>氣血 ${Math.max(0,b.foeHp)}/${foe.hp}</small></div></div><div class="intent-box"><i>${INTENTS[b.intent].icon}</i><div><b>敵方意圖：${INTENTS[b.intent].name}</b><small>${intentHint()}</small></div></div>${state.live?'<div class="poll-hint">實況提示：請觀眾刷 1–5，實況主用數字鍵執行聊天室的選擇。</div>':''}<div class="battle-log">${b.log.slice(-5).map(x=>`<div>${esc(x)}</div>`).join('')}</div><div class="battle-actions"><button class="battle-button" data-battle="attack"><b>1. 普通攻擊</b><small>穩定傷害；敏捷提供暴擊</small></button><button class="battle-button" data-battle="guard"><b>2. 防禦</b><small>重擊剋星；成功會反制</small></button><button class="battle-button" data-battle="skill" ${state.qi<10?'disabled':''}><b>3. 糖門滑劍</b><small>真氣 10；破防、高傷害</small></button><button class="battle-button" data-battle="focus"><b>4. 看破</b><small>破解詭計；回復 7 真氣</small></button><button class="battle-button" data-battle="rice" ${(state.inventory.rice||0)<1?'disabled':''}><b>5. 米特飯盒</b><small>剩 ${state.inventory.rice||0}；恢復 38 氣血</small></button><button class="battle-button" data-battle="flee" ${foe.boss?'disabled':''}><b>6. 戰略撤退</b><small>保命；行動不退還</small></button></div></div>`;
+    document.querySelector('.fighter.player .avatar').innerHTML=`<img class="battle-avatar" src="roger.png" alt="${esc(state.name)}">`;
     $('modal-actions').innerHTML='';$('modal').hidden=false;
     document.querySelectorAll('[data-battle]').forEach(btn=>btn.onclick=()=>battleTurn(btn.dataset.battle));
   }
@@ -876,7 +894,12 @@
   $('story-button').onclick=openStoryInfo;$('allocate-open').onclick=openAllocate;$('inventory-open').onclick=openInventory;$('quests-open').onclick=openMissions;$('achievements-open').onclick=openAchievements;
   $('clear-log').onclick=()=>{state.log=state.log.slice(0,3);save();render();};
   $('modal-close').onclick=closeModal;document.querySelector('[data-close-modal]').onclick=closeModal;
-  $('mobile-menu').onclick=()=>$('character-panel').classList.add('open');$('close-mobile-menu').onclick=()=>$('character-panel').classList.remove('open');
+  function setMobilePanel(open) {
+    $('character-panel').classList.toggle('open', open);
+    $('mobile-panel-backdrop').classList.toggle('open', open);
+    document.body.classList.toggle('panel-open', open);
+  }
+  $('mobile-menu').onclick=()=>setMobilePanel(true);$('close-mobile-menu').onclick=()=>setMobilePanel(false);$('mobile-panel-backdrop').onclick=()=>setMobilePanel(false);
   document.addEventListener('keydown',e=>{
     if(e.target.matches('input,textarea,select,[contenteditable="true"]')||e.ctrlKey||e.metaKey||e.altKey)return;
     const n=Number(e.key);if(!n)return;
