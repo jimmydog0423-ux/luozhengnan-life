@@ -313,6 +313,17 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .battle-button b, .battle-button small { display: block; }
 .battle-button small { color: #7d7262; font-size: 8px; margin-top: 2px; }
 .poll-hint { border: 1px dashed rgba(217,164,65,.28); padding: 9px; text-align: center; color: var(--gold); font-size: 9px; }
+.battle-result { text-align: center; padding: 4px 0; }
+.result-seal { width: 82px; height: 82px; margin: 0 auto 16px; display: grid; place-items: center; border: 5px double var(--gold); color: var(--gold); font: 900 45px/1 var(--serif); transform: rotate(-4deg); box-shadow: 0 0 38px rgba(217,164,65,.13); }
+.battle-result h3 { margin: 0; color: var(--cream); font: 900 23px var(--serif); }
+.battle-result > p { margin: 8px auto 18px; max-width: 480px; color: #a99d88; }
+.result-rewards { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.result-rewards div { padding: 13px 8px; border: 1px solid var(--line); background: #100c0b; }
+.result-rewards span, .result-rewards b { display: block; }
+.result-rewards span { color: #827767; font-size: 11px; }
+.result-rewards b { margin-top: 3px; color: var(--gold); font-size: 17px; }
+.result-notice { margin-top: 10px; padding: 10px 12px; border: 1px solid rgba(117,168,125,.35); background: rgba(117,168,125,.08); color: var(--jade); font-weight: 800; }
+.result-notice.achievement-pop { border-color: rgba(217,164,65,.35); background: rgba(217,164,65,.08); color: var(--gold); }
 .ending-rank { color: var(--gold); font: 900 72px/.9 var(--serif); }
 .ending-summary { margin: 14px 0; color: #c4b7a1; font: 700 15px/1.8 var(--serif); }
 .ending-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-top: 14px; }
@@ -419,6 +430,7 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
   .battle-foes { grid-template-columns: 1fr 32px 1fr; gap: 5px; }
   .fighter { padding: 9px 6px; }
   .fighter .avatar { font-size: 29px; }
+  .result-rewards { grid-template-columns: 1fr; }
   .ending-stats { grid-template-columns: 1fr 1fr; }
 }
 
