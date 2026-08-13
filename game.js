@@ -365,7 +365,7 @@
     { id:'master10', icon:'🏋️', name:'掌門的重量', description:'完成 10 次糖之漢健身特訓。', test:s=>s.metrics.masterSessions>=10 },
     { id:'menu', icon:'🍽️', name:'掌門私房全餐', description:'吃過糖之漢煎的全部 6 種料理。', test:s=>s.mealsEaten.length>=MASTER_FOODS.length },
     { id:'clan', icon:'🤜', name:'糖門全明星', description:'與五位師兄妹都完成一次互動訓練。', test:s=>s.trainingPartners.length>=BROTHER_SESSIONS.length },
-    { id:'goat', icon:'🦌', name:'十萬分之一大中計', description:'在掌門伙房抽中 0.001% 山羌事件。', test:s=>s.metrics.mountainGoat>=1 },
+    { id:'goat', icon:'🦌', name:'十萬分之一大中計', description:'與糖之漢互動時抽中 0.001%「糖之漢被開山羌」。', test:s=>s.metrics.mountainGoat>=1 },
     { id:'hunt5', icon:'⚔️', name:'江湖不是點擊器', description:'擊敗 5 隻野怪。', test:s=>s.metrics.wins>=5 },
     { id:'mission5', icon:'📜', name:'糖門工具人', description:'完成 5 次任務。', test:s=>s.metrics.missions>=5 },
     { id:'rich', icon:'🪙', name:'不是免費仔', description:'同時持有 500 糖錢。', test:s=>s.coins>=500 },
@@ -815,7 +815,7 @@
     openModal({
       kicker:'糖門外院・同門修行堂',
       title:'今天要跟誰練？',
-      body:`<div class="clan-summary"><span>掌門健身 <b>${state.metrics.masterSessions}</b></span><span>掌門料理 <b>${state.metrics.mentorMeals}</b></span><span>同門搭檔 <b>${state.trainingPartners.length}/${BROTHER_SESSIONS.length}</b></span></div><div class="goat-warning"><b>極稀有事件・糖之漢開山羌</b><span>每次請掌門做飯有 <strong>0.001%（十萬分之一）</strong>機率遭山羌突襲並立即死亡。這是真死亡，防禦與飯盒都擋不住。</span></div><h3 class="clan-section-title">掌門・糖之漢</h3><div class="clan-grid">${clanCard({id:'gym',icon:'🏋️',role:'師父',name:'糖之漢',title:'猛男健身房',effect:'五種器械訓練，專練不同四維'},'master')}${clanCard({id:'kitchen',icon:'🥩',role:'師父',name:'糖之漢',title:'掌門鐵板伙房',effect:'六種現煎料理，也可能開出山羌'},'master')}</div><h3 class="clan-section-title">師兄妹互動陪練</h3><div class="clan-grid">${BROTHER_SESSIONS.map(x=>clanCard(x,'partner')).join('')}</div>`,
+      body:`<div class="clan-summary"><span>掌門健身 <b>${state.metrics.masterSessions}</b></span><span>掌門料理 <b>${state.metrics.mentorMeals}</b></span><span>同門搭檔 <b>${state.trainingPartners.length}/${BROTHER_SESSIONS.length}</b></span></div><div class="goat-warning"><b>極稀有事件・糖之漢被開山羌</b><span>每次實際與糖之漢健身或吃他做的料理，都有 <strong>0.001%（十萬分之一）</strong>機率觸發山羌突襲。若命中，糖之漢死亡，本世立即 GAME OVER。</span></div><h3 class="clan-section-title">掌門・糖之漢</h3><div class="clan-grid">${clanCard({id:'gym',icon:'🏋️',role:'師父',name:'糖之漢',title:'猛男健身房',effect:'五種器械訓練；每次都有山羌風險'},'master')}${clanCard({id:'kitchen',icon:'🥩',role:'師父',name:'糖之漢',title:'掌門鐵板伙房',effect:'六種現煎料理；每次都有山羌風險'},'master')}</div><h3 class="clan-section-title">師兄妹互動陪練</h3><div class="clan-grid">${BROTHER_SESSIONS.map(x=>clanCard(x,'partner')).join('')}</div>`,
       actions:[{label:'先自己修行',sub:'返回糖門外院，不消耗行動',onClick:forceCloseModal}],
       afterOpen:()=>{
         document.querySelectorAll('[data-clan-master]').forEach(btn=>btn.onclick=()=>btn.dataset.clanMaster==='gym'?openMasterGym():openMasterKitchen());
@@ -828,7 +828,7 @@
     openModal({
       kicker:'糖之漢・猛男健身房',
       title:'器械不會因為你瘸就變輕',
-      body:`<p>每項訓練主屬性必定成長，另有機率練到第二屬性；普通健身最多把你操到剩 1 點氣血，不會像山羌一樣直接送你轉生。</p><div class="clan-grid workout-grid">${MASTER_WORKOUTS.map(x=>clanCard({...x,role:'師父監督',effect:x.focus},'workout')).join('')}</div>`,
+      body:`<div class="goat-warning"><b>每次健身也會判定山羌：0.001%</b><span>普通訓練傷害最多讓你剩 1 點氣血；但若觸發「糖之漢被開山羌」，師父會死亡並使本世立即 GAME OVER。</span></div><p>每項訓練主屬性必定成長，另有機率練到第二屬性。</p><div class="clan-grid workout-grid">${MASTER_WORKOUTS.map(x=>clanCard({...x,role:'師父監督',effect:x.focus},'workout')).join('')}</div>`,
       actions:[{label:'返回同門修行堂',sub:'改找師兄妹或去掌門伙房',onClick:openClanTraining}],
       afterOpen:()=>document.querySelectorAll('[data-clan-workout]').forEach(btn=>btn.onclick=()=>runMasterWorkout(btn.dataset.clanWorkout))
     });
@@ -838,7 +838,7 @@
     openModal({
       kicker:'糖之漢・掌門鐵板伙房',
       title:'今天師父煎什麼？',
-      body:`<div class="goat-warning danger"><b>山羌機率：0.001%</b><span>每道料理各自擲一次十萬分之一。若觸發「開山羌」，料理取消、氣血歸零並進入轉生。</span></div><div class="clan-grid food-grid">${MASTER_FOODS.map(x=>clanCard({...x,role:'現點現煎',title:x.effect,effect:x.quote},'food')).join('')}</div>`,
+      body:`<div class="goat-warning danger"><b>糖之漢被開山羌機率：0.001%</b><span>每道料理各自擲一次十萬分之一。若觸發，料理取消、糖之漢死亡，本世立即 GAME OVER。</span></div><div class="clan-grid food-grid">${MASTER_FOODS.map(x=>clanCard({...x,role:'現點現煎',title:x.effect,effect:x.quote},'food')).join('')}</div>`,
       actions:[{label:'返回同門修行堂',sub:'突然不餓也沒有關係',onClick:openClanTraining}],
       afterOpen:()=>document.querySelectorAll('[data-clan-food]').forEach(btn=>btn.onclick=()=>runMasterMeal(btn.dataset.clanFood))
     });
@@ -853,9 +853,10 @@
     });
   }
 
-  function runMasterWorkout(id) {
+  function runMasterWorkout(id, goatRoll=Math.random()) {
     const workout=MASTER_WORKOUTS.find(x=>x.id===id);if(!workout||state.ap<=0)return;
     forceCloseModal();runAction(()=>{
+      const goatOutcome=masterGoatOutcome(goatRoll,`進行「${workout.name}」`);if(goatOutcome)return goatOutcome;
       const primaryGain=Math.random()<.22?2:1,secondaryGain=Math.random()<.35?1:0;
       state.stats[workout.stat]+=primaryGain;if(secondaryGain)state.stats[workout.secondary]++;
       const damage=roll(...workout.damage);state.hp=Math.max(1,state.hp-damage);state.stress=clamp(state.stress+workout.stress,0,100);
@@ -868,14 +869,18 @@
 
   function mountainGoatAppears(value) { return value < MOUNTAIN_GOAT_RATE; }
 
+  function masterGoatOutcome(goatRoll, activity) {
+    if(!mountainGoatAppears(goatRoll))return null;
+    state.metrics.mountainGoat++;state.routes.chaos+=10;state.finalChoice='master_goat';state.ended=true;state.pendingStory=null;state.pendingFinal=false;
+    const ending=calculateEnding('master_goat'),collection=endingCollection();if(!collection.includes(ending.id)){collection.push(ending.id);localStorage.setItem(COLLECTION_KEY,JSON.stringify(collection));}
+    addLog('bad','0.001%・糖之漢被開山羌',`你正和糖之漢${activity}，山羌突然撞進外院，當場把師父開死。掌門殞落，糖門修行至此中止。`,'師父死亡 · GAME OVER');pushChat('hype','糖之漢被開山羌！！！遊戲結束！');
+    return {gameOver:true};
+  }
+
   function runMasterMeal(id, goatRoll=Math.random()) {
     const food=MASTER_FOODS.find(x=>x.id===id);if(!food||state.ap<=0)return;
     forceCloseModal();runAction(()=>{
-      if(mountainGoatAppears(goatRoll)){
-        state.metrics.mountainGoat++;state.routes.chaos+=10;state.hp=0;
-        addLog('bad','0.001%・糖之漢開山羌','掌門掀開鐵板蓋，一頭山羌從伙房正面撞進來。這不是比喻，也沒有傷害計算。','氣血歸零 · 強制轉生');pushChat('hype','十萬分之一大中計！！！');
-        return {deathReason:'糖之漢正要把料理端上桌，卻開出了十萬分之一的山羌。牠無視防禦、護具與飯盒，把這一世直接撞進結算畫面。'};
-      }
+      const goatOutcome=masterGoatOutcome(goatRoll,`料理「${food.name}」`);if(goatOutcome)return goatOutcome;
       let statGain=0;if(food.stat&&Math.random()<food.chance){state.stats[food.stat]++;statGain=1;}
       if(food.rice)addItem(state,'rice',food.rice);if(food.qi)state.qi=Math.min(maxQi(state),state.qi+food.qi);if(food.discipline)state.routes.discipline+=food.discipline;
       const heal=Math.min(food.heal,maxHp(state)-state.hp);state.hp=Math.min(maxHp(state),state.hp+food.heal);state.stress=clamp(state.stress+food.stress,0,100);state.routes.ties++;
@@ -970,9 +975,10 @@
     setTimeout(()=>{
       const outcome=callback()||{}; busy=false; $('cooldown').hidden=true;
       checkAchievements();
-      const transition=state.hp>0&&state.stress<100?advanceChapterStep():null;
+      const transition=!state.ended&&state.hp>0&&state.stress<100?advanceChapterStep():null;
       save(); render();
-      if(state.hp<=0) showDeath(outcome.deathReason||'你在修行途中倒下，糖門只來得及把遺物寄回北投。');
+      if(outcome.gameOver)showMasterGoatEnding();
+      else if(state.hp<=0) showDeath(outcome.deathReason||'你在修行途中倒下，糖門只來得及把遺物寄回北投。');
       else if(state.stress>=100) showDeath('心火攻心。畫面還在直播，人已經先離線。');
       else if(transition) showChapterTransition(transition);
       else if(outcome.result)showClanResult(outcome.result);
@@ -1276,6 +1282,7 @@
 
   function calculateEnding(finalChoice) {
     const r=state.routes,balanced=Math.max(...Object.values(r))-Math.min(...Object.values(r))<=8;
+    if(finalChoice==='master_goat')return{id:'master_goat',rank:'GAME OVER',title:'糖之漢被開山羌',text:'十萬分之一的山羌撞進糖門，掌門糖之漢當場死亡。失去師父的糖門無法繼續傳功，羅瘸的這一世在尚未登上泰山前被迫結束。'};
     if(state.vows.length>=4&&balanced)return{id:'whole',rank:'SS',title:'瘸俠不是一個人',text:'你沒有把任何一段人生剪掉。冠軍、朋友、家、失敗與聊天室都被留在同一個人身上。泰山承認的不是最強數值，而是一個完整的人。'};
     if(finalChoice==='cards'&&r.discipline+r.integrity>=24&&stat(state,'insight')>=18)return{id:'winter',rank:'S',title:'冬季之王・再臨',text:'你關掉多餘分頁，重新坐回牌桌。這次每一道黃光都看得清楚，世界冠軍不再只是「如果當時」。'};
     if(finalChoice==='brand'&&r.show+r.integrity>=25)return{id:'empire',rank:'S',title:'糖門娛樂帝國',text:'你把迷因變成制度，也終於理解老蟹為什麼每天看帳本嘆氣。新收的天才弟子今天又睡到下午。'};
@@ -1286,6 +1293,11 @@
   }
 
   async function copySummary(e){const text=`《瘸俠傳：糖門再起》\n結局：${e.title}｜評價 ${e.rank}\nLV.${state.level}｜俠名 ${state.fame}｜轉生 ${state.reincarnations}\n${e.text}`;try{await navigator.clipboard.writeText(text);toast('結算摘要已複製');}catch(_){prompt('手動複製：',text);}}
+
+  function showMasterGoatEnding() {
+    currentBattle=null;modalClosable=false;const e=calculateEnding('master_goat'),collection=endingCollection();
+    openModal({kicker:`0.001% 特殊事件・已收入結局圖鑑 ${collection.length} 種`,title:e.title,closable:false,body:`<div class="ending-rank game-over-rank">${e.rank}</div><p class="ending-summary">${e.text}</p><div class="story-box"><h4>本世已永久結束</h4><p>這不是羅瘸死亡，因此不能轉生續接。糖門失去掌門後故事中止，只能清除本世進度並從標題重新開始。</p></div>`,actions:[{label:'回到標題重新開始',sub:'清除本世進度；結局圖鑑仍會保留',primary:true,onClick:()=>{localStorage.removeItem(SAVE_KEY);location.reload();}}]});
+  }
 
   function showDeath(reason) {
     currentBattle=null;modalClosable=false;
@@ -1323,6 +1335,7 @@
   function initializeGame(newState, showTutorial = true) {
     state=newState;$('start-screen').hidden=true;$('game').hidden=false;window.scrollTo(0,0);render();seedChat();save();
     if(state.ended){
+      if(state.finalChoice==='master_goat'){showMasterGoatEnding();return;}
       const e=calculateEnding(state.finalChoice);
       openModal({kicker:'已完成的本世存檔',title:e.title,body:`<div class="ending-rank">${e.rank}</div><p class="ending-summary">${e.text}</p>`,closable:false,actions:[{label:'帶著記憶開啟下一世',sub:'保留成就與一項永久四維',primary:true,onClick:()=>showRebirth(true)}]});
       return;
