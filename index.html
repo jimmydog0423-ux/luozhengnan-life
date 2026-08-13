@@ -54,7 +54,7 @@
   <div id="game" class="game" hidden>
     <header class="topbar">
       <div class="brand-lockup">
-        <button id="mobile-menu" class="icon-button mobile-only" aria-label="開啟角色面板">☰</button>
+        <button id="mobile-menu" class="icon-button mobile-only" aria-label="開啟角色面板">人物</button>
         <div class="mini-seal">糖</div>
         <div><b>瘸俠傳</b><small>糖門再起</small></div>
       </div>
@@ -70,12 +70,13 @@
       </div>
     </header>
 
+    <button id="mobile-panel-backdrop" class="mobile-panel-backdrop" aria-label="關閉角色面板"></button>
     <div class="game-grid">
       <aside id="character-panel" class="character-panel">
         <button id="close-mobile-menu" class="panel-close mobile-only" aria-label="關閉角色面板">×</button>
         <div class="character-card">
-          <div class="portrait" aria-hidden="true">
-            <div class="portrait-moon"></div><div class="portrait-hair"></div><div class="portrait-face">羅</div>
+          <div class="portrait">
+            <img class="portrait-image" src="roger.png" alt="羅正男角色頭像">
             <span id="rebirth-badge" class="rebirth-badge">初世</span>
           </div>
           <div class="character-name"><h2 id="player-name-view">羅正男</h2><p id="title-view">糖門外院弟子</p></div>
@@ -157,7 +158,7 @@
         </section>
 
         <section class="side-card">
-          <div class="side-title"><span>任務追蹤</span><button id="quests-open" class="text-button">全部</button></div>
+          <div class="side-title"><span>江湖帖追蹤</span><button id="quests-open" class="text-button">全部</button></div>
           <div id="quest-mini" class="quest-mini"></div>
         </section>
 

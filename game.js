@@ -11,6 +11,12 @@
 
   const STAT_NAMES = { strength: '力道', agility: '身法', vitality: '根骨', insight: '心眼' };
   const STAT_ICONS = { strength: '力', agility: '影', vitality: '骨', insight: '眼' };
+  const STAT_EFFECTS = {
+    strength: '每 1 點使基礎攻擊 +2，直接提高普攻與糖門滑劍傷害。',
+    agility: '每 1 點使暴擊率 +1.2%，並提高普攻與糖門滑劍傷害。',
+    vitality: '每 1 點使氣血上限 +7，並逐步提高防禦。',
+    insight: '每 1 點使真氣上限 +3、提高看破反擊；達 10 可看清詭計。'
+  };
   const ROUTE_NAMES = { discipline: '自律', integrity: '信義', ties: '人情', show: '節目', chaos: '混沌' };
 
   const LOCATIONS = {
@@ -135,26 +141,43 @@
 
   const ENEMIES = {
     outer: [
-      { name:'欠薪木樁', icon:'🪵', hp:54, attack:8, reward:22, xp:24 },
-      { name:'山羌斥候', icon:'🦌', hp:66, attack:10, reward:28, xp:28 }
+      { name:'欠薪木樁精', icon:'🪵', hp:54, attack:8, reward:22, xp:24, style:'guard', flavor:'皮厚愛防守，適合練習破架。' },
+      { name:'山羌斥候', icon:'🦌', hp:66, attack:10, reward:28, xp:28, style:'swift', flavor:'腳程很快，常用普通攻勢與假動作。' },
+      { name:'偷飯灰鼠', icon:'🐀', hp:48, attack:9, reward:24, xp:25, style:'swift', flavor:'叼著米特飯盒逃跑，動作又小又快。' },
+      { name:'催台紙人', icon:'📜', hp:58, attack:9, reward:27, xp:27, style:'trick', flavor:'每一張紙都寫著「到底開不開」。' },
+      { name:'丹爐煤精', icon:'🔥', hp:72, attack:11, reward:31, xp:30, style:'brute', flavor:'糖偉健煉壞的丹氣成精，重擊很燙。' }
     ],
     cave: [
-      { name:'免費仔蛇妖', icon:'🐍', hp:82, attack:13, reward:48, xp:34 },
-      { name:'剪輯水鬼', icon:'👻', hp:92, attack:14, reward:54, xp:38 }
+      { name:'免費仔蛇妖', icon:'🐍', hp:82, attack:13, reward:48, xp:34, style:'trick', flavor:'最會用假動作騙你交出真氣。' },
+      { name:'剪輯水鬼', icon:'👻', hp:92, attack:14, reward:54, xp:38, style:'swift', flavor:'專挑失誤片段突襲，來得快也去得快。' },
+      { name:'斗內寶箱怪', icon:'🎁', hp:104, attack:15, reward:70, xp:40, style:'guard', flavor:'看起來很香，打開前最好先防一手。' },
+      { name:'回音蝙蝠', icon:'🦇', hp:76, attack:14, reward:46, xp:35, style:'swift', flavor:'把聊天室同一句話重複到你紅溫。' },
+      { name:'演算法陰兵', icon:'🤖', hp:112, attack:16, reward:66, xp:43, style:'brute', flavor:'不講道理，只把高傷害內容一直推給你。' }
     ],
     villa: [
-      { name:'遲到執法隊', icon:'⏱️', hp:102, attack:15, reward:58, xp:42 },
-      { name:'麻將桌精', icon:'🀄', hp:110, attack:16, reward:64, xp:45 }
+      { name:'遲到執法隊', icon:'⏱️', hp:102, attack:15, reward:58, xp:42, style:'swift', flavor:'班表寫幾點，它就提早幾分鐘來抓人。' },
+      { name:'麻將桌精', icon:'🀄', hp:110, attack:16, reward:64, xp:45, style:'trick', flavor:'每一手都像在等你打錯那張。' },
+      { name:'合約墨怪', icon:'🖋️', hp:118, attack:17, reward:68, xp:47, style:'trick', flavor:'條款會自己換行，心眼不夠很容易中招。' },
+      { name:'戰隊椅妖', icon:'🪑', hp:128, attack:18, reward:70, xp:49, style:'guard', flavor:'坐得比選手久，架勢也穩得離譜。' },
+      { name:'軍師沙盤鬼', icon:'♟️', hp:122, attack:18, reward:72, xp:50, style:'brute', flavor:'薛喜沒說話，沙盤倒是自己殺過來了。' }
     ],
     market: [
-      { name:'工商刺客', icon:'💼', hp:115, attack:17, reward:72, xp:48 },
-      { name:'假貨商人', icon:'🎭', hp:122, attack:18, reward:78, xp:50 }
+      { name:'工商刺客', icon:'💼', hp:115, attack:17, reward:72, xp:48, style:'swift', flavor:'開口先報價，拔刀才說品項。' },
+      { name:'假貨商人', icon:'🎭', hp:122, attack:18, reward:78, xp:50, style:'trick', flavor:'每一件商品都是真的，除了商品本身。' },
+      { name:'退貨怨靈', icon:'📦', hp:132, attack:18, reward:82, xp:52, style:'guard', flavor:'封條纏滿全身，想退它還得先破防。' },
+      { name:'黃牛刀客', icon:'🎫', hp:126, attack:20, reward:88, xp:54, style:'brute', flavor:'價格翻倍，刀傷也是。' },
+      { name:'折扣狐妖', icon:'🦊', hp:108, attack:19, reward:76, xp:51, style:'swift', flavor:'倒數三秒永遠不結束，出手倒是真的快。' }
     ],
     cliff: [
-      { name:'泰山攔路虎', icon:'🐅', hp:138, attack:20, reward:88, xp:58 },
-      { name:'斷腿刀客', icon:'🩼', hp:146, attack:21, reward:94, xp:62 }
+      { name:'泰山攔路虎', icon:'🐅', hp:138, attack:20, reward:88, xp:58, style:'brute', flavor:'不管你準備好了沒，它都先撲一次。' },
+      { name:'斷腿刀客', icon:'🩼', hp:146, attack:21, reward:94, xp:62, style:'swift', flavor:'步法看似不穩，刀路卻專打下盤。' },
+      { name:'山風無常', icon:'🌪️', hp:130, attack:22, reward:92, xp:61, style:'trick', flavor:'招式藏在風裡，心眼不夠只會看到殘影。' },
+      { name:'石階巨靈', icon:'🗿', hp:172, attack:23, reward:104, xp:68, style:'guard', flavor:'一百八十階石梯合成的硬派守衛。' },
+      { name:'登頂執念', icon:'👹', hp:158, attack:24, reward:110, xp:72, style:'brute', flavor:'越接近泰山，越像你自己不肯放下的東西。' }
     ]
   };
+
+  const MONSTER_STYLE_NAMES = { swift:'迅捷型', trick:'詭計型', guard:'防守型', brute:'重擊型' };
 
   const ACHIEVEMENTS = [
     { id:'first', icon:'👣', name:'不是跑馬燈', description:'完成第一次自主行動。', test:s=>s.metrics.actions>=1 },
@@ -305,6 +328,14 @@
   }
   function addVow(s, vow) { if (!s.vows.includes(vow)) s.vows.push(vow); }
   function missionReward(s, amount) { return Math.round(amount * (s.location === 'villa' ? 1.2 : 1)); }
+  function statPreview(s, key) {
+    const next = { ...s, stats: { ...s.stats, [key]: (s.stats[key] || 0) + 1 } };
+    if (key === 'strength') return `攻擊 ${attackPower(s)} → ${attackPower(next)}`;
+    if (key === 'agility') return `暴擊率 ${(stat(s,key) * 1.2).toFixed(1)}% → ${(stat(next,key) * 1.2).toFixed(1)}%`;
+    if (key === 'vitality') return `氣血 ${maxHp(s)} → ${maxHp(next)}・防禦 ${defensePower(s)} → ${defensePower(next)}`;
+    const insightNote = stat(s,key) < 10 && stat(next,key) >= 10 ? '・解鎖看清詭計' : '';
+    return `真氣 ${maxQi(s)} → ${maxQi(next)}・看破傷害 +1.4${insightNote}`;
+  }
 
   function gainXp(s, amount) {
     let gained = amount;
@@ -404,7 +435,7 @@
     $('live-toggle').classList.toggle('off', !state.live); $('live-toggle').setAttribute('aria-pressed', String(state.live));
     $('live-toggle').innerHTML = `<span class="live-dot"></span> ${state.live ? '實況中' : '已關台'}`;
 
-    $('stats-grid').innerHTML = Object.entries(STAT_NAMES).map(([key,name]) => `<div class="stat-tile"><span>${name}</span><b>${stat(state,key)}</b></div>`).join('');
+    $('stats-grid').innerHTML = Object.entries(STAT_NAMES).map(([key,name]) => `<div class="stat-tile" title="${esc(STAT_EFFECTS[key])}"><span>${name}</span><b>${stat(state,key)}</b></div>`).join('');
     $('equipment-mini').innerHTML = ['weapon','armor','charm'].map(slot => {
       const id = state.equipped[slot], item = ITEMS[id];
       const slotName = {weapon:'兵器',armor:'護具',charm:'法器'}[slot];
@@ -438,7 +469,7 @@
     const sets = {
       outer: [
         {icon:'修',name:'自主修行',desc:'選一項四維鍛鍊，穩定獲得經驗。',cost:'行動 -1',fn:openTraining},
-        {icon:'戰',name:'糖虧皮陪練',desc:'進入回合制戰鬥，大師兄會提醒你觀察招式。',cost:'行動 -1',fn:()=>startEncounter(false)},
+        {icon:'獵',name:'外院打野怪',desc:'從多種外院野怪中挑一隻交手；不想打可以免費換一批。',cost:'選擇後行動 -1',fn:openWildEncounter},
         {icon:'帖',name:'承接任務',desc:'完成糖門委託，取得特殊物品與人情。',cost:'依任務',fn:openMissions},
         {icon:'息',name:'調息打坐',desc:'恢復真氣與氣血，稍微降低心火。',cost:'行動 -1',fn:restAction}, commonEnd
       ],
@@ -450,26 +481,26 @@
       ],
       cave: [
         {icon:'播',name:'水蛇洞開台',desc:'賺糖錢與俠名，心火與混沌也會上升。',cost:'行動 -1',fn:streamAction},
-        {icon:'獵',name:'討伐洞妖',desc:'高報酬戰鬥，敵人也比外院更兇。',cost:'行動 -1',fn:()=>startEncounter(false)},
+        {icon:'獵',name:'討伐洞妖',desc:'挑選水蛇洞妖物，高報酬也更凶險。',cost:'選擇後行動 -1',fn:openWildEncounter},
         {icon:'梗',name:'迷因鍊金',desc:'把一次事故煉成流量，結果難以預料。',cost:'行動 -1',fn:memeAlchemy},
         {icon:'帖',name:'承接任務',desc:'查看能推進故事的江湖委託。',cost:'依任務',fn:openMissions}, commonEnd
       ],
       villa: [
         {icon:'影',name:'薛喜陪練',desc:'身法修行必定額外 +1，心火稍高。',cost:'行動 -1',fn:()=>quickTrain('agility')},
-        {icon:'戰',name:'山莊對練',desc:'對手攻勢更強，報酬也更高。',cost:'行動 -1',fn:()=>startEncounter(false)},
+        {icon:'獵',name:'山莊掃蕩',desc:'從盤踞山莊的怪物中選擇對手。',cost:'選擇後行動 -1',fn:openWildEncounter},
         {icon:'帳',name:'整理老蟹帳本',desc:'提升信義、人情與少量糖錢。',cost:'行動 -1',fn:ledgerAction},
         {icon:'帖',name:'承接任務',desc:'山莊任務能解鎖關鍵道具。',cost:'依任務',fn:openMissions}, commonEnd
       ],
       market: [
         {icon:'買',name:'進入商城',desc:'購買丹藥、兵器、護具與 Boss 關鍵物。',cost:'不耗行動',fn:openShop},
         {icon:'聞',name:'打聽奇聞',desc:'可能撿到便宜，也可能被當盤子。',cost:'行動 -1',fn:marketRumor},
-        {icon:'戰',name:'抓假貨商',desc:'在市集打怪，賺取較多糖錢。',cost:'行動 -1',fn:()=>startEncounter(false)},
+        {icon:'獵',name:'市集緝怪',desc:'選擇一名市集惡徒，賺取較多糖錢。',cost:'選擇後行動 -1',fn:openWildEncounter},
         {icon:'囊',name:'整理行囊',desc:'使用消耗品或切換已購裝備。',cost:'不耗行動',fn:openInventory}, commonEnd
       ],
       cliff: [
         {icon:'王',name:'挑戰守關 Boss',desc:'先檢查特殊素質，再自行決定是否上山。',cost:'行動 -1',fn:openBossChallenge,boss:true},
         {icon:'悟',name:'斷腿崖悟道',desc:'大量經驗與隨機四維，失敗會受傷。',cost:'行動 -1',fn:cliffMeditate},
-        {icon:'虎',name:'清理山路',desc:'強敵出沒，適合測試目前構築。',cost:'行動 -1',fn:()=>startEncounter(false)},
+        {icon:'虎',name:'清理山路',desc:'從山路強敵中挑選對手，測試目前構築。',cost:'選擇後行動 -1',fn:openWildEncounter},
         {icon:'囊',name:'最後整備',desc:'使用行囊，確認飯盒與回氣丹。',cost:'不耗行動',fn:openInventory}, commonEnd
       ]
     };
@@ -494,7 +525,7 @@
   }
 
   function renderLog() {
-    $('log-list').innerHTML = state.log.slice(0,8).map(entry => `<article class="log-entry ${entry.type}"><time>第 ${entry.day} 日</time><div><b>${esc(entry.title)}</b><p>${esc(entry.text)}</p>${entry.delta?`<div class="delta-line">${esc(entry.delta)}</div>`:''}</div></article>`).join('');
+    $('log-list').innerHTML = state.log.slice(0,4).map(entry => `<article class="log-entry ${entry.type}"><time>第 ${entry.day} 日</time><div><b>${esc(entry.title)}</b><p>${esc(entry.text)}</p>${entry.delta?`<div class="delta-line">${esc(entry.delta)}</div>`:''}</div></article>`).join('');
   }
 
   function renderBossPreview() {
@@ -508,8 +539,10 @@
 
   function availableMissions() { return MISSIONS.filter(m => m.repeat || !state.completedMissions.includes(m.id)); }
   function renderQuestMini() {
-    const list = availableMissions().slice(0,3);
-    $('quest-mini').innerHTML = list.length ? list.map(m=>`<div class="mini-row ${m.can(state)?'':'done'}"><i></i><span>${esc(m.name)}${m.can(state)?'':' · 未達條件'}</span></div>`).join('') : '<div class="mini-row done"><i></i><span>本世委託已全數完成</span></div>';
+    const list = availableMissions().filter(m => !m.repeat).slice(0,2);
+    $('quest-mini').innerHTML = list.length
+      ? list.map(m=>`<div class="mini-row ${m.can(state)?'':'locked'}"><i></i><span>${esc(m.name)}${m.can(state)?' · 可承接':' · '+esc(m.reason||'未達條件')}</span></div>`).join('')
+      : '<div class="mini-row complete"><i></i><span>本世江湖帖已全數完成</span></div>';
   }
   function renderAchievementMini() {
     const latest = ACHIEVEMENTS.filter(a=>state.achievements.includes(a.id)).slice(-3).reverse();
@@ -533,7 +566,7 @@
 
   function openTraining() {
     const locNote = state.location === 'outer' ? '外院修行會多得 20% 經驗。' : state.location === 'villa' ? '山莊修身法會額外 +1。' : '不同場域會改變修行風險。';
-    openModal({ kicker:'自主修行', title:'今天磨哪一把刀？', body:`<p>${locNote}每次修行消耗 1 行動；升級後可再自由配點。</p><div class="choice-grid">${Object.entries(STAT_NAMES).map(([key,name])=>`<button class="choice-card" data-train="${key}"><b>${STAT_ICONS[key]}・${name}</b><span>${stat(state,key)}</span><small>${{strength:'提高攻擊與劍技傷害',agility:'提高暴擊、閃避與連招',vitality:'提高氣血、防禦與生存',insight:'提高真氣、看破與判定'}[key]}</small></button>`).join('')}</div>`, afterOpen:()=>{
+    openModal({ kicker:'自主修行', title:'今天磨哪一把刀？', body:`<p>${locNote}每次修行消耗 1 行動；升級後可再自由配點。</p><div class="choice-grid">${Object.entries(STAT_NAMES).map(([key,name])=>`<button class="choice-card" data-train="${key}"><b>${STAT_ICONS[key]}・${name}</b><span>${stat(state,key)}</span><small>${STAT_EFFECTS[key]}</small></button>`).join('')}</div>`, afterOpen:()=>{
       document.querySelectorAll('[data-train]').forEach(btn => btn.onclick = () => { forceCloseModal(); quickTrain(btn.dataset.train); });
     }});
   }
@@ -634,9 +667,10 @@
   }
 
   function openMissions() {
-    const list=availableMissions();
-    openModal({kicker:'糖門江湖帖',title:'今天替誰收拾問題？',body:`<div class="item-grid">${list.map(m=>`<article class="shop-item"><div class="item-icon">帖</div><div><h4>${esc(m.name)}${m.repeat?' · 可重複':''}</h4><p>${esc(m.description)}<br>報酬：${esc(m.reward)}</p><button class="buy-button" data-mission="${m.id}" ${m.can(state)&&state.ap>0?'':'disabled'}>${m.can(state)?(state.ap>0?'接下任務':'今日無行動'):(m.reason||'條件不足')}</button></div></article>`).join('')}</div>`,afterOpen:()=>{
-      document.querySelectorAll('[data-mission]').forEach(btn=>btn.onclick=()=>{const m=MISSIONS.find(x=>x.id===btn.dataset.mission);forceCloseModal();runAction(()=>{m.run(state);state.metrics.missions++;if(!m.repeat&&!state.completedMissions.includes(m.id))state.completedMissions.push(m.id);addLog('good',`完成委託・${m.name}`,m.description,m.reward);pushChat('','工具人有料');});});
+    const list=availableMissions(), story=list.filter(m=>!m.repeat), daily=list.filter(m=>m.repeat);
+    const missionCards = missions => missions.map(m=>`<article class="shop-item"><div class="item-icon">${m.repeat?'日':'帖'}</div><div><h4>${esc(m.name)}${m.repeat?' · 可重複':''}</h4><p>${esc(m.description)}<br>報酬：${esc(m.reward)}</p><button class="buy-button" data-mission="${m.id}" ${m.can(state)&&state.ap>0?'':'disabled'}>${m.can(state)?(state.ap>0?'接下任務':'今日無行動'):(m.reason||'條件不足')}</button></div></article>`).join('');
+    openModal({kicker:'糖門江湖帖',title:'今天替誰收拾問題？',body:`<div class="mission-note">右側只追蹤一次性江湖帖；日常委託完成後仍可再次承接，不是卡住。</div><h3 class="mission-group-title">江湖帖・完成後自追蹤移除</h3><div class="item-grid">${story.length?missionCards(story):'<p class="empty-state">本世江湖帖已全數完成。</p>'}</div><h3 class="mission-group-title">日常委託・可重複、不列入追蹤</h3><div class="item-grid">${missionCards(daily)}</div>`,afterOpen:()=>{
+      document.querySelectorAll('[data-mission]').forEach(btn=>btn.onclick=()=>{const m=MISSIONS.find(x=>x.id===btn.dataset.mission);forceCloseModal();runAction(()=>{m.run(state);state.metrics.missions++;if(!m.repeat&&!state.completedMissions.includes(m.id))state.completedMissions.push(m.id);addLog('good',`${m.repeat?'完成日常':'完成委託'}・${m.name}`,m.description,m.reward);if(m.repeat)toast('日常委託完成；可再次承接，不列入右側追蹤');pushChat('','工具人有料');});});
     }});
   }
 
@@ -664,7 +698,7 @@
   function useInventoryItem(id){if(id==='rice'&&consumeItem(state,id)){state.hp=Math.min(maxHp(state),state.hp+38);addLog('good','吃下米特飯盒','先吃再嫌，氣血總算回來了。','氣血 +38');}if(id==='pill'&&consumeItem(state,id)){state.qi=Math.min(maxQi(state),state.qi+24);addLog('good','服下回氣丹','甜得不太像藥，但確實有用。','真氣 +24');}save();render();forceCloseModal();openInventory();}
 
   function openAllocate() {
-    openModal({kicker:'升級配點',title:`尚有 ${state.points} 點`,body:`<p>每次升級獲得 2 點。Boss 的特殊素質是硬門檻，配錯可以繼續修行補回來。</p><div class="choice-grid">${Object.entries(STAT_NAMES).map(([key,name])=>`<button class="choice-card" data-point="${key}" ${state.points?'':'disabled'}><b>${name}</b><span>${stat(state,key)}</span><small>投入 1 點</small></button>`).join('')}</div>`,afterOpen:()=>{document.querySelectorAll('[data-point]').forEach(btn=>btn.onclick=()=>{if(!state.points)return;state.points--;state.stats[btn.dataset.point]++;state.hp=Math.min(maxHp(state),state.hp+5);state.qi=Math.min(maxQi(state),state.qi+3);save();render();forceCloseModal();openAllocate();});}});
+    openModal({kicker:'升級配點',title:`尚有 ${state.points} 點`,body:`<div class="allocation-guide"><b>怎麼選？</b><p>力道打得痛、身法拚暴擊、根骨撐生存、心眼管真氣與看破。每次升級獲得 2 點；Boss 的特殊素質是硬門檻。</p></div><div class="choice-grid">${Object.entries(STAT_NAMES).map(([key,name])=>`<button class="choice-card stat-choice" data-point="${key}" ${state.points?'':'disabled'}><b>${STAT_ICONS[key]}・${name}</b><span>${stat(state,key)} → ${stat(state,key)+1}</span><small>${STAT_EFFECTS[key]}</small><em>${statPreview(state,key)}</em></button>`).join('')}</div>`,afterOpen:()=>{document.querySelectorAll('[data-point]').forEach(btn=>btn.onclick=()=>{if(!state.points)return;const key=btn.dataset.point,beforeHp=maxHp(state),beforeQi=maxQi(state);state.points--;state.stats[key]++;if(key==='vitality')state.hp=Math.min(maxHp(state),state.hp+maxHp(state)-beforeHp);if(key==='insight')state.qi=Math.min(maxQi(state),state.qi+maxQi(state)-beforeQi);save();render();forceCloseModal();openAllocate();});}});
   }
 
   function openAchievements() {
@@ -681,14 +715,38 @@
     openModal({kicker:`守關試煉・${chapter().number}`,title:`${boss.icon} ${boss.name}`,body:`<p>${boss.title}</p><div class="requirements-box"><h4>特殊素質門檻</h4><ul>${boss.requirements.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><p>特殊機制：${boss.mechanic}</p>${ready?'<p class="warning">Boss 戰會消耗 1 行動。戰敗死亡只能帶著跨世成就與一項根骨轉生。</p>':'<p class="warning">條件未滿時無法靠運氣硬闖。這是門檻，不是成功率。</p>'}`,actions:[{label:ready?'踢館・開始 Boss 戰':'條件不足',sub:ready?'我已看過招式與行囊':'先去修行、接任務或商城整備',primary:ready,disabled:!ready||state.ap<=0,onClick:()=>{forceCloseModal();startEncounter(true);}},{label:'再準備一下',sub:'保留進度，自己決定何時挑戰',onClick:forceCloseModal}]});
   }
 
-  function startEncounter(isBoss) {
+  function scaledMonster(monster) {
+    const foe = { ...monster }, scale = 1 + state.bossIndex * .08;
+    foe.hp = Math.round(foe.hp * scale); foe.attack = Math.round(foe.attack * scale);
+    return foe;
+  }
+
+  function openWildEncounter() {
+    if (busy || state.ap <= 0 || state.ended) return toast(state.ap <= 0 ? '今日行動已用完' : '現在無法戰鬥');
+    const pool = ENEMIES[state.location] || ENEMIES.outer;
+    const candidates = [...pool].sort(() => Math.random() - .5).slice(0, Math.min(3, pool.length));
+    openModal({
+      kicker:`${LOCATIONS[state.location].name}・野怪名冊`,
+      title:'這一場要打誰？',
+      body:`<p>每個場域有五種野怪與不同出招傾向。選定後才消耗 1 行動；不滿意可以免費換一批。</p>`,
+      actions:[
+        ...candidates.map(monster => {
+          const preview = scaledMonster(monster);
+          return { label:`${monster.icon} ${monster.name}`, sub:`${MONSTER_STYLE_NAMES[monster.style]}・氣血 ${preview.hp}・攻勢 ${preview.attack}｜${monster.flavor}`, onClick:()=>{forceCloseModal();startEncounter(false,monster);} };
+        }),
+        { label:'換一批野怪', sub:'不消耗行動，重新抽出三名對手', onClick:()=>{forceCloseModal();openWildEncounter();} }
+      ]
+    });
+  }
+
+  function startEncounter(isBoss, chosenFoe = null) {
     if(busy||state.ap<=0||state.ended)return toast(state.ap<=0?'今日行動已用完':'現在無法戰鬥');
     if(isBoss&&!bossReady())return openBossChallenge();
     state.ap--;state.metrics.actions++;save();render();
     let foe;
     if(isBoss){const b=currentBoss();foe={...b,boss:true,coinReward:100+b.hp,xp:90+b.hp/3};}
-    else{const pool=ENEMIES[state.location]||ENEMIES.outer;foe={...pick(pool)};const scale=1+state.bossIndex*.08;foe.hp=Math.round(foe.hp*scale);foe.attack=Math.round(foe.attack*scale);}
-    const openingLog=[`${foe.name} 擋住去路。先看招，再出手。`];
+    else{const pool=ENEMIES[state.location]||ENEMIES.outer;foe=scaledMonster(chosenFoe||pick(pool));}
+    const openingLog=[`${foe.name} 擋住去路。先看招，再出手。`, ...(foe.flavor?[foe.flavor]:[])];
     if(foe.id==='taishan')openingLog.push(`${state.vows.length} 枚心印化為加護：造成傷害提升，信義與人情減少所受傷害。`);
     currentBattle={foe,foeHp:foe.hp,turn:1,intent:nextIntent(foe,1),foeGuard:false,playerGuard:false,damageTaken:0,log:openingLog,busy:false};
     renderBattle();
@@ -696,6 +754,10 @@
 
   function nextIntent(foe,turn) {
     let pool=['attack','attack','heavy','guard','trick'];
+    if(foe.style==='swift')pool=['attack','attack','attack','trick','guard'];
+    if(foe.style==='trick')pool=['trick','trick','attack','guard','heavy'];
+    if(foe.style==='guard')pool=['guard','guard','attack','heavy','trick'];
+    if(foe.style==='brute')pool=['heavy','heavy','attack','attack','guard'];
     if(foe.id==='green')pool=['trick','trick','attack','guard','heavy'];
     if(foe.id==='crows')pool=['heavy','heavy','attack','guard','trick'];
     if(foe.id==='copies')pool=['trick','attack','trick','heavy','guard'];
@@ -713,6 +775,7 @@
     const b=currentBattle,foe=b.foe;
     modalClosable=false;$('modal-kicker').textContent=foe.boss?'守關 Boss 戰':'江湖遭遇';$('modal-title').textContent=foe.name;$('modal-close').hidden=true;
     $('modal-body').innerHTML=`<div class="battle"><div class="battle-foes"><div class="fighter player"><div class="avatar">瘸</div><b>${esc(state.name)}</b><div class="battle-hp"><i style="width:${state.hp/maxHp(state)*100}%"></i></div><small>氣血 ${state.hp}/${maxHp(state)} · 真氣 ${state.qi}/${maxQi(state)}</small></div><div class="versus">對</div><div class="fighter"><div class="avatar">${foe.icon}</div><b>${foe.name}</b><div class="battle-hp"><i style="width:${b.foeHp/foe.hp*100}%"></i></div><small>氣血 ${Math.max(0,b.foeHp)}/${foe.hp}</small></div></div><div class="intent-box"><i>${INTENTS[b.intent].icon}</i><div><b>敵方意圖：${INTENTS[b.intent].name}</b><small>${intentHint()}</small></div></div>${state.live?'<div class="poll-hint">實況提示：請觀眾刷 1–5，實況主用數字鍵執行聊天室的選擇。</div>':''}<div class="battle-log">${b.log.slice(-5).map(x=>`<div>${esc(x)}</div>`).join('')}</div><div class="battle-actions"><button class="battle-button" data-battle="attack"><b>1. 普通攻擊</b><small>穩定傷害；敏捷提供暴擊</small></button><button class="battle-button" data-battle="guard"><b>2. 防禦</b><small>重擊剋星；成功會反制</small></button><button class="battle-button" data-battle="skill" ${state.qi<10?'disabled':''}><b>3. 糖門滑劍</b><small>真氣 10；破防、高傷害</small></button><button class="battle-button" data-battle="focus"><b>4. 看破</b><small>破解詭計；回復 7 真氣</small></button><button class="battle-button" data-battle="rice" ${(state.inventory.rice||0)<1?'disabled':''}><b>5. 米特飯盒</b><small>剩 ${state.inventory.rice||0}；恢復 38 氣血</small></button><button class="battle-button" data-battle="flee" ${foe.boss?'disabled':''}><b>6. 戰略撤退</b><small>保命；行動不退還</small></button></div></div>`;
+    document.querySelector('.fighter.player .avatar').innerHTML=`<img class="battle-avatar" src="roger.png" alt="${esc(state.name)}">`;
     $('modal-actions').innerHTML='';$('modal').hidden=false;
     document.querySelectorAll('[data-battle]').forEach(btn=>btn.onclick=()=>battleTurn(btn.dataset.battle));
   }
@@ -760,16 +823,32 @@
     if(b.foeHp<=0){battleWin();}
   }
 
+  function showBattleResult({ foe, xp, coins, levelBefore, newAchievements = [], boss = false, next }) {
+    currentBattle = null;
+    const leveled = state.level > levelBefore;
+    openModal({
+      kicker:boss ? '守關突破・戰鬥結算' : '野怪討伐・戰鬥結算',
+      title:boss ? `擊破 ${foe.name}` : '戰鬥勝利！',
+      body:`<div class="battle-result"><div class="result-seal">勝</div><h3>${foe.icon} ${esc(foe.name)} 已被擊敗</h3><p>${boss?'你跨過了這一回的硬門檻，故事將因這場勝利繼續。':'你看招、出招，活著把戰利品帶回糖門。'}</p><div class="result-rewards"><div><span>糖錢</span><b>+${coins}</b></div><div><span>經驗</span><b>+${xp}</b></div><div><span>剩餘氣血</span><b>${state.hp}/${maxHp(state)}</b></div></div>${leveled?`<div class="result-notice">升級至 LV.${state.level}・目前可用配點 ${state.points}</div>`:''}${newAchievements.length?`<div class="result-notice achievement-pop">新成就：${newAchievements.map(esc).join('、')}</div>`:''}</div>`,
+      closable:false,
+      actions:[{ label:boss?'繼續本回劇情':'收下戰利品', sub:boss?'查看 Boss 戰後故事選擇':'返回場域，決定下一個行動', primary:true, onClick:()=>{forceCloseModal();next?.();} }]
+    });
+  }
+
   function battleWin() {
     const b=currentBattle,foe=b.foe;
     if(!foe.boss){
+      const levelBefore=state.level, achievementBefore=[...state.achievements];
       state.metrics.wins++;if(state.hp<=10)state.metrics.oneHpWins++;
       const xp=gainXp(state,Math.round(foe.xp));state.coins+=foe.reward;state.fame+=1;
       addLog('good',`擊敗・${foe.name}`,'你不是靠按下一頁贏的，是看招、出招和活著離開。',`糖錢 +${foe.reward} · 經驗 +${xp}`);
-      checkAchievements();save();forceCloseModal();render();pushChat('hype',state.hp<=10?'一滴血！這能贏？':'打得好！');return;
+      checkAchievements();const newAchievements=state.achievements.filter(id=>!achievementBefore.includes(id)).map(id=>ACHIEVEMENTS.find(a=>a.id===id)?.name).filter(Boolean);
+      save();render();pushChat('hype',state.hp<=10?'一滴血！這能贏？':'打得好！');
+      showBattleResult({foe,xp,coins:foe.reward,levelBefore,newAchievements});return;
     }
+    const levelBefore=state.level, achievementBefore=[...state.achievements];
     if(b.damageTaken===0)state.metrics.noHitBoss++;
-    state.coins+=foe.coinReward;gainXp(state,Math.round(foe.xp));state.hp=Math.min(maxHp(state),state.hp+Math.floor(maxHp(state)*.28));state.qi=maxQi(state);
+    state.coins+=foe.coinReward;const xp=gainXp(state,Math.round(foe.xp));state.hp=Math.min(maxHp(state),state.hp+Math.floor(maxHp(state)*.28));state.qi=maxQi(state);
     if(!state.defeatedBosses.includes(foe.id))state.defeatedBosses.push(foe.id);
     if(foe.id==='taishan')state.pendingFinal=true;else state.pendingStory=foe.id;
     if(foe.id==='sleep')addItem(state,'clock');
@@ -777,8 +856,9 @@
     if(foe.id==='crows'){addItem(state,'bondseal');addVow(state,'同門心印');}
     if(foe.id==='copies'){addItem(state,'trueseal');addVow(state,'本真心印');}
     addLog('gold',`守關突破・${foe.name}`,`特殊素質不是裝飾。你準備好，才有資格把這一關打過去。`,`糖錢 +${foe.coinReward} · ${foe.reward}`);
-    checkAchievements();save();forceCloseModal();render();pushChat('hype','過了過了過了！');
-    setTimeout(()=>foe.id==='taishan'?openFinalChoice():openBossStory(foe.id),260);
+    checkAchievements();const newAchievements=state.achievements.filter(id=>!achievementBefore.includes(id)).map(id=>ACHIEVEMENTS.find(a=>a.id===id)?.name).filter(Boolean);
+    save();render();pushChat('hype','過了過了過了！');
+    showBattleResult({foe,xp,coins:foe.coinReward,levelBefore,newAchievements,boss:true,next:()=>foe.id==='taishan'?openFinalChoice():openBossStory(foe.id)});
   }
 
   function openBossStory(id) {
@@ -876,7 +956,12 @@
   $('story-button').onclick=openStoryInfo;$('allocate-open').onclick=openAllocate;$('inventory-open').onclick=openInventory;$('quests-open').onclick=openMissions;$('achievements-open').onclick=openAchievements;
   $('clear-log').onclick=()=>{state.log=state.log.slice(0,3);save();render();};
   $('modal-close').onclick=closeModal;document.querySelector('[data-close-modal]').onclick=closeModal;
-  $('mobile-menu').onclick=()=>$('character-panel').classList.add('open');$('close-mobile-menu').onclick=()=>$('character-panel').classList.remove('open');
+  function setMobilePanel(open) {
+    $('character-panel').classList.toggle('open', open);
+    $('mobile-panel-backdrop').classList.toggle('open', open);
+    document.body.classList.toggle('panel-open', open);
+  }
+  $('mobile-menu').onclick=()=>setMobilePanel(true);$('close-mobile-menu').onclick=()=>setMobilePanel(false);$('mobile-panel-backdrop').onclick=()=>setMobilePanel(false);
   document.addEventListener('keydown',e=>{
     if(e.target.matches('input,textarea,select,[contenteditable="true"]')||e.ctrlKey||e.metaKey||e.altKey)return;
     const n=Number(e.key);if(!n)return;
