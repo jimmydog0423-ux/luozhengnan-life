@@ -109,6 +109,11 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .level-row { grid-column: 1 / -1; display: grid; grid-template-columns: 42px 1fr auto; align-items: center; gap: 8px; margin-top: 4px; }
 .level-row b { color: var(--gold); font: 800 11px var(--sans); }
 .level-row small { color: #827766; font-size: 9px; }
+.origin-build { grid-column: 1 / -1; display: flex; align-items: center; gap: 9px; padding: 9px 10px; border: 1px solid rgba(217,164,65,.2); background: rgba(217,164,65,.055); }
+.origin-build > i { display: grid; place-items: center; width: 25px; height: 25px; flex: 0 0 auto; border: 1px solid rgba(217,164,65,.35); color: var(--gold); font: 900 12px var(--serif); }
+.origin-build span { display: grid; gap: 2px; min-width: 0; }
+.origin-build b { color: #d9c9aa; font-size: 10px; }
+.origin-build small { color: #8f8370; font-size: 8px; }
 .xp-track, .bar { background: rgba(255,255,255,.075); overflow: hidden; }
 .xp-track { height: 3px; }
 .xp-track i, .bar i { height: 100%; display: block; transition: width .35s ease; }
@@ -316,6 +321,9 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .shop-item { display: grid; grid-template-columns: 38px 1fr; gap: 10px; align-items: center; }
 .mission-item { align-items: start; }
 .mission-chapter-tag { width: max-content; margin-bottom: 4px; color: var(--gold); font-size: 9px; font-weight: 900; letter-spacing: .08em; }
+.secret-title { color: #c8a7df; }
+.secret-mission { border-color: rgba(164,111,196,.32); background: linear-gradient(135deg,rgba(89,44,115,.16),rgba(255,255,255,.02)); }
+.secret-mission .item-icon, .secret-mission .mission-chapter-tag { color: #d0a7ea; }
 .mission-progress { display: grid; gap: 4px; margin: 9px 0; padding: 8px 9px; background: #100c0b; border: 1px solid rgba(232,221,194,.08); }
 .mission-progress span { display: flex; justify-content: space-between; gap: 8px; color: #817667; font-size: 10px; }
 .mission-progress span.ok { color: var(--jade); }
