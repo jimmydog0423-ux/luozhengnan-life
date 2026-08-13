@@ -53,11 +53,105 @@
   };
 
   const CHAPTERS = [
-    { number: '第一回', title: '斷腿入糖門', summary: '被聊天室威脅打斷腿後，你陰錯陽差踏進糖門。', goal: '升到 3 級，累積「自律 4」，再擊敗睡魔。真正的第一關不是武功，是準時起床。', cast:['糖之漢','糖虧皮','糖政銘','糖汶銨'] },
-    { number: '第二回', title: '綠光不可亂按', summary: '糖偉健遞來一張發著綠光的核心牌，所有人都在等你犯錯。', goal: '將心眼練到 14，並取得「驗牌銅鏡」。黃光沒有確認，任何神抽都只是幻覺。', cast:['糖偉健','糖虧皮','糖汶銨'] },
-    { number: '第三回', title: '金銀雙烏壓境', summary: '張家雙煞堵住糖門，掌門糖之漢看到山羌圖案先退了三步。', goal: '根骨達 17、人情達 10。雙王連戰不能只靠自己，先把同門變成真正的隊伍。', cast:['糖之漢','糖負荷','龍耿','金烏上豬','銀烏下豬'] },
-    { number: '第四回', title: '一萬個羅正男', summary: '江湖到處都是你的頭像與口頭禪，卻沒有一個人承認自己是假貨。', goal: '俠名達 25、信義達 12。若自己說過的話都不算數，又要如何證明哪一個才是真身？', cast:['峰哥說書人','糖政銘','糖負荷','萬面分身'] },
-    { number: '終章', title: '泰山問心', summary: '所有冠軍、失約、朋友與迷因化作山路。泰山沒有血條，只有你走過的選擇。', goal: '升到 14 級、集齊三枚心印，再登泰山。最後一戰會讀取你整輪的養成與選擇。', cast:['夏侯芝','龍耿','糖門眾人','泰山'] }
+    {
+      number:'第一章', title:'斷腿入糖門', summary:'從糖門外院站穩腳步，先證明自己不是只會按下一頁。', cast:['糖之漢','糖虧皮','糖政銘','糖汶銨'],
+      sections:[
+        { number:'第一回', title:'招生之夜', summary:'糖政銘把門規丟到桌上：先練、先做，再談上山。', requirements:[
+          {label:'完成 3 次自主行動',check:s=>s.metrics.actions>=3,value:s=>`${s.metrics.actions}/3`},
+          {label:'至少修行 1 次',check:s=>s.metrics.training>=1,value:s=>`${s.metrics.training}/1`}
+        ]},
+        { number:'第二回', title:'外院晨課', summary:'想留在糖門，先讓大師兄看到你能準時，也能打。', requirements:[
+          {label:'擊敗 3 隻野怪',check:s=>s.metrics.wins>=3,value:s=>`${s.metrics.wins}/3`},
+          {label:'活到第 3 日',check:s=>s.day>=3,value:s=>`第 ${s.day} 日`},
+          {label:'完成「外院點名簿」',check:s=>s.completedMissions.includes('rollcall'),value:s=>s.completedMissions.includes('rollcall')?'已完成':'未完成'}
+        ]},
+        { number:'第三回', title:'四十包試煉', summary:'糖偉健端出整箱卡包；先學會確認，才有資格碰綠光。', requirements:[
+          {label:'完成 3 張江湖帖',check:s=>s.completedMissions.length>=3,value:s=>`${s.completedMissions.length}/3`},
+          {label:'持有驗牌銅鏡',check:s=>hasItem(s,'mirror'),value:s=>hasItem(s,'mirror')?'已持有':'未取得'},
+          {label:'等級達 4',check:s=>s.level>=4,value:s=>`LV.${s.level}`}
+        ]},
+        { number:'第四回', title:'破曉斷腿崖', summary:'睡魔盤踞山門。這次不是鬧鐘響了就算贏。', boss:true }
+      ]
+    },
+    {
+      number:'第二章', title:'綠光不可亂按', summary:'一次失誤會被記很久；真正的試煉，是你願不願意把它重新看清。', cast:['糖偉健','糖虧皮','糖汶銨','蟹老闆'],
+      sections:[
+        { number:'第一回', title:'水蛇洞開台', summary:'洞裡的回音專挑你最想逃避的話重播。', requirements:[
+          {label:'累積開台 3 次',check:s=>s.metrics.streams>=3,value:s=>`${s.metrics.streams}/3`},
+          {label:'累積擊敗 6 隻野怪',check:s=>s.metrics.wins>=6,value:s=>`${s.metrics.wins}/6`}
+        ]},
+        { number:'第二回', title:'三招與一本帳', summary:'大師兄的第三招和老蟹的帳本，都不能只看表面。', requirements:[
+          {label:'完成「糖虧皮的三招」',check:s=>s.completedMissions.includes('krapy'),value:s=>s.completedMissions.includes('krapy')?'已完成':'未完成'},
+          {label:'完成「蟹老闆的帳」',check:s=>s.completedMissions.includes('ledger'),value:s=>s.completedMissions.includes('ledger')?'已完成':'未完成'},
+          {label:'身法達 11',check:s=>stat(s,'agility')>=11,value:s=>`${stat(s,'agility')}/11`}
+        ]},
+        { number:'第三回', title:'黃光復盤', summary:'你把每一步重新演過，直到綠光再也騙不了你。', requirements:[
+          {label:'完成 6 張江湖帖',check:s=>s.completedMissions.length>=6,value:s=>`${s.completedMissions.length}/6`},
+          {label:'心眼達 15',check:s=>stat(s,'insight')>=15,value:s=>`${stat(s,'insight')}/15`},
+          {label:'活到第 7 日',check:s=>s.day>=7,value:s=>`第 ${s.day} 日`}
+        ]},
+        { number:'第四回', title:'邪僧試牌', summary:'拉札舉起綠色核心牌。這一次，你要先看見真相。', boss:true }
+      ]
+    },
+    {
+      number:'第三章', title:'金銀雙烏壓境', summary:'張家雙煞封住山路。單人數值再高，也頂不住兩個人的連招。', cast:['糖之漢','糖負荷','龍耿','金烏上豬','銀烏下豬'],
+      sections:[
+        { number:'第一回', title:'雙烏封山', summary:'山路斷糧，外院每個人都得先學會自保。', requirements:[
+          {label:'累積擊敗 10 隻野怪',check:s=>s.metrics.wins>=10,value:s=>`${s.metrics.wins}/10`},
+          {label:'根骨達 15',check:s=>stat(s,'vitality')>=15,value:s=>`${stat(s,'vitality')}/15`}
+        ]},
+        { number:'第二回', title:'雞腿糧道', summary:'龍耿把最後一袋糧交給你。路上不能少一根雞腿。', requirements:[
+          {label:'完成「龍耿的雞腿」',check:s=>s.completedMissions.includes('chicken'),value:s=>s.completedMissions.includes('chicken')?'已完成':'未完成'},
+          {label:'人情達 10',check:s=>s.routes.ties>=10,value:s=>`${s.routes.ties}/10`},
+          {label:'完成 8 張江湖帖',check:s=>s.completedMissions.length>=8,value:s=>`${s.completedMissions.length}/8`}
+        ]},
+        { number:'第三回', title:'同門血戰前夜', summary:'糖門眾人終於站成一排。今晚沒有人能只顧自己。', requirements:[
+          {label:'等級達 10',check:s=>s.level>=10,value:s=>`LV.${s.level}`},
+          {label:'累積擊敗 14 隻野怪',check:s=>s.metrics.wins>=14,value:s=>`${s.metrics.wins}/14`},
+          {label:'活到第 12 日',check:s=>s.day>=12,value:s=>`第 ${s.day} 日`}
+        ]},
+        { number:'第四回', title:'金銀合擊', summary:'雙烏同時出手；只有真正的同門才能拆掉這一招。', boss:true }
+      ]
+    },
+    {
+      number:'第四章', title:'一萬個羅正男', summary:'江湖到處都是你的臉。要證明本尊，靠的不是音量而是留下的證據。', cast:['峰哥說書人','糖政銘','糖負荷','萬面分身'],
+      sections:[
+        { number:'第一回', title:'真假本尊', summary:'每個分身都比你更準時，還比你更會發文。', requirements:[
+          {label:'俠名達 22',check:s=>s.fame>=22,value:s=>`${s.fame}/22`},
+          {label:'累積開台 6 次',check:s=>s.metrics.streams>=6,value:s=>`${s.metrics.streams}/6`}
+        ]},
+        { number:'第二回', title:'證據鏈', summary:'峰哥要的不是感覺，是時間、帳本與完整前因後果。', requirements:[
+          {label:'完成「我不是高金生」',check:s=>s.completedMissions.includes('identity'),value:s=>s.completedMissions.includes('identity')?'已完成':'未完成'},
+          {label:'完成「平台舊檔案」',check:s=>s.completedMissions.includes('archive'),value:s=>s.completedMissions.includes('archive')?'已完成':'未完成'},
+          {label:'信義達 13',check:s=>s.routes.integrity>=13,value:s=>`${s.routes.integrity}/13`}
+        ]},
+        { number:'第三回', title:'演算法風暴', summary:'分身開始互相複製。你只能用持續累積的選擇穿過風暴。', requirements:[
+          {label:'完成 12 張江湖帖',check:s=>s.completedMissions.length>=12,value:s=>`${s.completedMissions.length}/12`},
+          {label:'累積擊敗 19 隻野怪',check:s=>s.metrics.wins>=19,value:s=>`${s.metrics.wins}/19`},
+          {label:'心眼達 19',check:s=>stat(s,'insight')>=19,value:s=>`${stat(s,'insight')}/19`}
+        ]},
+        { number:'第四回', title:'萬面照真身', summary:'一萬張臉同時開口。只有你的選擇無法被複製。', boss:true }
+      ]
+    },
+    {
+      number:'第五章', title:'泰山問心', summary:'冠軍、失約、朋友與迷因化作山路。這次沒有捷徑，也沒有代打。', cast:['夏侯芝','龍耿','糖門眾人','泰山'],
+      sections:[
+        { number:'第一回', title:'四印會盟', summary:'前四戰留下的不是戰利品，而是你願意承認的自己。', requirements:[
+          {label:'前四位守關者全破',check:s=>s.defeatedBosses.length>=4,value:s=>`${s.defeatedBosses.length}/4`},
+          {label:'取得至少三枚心印',check:s=>s.vows.length>=3,value:s=>`${s.vows.length}/3`}
+        ]},
+        { number:'第二回', title:'山路十八盤', summary:'越靠近山頂，攔路怪越像你不肯放下的執念。', requirements:[
+          {label:'累積擊敗 25 隻野怪',check:s=>s.metrics.wins>=25,value:s=>`${s.metrics.wins}/25`},
+          {label:'等級達 15',check:s=>s.level>=15,value:s=>`LV.${s.level}`}
+        ]},
+        { number:'第三回', title:'登頂前夜', summary:'把糧、心印與最後一句話帶齊。天亮後只剩泰山。', requirements:[
+          {label:'完成「泰山路引」',check:s=>s.completedMissions.includes('taishan_route'),value:s=>s.completedMissions.includes('taishan_route')?'已完成':'未完成'},
+          {label:'活到第 20 日',check:s=>s.day>=20,value:s=>`第 ${s.day} 日`},
+          {label:'解鎖 8 項成就',check:s=>s.achievements.length>=8,value:s=>`${s.achievements.length}/8`}
+        ]},
+        { number:'第四回', title:'泰山問心', summary:'山頂沒有血條之外的答案。你一路做過的選擇，就是最後一招。', boss:true }
+      ]
+    }
   ];
 
   const BOSSES = [
@@ -65,41 +159,47 @@
       id: 'sleep', name: '睡魔・棉被精', icon: '🛏️', title: '永遠差五分鐘的心魔', hp: 96, attack: 12,
       mechanic: '蓄力時必須防禦；詭計會吸走真氣。', reward: '破曉腰牌',
       requirements: [
-        { label: '等級達 3', check: s => s.level >= 3, value: s => `LV.${s.level}` },
-        { label: '自律達 4', check: s => s.routes.discipline >= 4, value: s => `${s.routes.discipline}/4` }
+        { label: '等級達 4', check: s => s.level >= 4, value: s => `LV.${s.level}` },
+        { label: '自律達 6', check: s => s.routes.discipline >= 6, value: s => `${s.routes.discipline}/6` },
+        { label: '完成本章前三回', check: s => s.chapterStep >= 3, value: s => `${s.chapterStep}/3` }
       ]
     },
     {
       id: 'green', name: '綠衣邪僧・拉札', icon: '🟢', title: '亮了就按的致命誘惑', hp: 142, attack: 17,
       mechanic: '詭計頻繁。用「看破」識破綠光，否則心火暴增。', reward: '黃光心印',
       requirements: [
-        { label: '心眼達 14', check: s => stat(s, 'insight') >= 14, value: s => `${stat(s,'insight')}/14` },
-        { label: '持有驗牌銅鏡', check: s => hasItem(s, 'mirror'), value: s => hasItem(s,'mirror') ? '已持有' : '未取得' }
+        { label: '心眼達 16', check: s => stat(s, 'insight') >= 16, value: s => `${stat(s,'insight')}/16` },
+        { label: '持有驗牌銅鏡', check: s => hasItem(s, 'mirror'), value: s => hasItem(s,'mirror') ? '已持有' : '未取得' },
+        { label: '完成本章前三回', check: s => s.chapterStep >= 3, value: s => `${s.chapterStep}/3` }
       ]
     },
     {
       id: 'crows', name: '金烏上豬・銀烏下豬', icon: '🐗', title: '張家雙王的兄弟連擊', hp: 205, attack: 22,
       mechanic: '重擊連發。防住紅色蓄力，才能讓雙王互撞。', reward: '同門心印',
       requirements: [
-        { label: '根骨達 17', check: s => stat(s, 'vitality') >= 17, value: s => `${stat(s,'vitality')}/17` },
-        { label: '人情達 10', check: s => s.routes.ties >= 10, value: s => `${s.routes.ties}/10` }
+        { label: '根骨達 20', check: s => stat(s, 'vitality') >= 20, value: s => `${stat(s,'vitality')}/20` },
+        { label: '人情達 14', check: s => s.routes.ties >= 14, value: s => `${s.routes.ties}/14` },
+        { label: '完成本章前三回', check: s => s.chapterStep >= 3, value: s => `${s.chapterStep}/3` }
       ]
     },
     {
       id: 'copies', name: '萬面分身・演算法', icon: '👥', title: '每一張臉都說自己是本尊', hp: 268, attack: 27,
       mechanic: '會以假話擾亂心神。心眼越高，意圖提示越明確。', reward: '本真心印',
       requirements: [
-        { label: '俠名達 25', check: s => s.fame >= 25, value: s => `${s.fame}/25` },
-        { label: '信義達 12', check: s => s.routes.integrity >= 12, value: s => `${s.routes.integrity}/12` }
+        { label: '俠名達 35', check: s => s.fame >= 35, value: s => `${s.fame}/35` },
+        { label: '信義達 16', check: s => s.routes.integrity >= 16, value: s => `${s.routes.integrity}/16` },
+        { label: '完成本章前三回', check: s => s.chapterStep >= 3, value: s => `${s.chapterStep}/3` }
       ]
     },
     {
       id: 'taishan', name: '最終大 Boss・泰山', icon: '⛰️', title: '沒有捷徑的萬丈問心', hp: 360, attack: 33,
       mechanic: '每三招改變架勢；你的心印與最高道路會化成戰鬥加護。', reward: '自己的結局',
       requirements: [
-        { label: '等級達 14', check: s => s.level >= 14, value: s => `LV.${s.level}` },
+        { label: '等級達 17', check: s => s.level >= 17, value: s => `LV.${s.level}` },
         { label: '取得至少三枚心印', check: s => s.vows.length >= 3, value: s => `${s.vows.length}/3` },
-        { label: '前四位守關者全破', check: s => s.defeatedBosses.length >= 4, value: s => `${s.defeatedBosses.length}/4` }
+        { label: '前四位守關者全破', check: s => s.defeatedBosses.length >= 4, value: s => `${s.defeatedBosses.length}/4` },
+        { label: '完成 15 張江湖帖', check: s => s.completedMissions.length >= 15, value: s => `${s.completedMissions.length}/15` },
+        { label: '完成本章前三回', check: s => s.chapterStep >= 3, value: s => `${s.chapterStep}/3` }
       ]
     }
   ];
@@ -115,28 +215,72 @@
     ledger: { name: '老蟹帳本', icon: '📒', kind: 'key', price: 0, description: '不是你的三千萬私人欠款。它記著整個團隊付出的成本。' },
     yellowseal: { name: '黃光心印', icon: '🟨', kind: 'relic', price: 0, description: '先確認，再出手。' },
     bondseal: { name: '同門心印', icon: '🤝', kind: 'relic', price: 0, description: '一個人很會打，不等於能走到最後。' },
-    trueseal: { name: '本真心印', icon: '🪪', kind: 'relic', price: 0, description: '你說過的話，終於能替你證明你是誰。' }
+    trueseal: { name: '本真心印', icon: '🪪', kind: 'relic', price: 0, description: '你說過的話，終於能替你證明你是誰。' },
+    taishanpass: { name: '泰山路引', icon: '🗺️', kind: 'key', price: 0, description: '十五張江湖帖與二十五場實戰換來的登頂資格。' }
   };
 
   const MISSIONS = [
-    { id: 'water', name: '外院挑水', description: '最普通，也最不會大中計的差事。', repeat: true, reward: '糖錢 28、經驗 22、根骨機率 +1', can: () => true,
+    { id: 'water', name: '外院挑水', description: '日常差事，可反覆完成，但不會算進十五張主線江湖帖。', repeat: true, reward: '糖錢 28、經驗 22、根骨機率 +1', can: () => true,
       run: s => { s.coins += missionReward(s, 28); gainXp(s, 22); if (Math.random() < .45) s.stats.vitality++; s.routes.discipline++; } },
-    { id: 'packs', name: '四十包零傳說', description: '替糖偉健拆完四十包，忍住不要先罵。', cost: 35, reward: '心眼 +2、驗牌銅鏡', can: s => s.coins >= 35, reason: '需要 35 糖錢',
-      run: s => { s.coins -= 35; s.stats.insight += 2; addItem(s,'mirror'); s.routes.integrity += 2; } },
-    { id: 'rice_run', name: '小師妹送飯', description: '糖汶銨被路上的山羌攔住了。', reward: '飯盒 ×2、人情 +3', can: s => s.routes.ties >= 4, reason: '需要人情 4',
+    { id:'rollcall', chapter:0, name:'外院點名簿', description:'連續完成晨課，讓糖政銘第一次把你寫進正式名冊。', reward:'經驗 55、自律 +2、信義 +1', can:()=>true, requirements:[
+      {label:'自主行動',check:s=>s.metrics.actions>=2,value:s=>`${s.metrics.actions}/2`}, {label:'修行',check:s=>s.metrics.training>=1,value:s=>`${s.metrics.training}/1`}
+    ], run:s=>{gainXp(s,55);s.routes.discipline+=2;s.routes.integrity++;} },
+    { id: 'rice_run', chapter:0, name: '小師妹送飯', description: '糖汶銨在山路遇到野怪；先把路清乾淨，飯才送得到。', reward: '飯盒 ×2、人情 +3', can: s => s.routes.ties >= 3, reason: '需要人情 3', requirements:[
+      {label:'擊敗野怪',check:s=>s.metrics.wins>=2,value:s=>`${s.metrics.wins}/2`}
+    ],
       run: s => { addItem(s,'rice',2); s.routes.ties += 3; s.hp = Math.min(maxHp(s), s.hp + 18); } },
-    { id: 'ledger', name: '蟹老闆的帳', description: '把「戰隊總投資」和「私人欠款」分清楚。', reward: '老蟹帳本、信義 +3、俠名 +5', can: s => s.bossIndex >= 1 && s.routes.integrity >= 5, reason: '第二回且信義 5',
+    { id: 'packs', chapter:0, name: '四十包零傳說', description: '先打怪湊齊卡包錢，再替糖偉健逐包驗牌。', cost: 55, reward: '心眼 +2、驗牌銅鏡、信義 +2', can: s => s.coins >= 55, reason: '需要 55 糖錢', requirements:[
+      {label:'擊敗野怪',check:s=>s.metrics.wins>=3,value:s=>`${s.metrics.wins}/3`}
+    ], run: s => { s.coins -= 55; s.stats.insight += 2; addItem(s,'mirror'); s.routes.integrity += 2; } },
+
+    { id: 'ledger', chapter:1, name: '蟹老闆的帳', description: '把戰隊總投資、私人欠款與那些說不清的承諾逐筆對完。', reward: '老蟹帳本、信義 +3、俠名 +5', can: s => s.routes.integrity >= 5, reason: '需要信義 5', requirements:[
+      {label:'已完成四十包試煉',check:s=>s.completedMissions.includes('packs'),value:s=>s.completedMissions.includes('packs')?'完成':'未完成'}
+    ],
       run: s => { addItem(s,'ledger'); s.routes.integrity += 3; s.fame += 5; } },
-    { id: 'stream_three', name: '水蛇洞三時辰', description: '連續開台，不跳票、不睡著、不亂承諾。', reward: '糖錢 95、節目 +3、自律 +2', can: s => s.metrics.streams >= 3, reason: '累積開台 3 次',
+    { id: 'stream_three', chapter:1, name: '水蛇洞三時辰', description: '分三次撐完洞中直播，不跳票、不睡著、不亂承諾。', reward: '糖錢 95、節目 +3、自律 +2', can:()=>true, requirements:[
+      {label:'累積開台',check:s=>s.metrics.streams>=3,value:s=>`${s.metrics.streams}/3`}, {label:'存活日數',check:s=>s.day>=5,value:s=>`第 ${s.day} 日 / 5`}
+    ],
       run: s => { s.coins += missionReward(s,95); s.routes.show += 3; s.routes.discipline += 2; } },
-    { id: 'identity', name: '我不是高金生', description: '整理官方帳號、發言時間與證據，對抗冒名分身。', reward: '信義 +4、心眼 +2、俠名 +8', can: s => s.bossIndex >= 3 && hasItem(s,'ledger'), reason: '第四回且持有老蟹帳本',
-      run: s => { s.routes.integrity += 4; s.stats.insight += 2; s.fame += 8; } },
-    { id: 'krapy', name: '糖虧皮的三招', description: '大師兄嘴上說隨便打，第三招卻完全沒留手。', reward: '身法 +2、斷腿骨劍、人情 +2', can: s => s.bossIndex >= 1 && stat(s,'agility') >= 9, reason: '第二回且身法 9',
+    { id: 'krapy', chapter:1, name: '糖虧皮的三招', description: '先在野外累積實戰，再接大師兄沒有留手的第三招。', reward: '身法 +2、斷腿骨劍、人情 +2', can: s => stat(s,'agility') >= 11, reason: '需要身法 11', requirements:[
+      {label:'累積擊敗野怪',check:s=>s.metrics.wins>=7,value:s=>`${s.metrics.wins}/7`}
+    ],
       run: s => { s.stats.agility += 2; addItem(s,'boneblade'); s.routes.ties += 2; } },
-    { id: 'chicken', name: '龍耿的雞腿', description: '把雞腿安全送過金銀雙烏的封鎖線，不能偷吃。', cost: 45, reward: '根骨 +2、人情 +3、飯盒 ×2', can: s => s.bossIndex >= 2 && s.coins >= 45, reason: '第三回且糖錢 45',
-      run: s => { s.coins -= 45; s.stats.vitality += 2; s.routes.ties += 3; addItem(s,'rice',2); } },
-    { id: 'snow', name: '夏侯芝的雪山帖', description: '在斷腿崖讀完雪山派的身法訣，不准只看聊天室解答。', reward: '身法 +2、自律 +3、心眼 +1', can: s => s.bossIndex >= 3 && stat(s,'insight') >= 16, reason: '第四回且心眼 16',
-      run: s => { s.stats.agility += 2; s.stats.insight += 1; s.routes.discipline += 3; } }
+    { id:'yellow_review', chapter:1, name:'黃光逐格復盤', description:'把三次錯誤操作逐格標註，不能用「手滑」帶過。', reward:'心眼 +2、信義 +2、經驗 80', can:s=>hasItem(s,'mirror'), reason:'需要驗牌銅鏡', requirements:[
+      {label:'心眼',check:s=>stat(s,'insight')>=14,value:s=>`${stat(s,'insight')}/14`}, {label:'第二章江湖帖',check:s=>['ledger','stream_three','krapy'].every(id=>s.completedMissions.includes(id)),value:s=>`${['ledger','stream_three','krapy'].filter(id=>s.completedMissions.includes(id)).length}/3`}
+    ], run:s=>{s.stats.insight+=2;s.routes.integrity+=2;gainXp(s,80);} },
+
+    { id: 'chicken', chapter:2, name: '龍耿的雞腿', description: '把糧食送過雙烏封鎖線；沿途至少清掉十隻山怪。', cost: 60, reward: '根骨 +2、人情 +3、飯盒 ×2', can: s => s.coins >= 60, reason: '需要 60 糖錢', requirements:[
+      {label:'累積擊敗野怪',check:s=>s.metrics.wins>=10,value:s=>`${s.metrics.wins}/10`}
+    ], run: s => { s.coins -= 60; s.stats.vitality += 2; s.routes.ties += 3; addItem(s,'rice',2); } },
+    { id:'gate_watch', chapter:2, name:'糖門守夜三更', description:'在封山期間守完整夜，不能因聊天室一句話離開崗位。', reward:'根骨 +2、自律 +3、經驗 100', can:()=>true, requirements:[
+      {label:'根骨',check:s=>stat(s,'vitality')>=16,value:s=>`${stat(s,'vitality')}/16`}, {label:'累積擊敗野怪',check:s=>s.metrics.wins>=12,value:s=>`${s.metrics.wins}/12`}
+    ], run:s=>{s.stats.vitality+=2;s.routes.discipline+=3;gainXp(s,100);} },
+    { id:'brother_riddle', chapter:2, name:'雙烏口供對照', description:'把兩兄弟互相矛盾的說法整理成一份能看的證詞。', reward:'人情 +3、信義 +3、俠名 +6', can:s=>s.routes.ties>=11, reason:'需要人情 11', requirements:[
+      {label:'已完成第三章前兩帖',check:s=>['chicken','gate_watch'].every(id=>s.completedMissions.includes(id)),value:s=>`${['chicken','gate_watch'].filter(id=>s.completedMissions.includes(id)).length}/2`}
+    ], run:s=>{s.routes.ties+=3;s.routes.integrity+=3;s.fame+=6;} },
+
+    { id: 'identity', chapter:3, name: '我不是高金生', description: '整理官方帳號、發言時間與證據，對抗冒名分身。', reward: '信義 +4、心眼 +2、俠名 +8', can: s => hasItem(s,'ledger'), reason: '需要老蟹帳本', requirements:[
+      {label:'俠名',check:s=>s.fame>=22,value:s=>`${s.fame}/22`}
+    ], run: s => { s.routes.integrity += 4; s.stats.insight += 2; s.fame += 8; } },
+    { id:'archive', chapter:3, name:'平台舊檔案', description:'找回被演算法壓下去的原始影片、時間戳與完整上下文。', reward:'心眼 +2、信義 +3、俠名 +7', can:()=>true, requirements:[
+      {label:'累積開台',check:s=>s.metrics.streams>=6,value:s=>`${s.metrics.streams}/6`}, {label:'心眼',check:s=>stat(s,'insight')>=17,value:s=>`${stat(s,'insight')}/17`}
+    ], run:s=>{s.stats.insight+=2;s.routes.integrity+=3;s.fame+=7;} },
+    { id: 'snow', chapter:3, name: '夏侯芝的雪山帖', description: '在斷腿崖讀完雪山派身法訣，還得親自打贏十九場證明。', reward: '身法 +2、自律 +3、心眼 +1', can: s => stat(s,'insight') >= 18, reason: '需要心眼 18', requirements:[
+      {label:'累積擊敗野怪',check:s=>s.metrics.wins>=19,value:s=>`${s.metrics.wins}/19`}
+    ], run: s => { s.stats.agility += 2; s.stats.insight += 1; s.routes.discipline += 3; } },
+    { id:'true_voice', chapter:3, name:'本尊公開辯證', description:'不刪留言、不換帳號，完整回答三輪質疑。', reward:'信義 +4、俠名 +10、節目 +2', can:s=>s.routes.integrity>=13, reason:'需要信義 13', requirements:[
+      {label:'完成身分證據',check:s=>['identity','archive'].every(id=>s.completedMissions.includes(id)),value:s=>`${['identity','archive'].filter(id=>s.completedMissions.includes(id)).length}/2`}
+    ], run:s=>{s.routes.integrity+=4;s.fame+=10;s.routes.show+=2;} },
+
+    { id:'summit_supplies', chapter:4, name:'十八盤行囊', description:'替登頂準備補給；沒有飯盒與回氣丹就不准出發。', reward:'玄鐵護踝、根骨 +1、經驗 120', can:s=>hasItem(s,'rice')&&hasItem(s,'pill'), reason:'需要飯盒與回氣丹', requirements:[
+      {label:'等級',check:s=>s.level>=15,value:s=>`LV.${s.level}/15`}
+    ], run:s=>{consumeItem(s,'rice');consumeItem(s,'pill');addItem(s,'ankleguard');s.stats.vitality++;gainXp(s,120);} },
+    { id:'seal_council', chapter:4, name:'糖門心印會盟', description:'讓三枚心印各自說出代價，不能只挑最好聽的答案。', reward:'心眼 +2、人情 +3、信義 +3', can:s=>s.vows.length>=3, reason:'需要三枚心印', requirements:[
+      {label:'前四位守關者',check:s=>s.defeatedBosses.length>=4,value:s=>`${s.defeatedBosses.length}/4`}
+    ], run:s=>{s.stats.insight+=2;s.routes.ties+=3;s.routes.integrity+=3;} },
+    { id:'taishan_route', chapter:4, name:'泰山路引', description:'集結十五張主線江湖帖與二十五場實戰，換取最後登山路引。', reward:'泰山路引、俠名 +12、自律 +4', can:()=>true, requirements:[
+      {label:'已完成主線江湖帖',check:s=>s.completedMissions.length>=15,value:s=>`${s.completedMissions.length}/15`}, {label:'累積擊敗野怪',check:s=>s.metrics.wins>=25,value:s=>`${s.metrics.wins}/25`}, {label:'存活日數',check:s=>s.day>=20,value:s=>`第 ${s.day} 日 / 20`}
+    ], run:s=>{s.fame+=12;s.routes.discipline+=4;addItem(s,'taishanpass');} }
   ];
 
   const ENEMIES = {
@@ -200,7 +344,7 @@
 
   const BOSS_CHOICES = {
     sleep: {
-      kicker:'第一回・破曉', title:'棉被燒了，門規還在', text:'糖政銘把出席簿放到你面前。糖汶銨在門外等著送飯，聊天室則一致要求「再睡五分鐘」。你要把第一枚心印刻成什麼？',
+      kicker:'第一章・第四回・破曉', title:'棉被燒了，門規還在', text:'糖政銘把出席簿放到你面前。糖汶銨在門外等著送飯，聊天室則一致要求「再睡五分鐘」。你要把第一枚心印刻成什麼？',
       choices:[
         { label:'把名字簽在出席簿上', sub:'自律 +5、信義 +2｜取得「破曉心印」', apply:s=>{s.routes.discipline+=5;s.routes.integrity+=2;addVow(s,'破曉心印');} },
         { label:'請小師妹每天踹門', sub:'人情 +5、節目 +2｜取得「同伴心印」', apply:s=>{s.routes.ties+=5;s.routes.show+=2;addVow(s,'同伴心印');} },
@@ -208,7 +352,7 @@
       ]
     },
     green: {
-      kicker:'第二回・黃光', title:'有些錯誤不能靠神抽洗掉', text:'綠衣邪僧消散後，銅鏡照出的是你自己的手。山下的人只記得那次失誤，還是要讓下一次選擇替它留下新答案？',
+      kicker:'第二章・第四回・黃光', title:'有些錯誤不能靠神抽洗掉', text:'綠衣邪僧消散後，銅鏡照出的是你自己的手。山下的人只記得那次失誤，還是要讓下一次選擇替它留下新答案？',
       choices:[
         { label:'公開復盤，承認看錯', sub:'信義 +6、心眼 +2｜取得「誠實心印」', apply:s=>{s.routes.integrity+=6;s.stats.insight+=2;addVow(s,'誠實心印');} },
         { label:'閉關一百場再上桌', sub:'自律 +5、力道 +1、身法 +1｜取得「百煉心印」', apply:s=>{s.routes.discipline+=5;s.stats.strength++;s.stats.agility++;addVow(s,'百煉心印');} },
@@ -216,7 +360,7 @@
       ]
     },
     crows: {
-      kicker:'第三回・同門', title:'贏的是糖門，不是單挑王', text:'金銀雙烏倒下時，糖之漢才從山羌屏風後走出來。老蟹的帳、薛喜的軍師圖與小師妹的飯盒，哪一樣才是宗門真正的武器？',
+      kicker:'第三章・第四回・同門', title:'贏的是糖門，不是單挑王', text:'金銀雙烏倒下時，糖之漢才從山羌屏風後走出來。老蟹的帳、薛喜的軍師圖與小師妹的飯盒，哪一樣才是宗門真正的武器？',
       choices:[
         { label:'把戰功分給所有同門', sub:'人情 +7、信義 +3｜取得「同門心印」', apply:s=>{s.routes.ties+=7;s.routes.integrity+=3;addVow(s,'同門心印');} },
         { label:'接下山莊的爛帳', sub:'信義 +6、糖錢 +120｜取得「擔當心印」', apply:s=>{s.routes.integrity+=6;s.coins+=120;addVow(s,'擔當心印');} },
@@ -224,7 +368,7 @@
       ]
     },
     copies: {
-      kicker:'第四回・本真', title:'真假不是靠頭貼決定', text:'一萬個分身同時閉嘴，江湖第一次聽見你的原聲。你可以把這份安靜變成界線、品牌，或下一支最危險的精華。',
+      kicker:'第四章・第四回・本真', title:'真假不是靠頭貼決定', text:'一萬個分身同時閉嘴，江湖第一次聽見你的原聲。你可以把這份安靜變成界線、品牌，或下一支最危險的精華。',
       choices:[
         { label:'建立清楚的官方界線', sub:'信義 +7、人情 +4｜取得「本真心印」', apply:s=>{s.routes.integrity+=7;s.routes.ties+=4;addVow(s,'本真心印');} },
         { label:'把分身納入糖門品牌', sub:'節目 +7、糖錢 +180｜取得「萬象心印」', apply:s=>{s.routes.show+=7;s.coins+=180;addVow(s,'萬象心印');} },
@@ -261,7 +405,7 @@
       routes: { discipline: 1, integrity: 1, ties: 1, show: 1, chaos: 0 },
       hp: 0, qi: 30, stress: 5, coins: 65, fame: 0, ap: 6,
       inventory: { rice: 1 }, owned: [], equipped: { weapon: null, armor: null, charm: null },
-      completedMissions: [], defeatedBosses: [], bossIndex: 0, vows: [], choices: [],
+      completedMissions: [], defeatedBosses: [], bossIndex: 0, chapterStep: 0, vows: [], choices: [],
       achievements: Array.isArray(legacy.achievements) ? [...legacy.achievements] : [],
       reincarnations: legacy.reincarnations || 0,
       legacyStats: legacy.legacyStats || { strength:0, agility:0, vitality:0, insight:0 },
@@ -292,6 +436,7 @@
     s.ended ||= false;
     s.pendingStory ||= null;
     s.pendingFinal ||= false;
+    s.chapterStep = clamp(Number.isFinite(s.chapterStep) ? s.chapterStep : 0, 0, 3);
     s.hp = clamp(s.hp, 0, maxHp(s));
     s.qi = clamp(s.qi, 0, maxQi(s));
     return s;
@@ -403,8 +548,28 @@
   }
 
   function chapter() { return CHAPTERS[Math.min(state.bossIndex, CHAPTERS.length - 1)]; }
+  function currentSection() { const ch=chapter(); return ch.sections[Math.min(state.chapterStep, ch.sections.length-1)]; }
+  function sectionReady(section=currentSection()) { return !section.boss && (section.requirements||[]).every(req=>req.check(state)); }
+  function chapterDisplay(ch=chapter(),section=currentSection()) { return `${ch.number}・${section.number}`; }
   function currentBoss() { return BOSSES[Math.min(state.bossIndex, BOSSES.length - 1)]; }
   function bossReady(boss = currentBoss()) { return boss.requirements.every(req => req.check(state)); }
+
+  function advanceChapterStep() {
+    const ch=chapter(),from=currentSection();
+    if(!sectionReady(from)||state.chapterStep>=ch.sections.length-1)return null;
+    state.chapterStep++;
+    const to=currentSection();
+    addLog('gold',`${ch.number}・${from.number}完成`,from.title,`開啟${to.number}・${to.title}`);
+    return {ch,from,to};
+  }
+
+  function showChapterTransition({ch,from,to}) {
+    openModal({
+      kicker:`${ch.number}・小回目突破`, title:`${from.number}「${from.title}」完成`, closable:false,
+      body:`<div class="chapter-unlock"><div class="chapter-unlock-mark">回</div><p>你完成了本回全部考驗。故事不會直接跳去 Boss，下一段江湖已經開啟。</p><strong>${to.number}・${esc(to.title)}</strong><small>${esc(to.summary)}</small></div>`,
+      actions:[{label:`進入${to.number}`,sub:to.boss?'前三回已完成；守關戰仍須滿足特殊素質。':'查看下一回的新目標與故事。',primary:true,onClick:forceCloseModal}]
+    });
+  }
 
   function titleForState() {
     if (state.defeatedBosses.includes('taishan')) return '泰山瘸俠';
@@ -418,7 +583,7 @@
   function render() {
     if (!state) return;
     state.hp = clamp(state.hp, 0, maxHp(state)); state.qi = clamp(state.qi, 0, maxQi(state)); state.ap = clamp(state.ap, 0, maxAp(state));
-    const ch = chapter();
+    const ch = chapter(), section=currentSection();
     $('player-name-view').textContent = state.name;
     $('title-view').textContent = titleForState();
     $('rebirth-badge').textContent = state.reincarnations ? `${state.reincarnations + 1} 世` : '初世';
@@ -430,8 +595,10 @@
     $('stress-view').textContent = state.stress; $('stress-bar').style.width = `${state.stress}%`;
     $('points-view').textContent = state.points;
     $('coins-view').textContent = state.coins; $('fame-view').textContent = state.fame; $('ap-view').textContent = `${state.ap}/${maxAp(state)}`;
-    $('day-label').textContent = `第 ${state.day} 日`; $('chapter-label').textContent = ch.number;
-    $('chapter-number').textContent = ch.number; $('chapter-title').textContent = ch.title; $('chapter-summary').textContent = ch.summary;
+    $('day-label').textContent = `第 ${state.day} 日`; $('chapter-label').textContent = chapterDisplay(ch,section);
+    $('chapter-number').textContent = chapterDisplay(ch,section); $('chapter-title').textContent = `${ch.title}｜${section.title}`; $('chapter-summary').textContent = section.summary;
+    $('story-button').querySelector('span').textContent = `章內進度 ${state.chapterStep+1} / ${ch.sections.length}`;
+    $('story-button').querySelector('b').textContent = section.boss ? '查看守關條件' : '查看本回目標';
     $('live-toggle').classList.toggle('off', !state.live); $('live-toggle').setAttribute('aria-pressed', String(state.live));
     $('live-toggle').innerHTML = `<span class="live-dot"></span> ${state.live ? '實況中' : '已關台'}`;
 
@@ -537,11 +704,22 @@
     $('boss-preview').innerHTML = `<h3 class="boss-name">${boss.icon} ${boss.name}</h3><p class="boss-tagline">${boss.title}</p><div class="req-list">${boss.requirements.map(req=>`<div class="req ${req.check(state)?'ok':''}"><span>${req.check(state)?'✓':'○'} ${req.label}</span><b>${req.value(state)}</b></div>`).join('')}</div>`;
   }
 
-  function availableMissions() { return MISSIONS.filter(m => m.repeat || !state.completedMissions.includes(m.id)); }
+  function missionReady(m) { return m.can(state) && (m.requirements||[]).every(req=>req.check(state)); }
+  function missionBlocker(m) {
+    const unmet=(m.requirements||[]).find(req=>!req.check(state));
+    return unmet ? `${unmet.label} ${unmet.value(state)}` : (m.can(state)?'條件達成':(m.reason||'條件不足'));
+  }
+  function missionProgressHtml(m) {
+    if(!(m.requirements||[]).length)return '';
+    return `<div class="mission-progress">${m.requirements.map(req=>`<span class="${req.check(state)?'ok':''}">${req.check(state)?'✓':'○'} ${esc(req.label)} <b>${esc(req.value(state))}</b></span>`).join('')}</div>`;
+  }
+  function availableMissions() {
+    return MISSIONS.filter(m => (m.repeat || (m.chapter??0)<=state.bossIndex) && (m.repeat || !state.completedMissions.includes(m.id)));
+  }
   function renderQuestMini() {
-    const list = availableMissions().filter(m => !m.repeat).slice(0,2);
+    const list = availableMissions().filter(m => !m.repeat).sort((a,b)=>Number(missionReady(b))-Number(missionReady(a)) || (b.chapter??0)-(a.chapter??0)).slice(0,2);
     $('quest-mini').innerHTML = list.length
-      ? list.map(m=>`<div class="mini-row ${m.can(state)?'':'locked'}"><i></i><span>${esc(m.name)}${m.can(state)?' · 可承接':' · '+esc(m.reason||'未達條件')}</span></div>`).join('')
+      ? list.map(m=>`<div class="mini-row ${missionReady(m)?'':'locked'}"><i></i><span>${esc(m.name)}${missionReady(m)?' · 可完成':' · '+esc(missionBlocker(m))}</span></div>`).join('')
       : '<div class="mini-row complete"><i></i><span>本世江湖帖已全數完成</span></div>';
   }
   function renderAchievementMini() {
@@ -647,9 +825,12 @@
     $('cooldown').hidden = false; const bar=$('cooldown').querySelector('i'); bar.style.animation='none'; void bar.offsetWidth; bar.style.animation='';
     setTimeout(()=>{
       callback(); busy=false; $('cooldown').hidden=true;
-      checkAchievements(); save(); render();
+      checkAchievements();
+      const transition=state.hp>0&&state.stress<100?advanceChapterStep():null;
+      save(); render();
       if(state.hp<=0) showDeath('你在修行途中倒下，糖門只來得及把遺物寄回北投。');
       else if(state.stress>=100) showDeath('心火攻心。畫面還在直播，人已經先離線。');
+      else if(transition) showChapterTransition(transition);
       else if(state.ap<=0) pushChat('system','系統：今日行動耗盡，可以收功入夜。');
     }, 850);
   }
@@ -663,14 +844,17 @@
       {title:'普通的一晚',text:'沒有炎上、沒有神抽、沒有警察。普通得像一種稀有事件。',delta:'氣血與真氣恢復',fn:()=>{}},
       {title:'高金生路過',text:'一個用你頭貼的人在門外說自己才是本尊。你決定明天再處理。',delta:'俠名 +2 · 混沌 +1',fn:()=>{state.fame+=2;state.routes.chaos++;}}
     ];
-    const e=pick(events);e.fn();addLog('gold',e.title,e.text,e.delta);checkAchievements();save();render();pushChat('system',`系統：第 ${state.day} 日開始，行動力已恢復。`);
+    const e=pick(events);e.fn();addLog('gold',e.title,e.text,e.delta);checkAchievements();const transition=advanceChapterStep();save();render();pushChat('system',`系統：第 ${state.day} 日開始，行動力已恢復。`);if(transition)showChapterTransition(transition);
   }
 
   function openMissions() {
     const list=availableMissions(), story=list.filter(m=>!m.repeat), daily=list.filter(m=>m.repeat);
-    const missionCards = missions => missions.map(m=>`<article class="shop-item"><div class="item-icon">${m.repeat?'日':'帖'}</div><div><h4>${esc(m.name)}${m.repeat?' · 可重複':''}</h4><p>${esc(m.description)}<br>報酬：${esc(m.reward)}</p><button class="buy-button" data-mission="${m.id}" ${m.can(state)&&state.ap>0?'':'disabled'}>${m.can(state)?(state.ap>0?'接下任務':'今日無行動'):(m.reason||'條件不足')}</button></div></article>`).join('');
-    openModal({kicker:'糖門江湖帖',title:'今天替誰收拾問題？',body:`<div class="mission-note">右側只追蹤一次性江湖帖；日常委託完成後仍可再次承接，不是卡住。</div><h3 class="mission-group-title">江湖帖・完成後自追蹤移除</h3><div class="item-grid">${story.length?missionCards(story):'<p class="empty-state">本世江湖帖已全數完成。</p>'}</div><h3 class="mission-group-title">日常委託・可重複、不列入追蹤</h3><div class="item-grid">${missionCards(daily)}</div>`,afterOpen:()=>{
-      document.querySelectorAll('[data-mission]').forEach(btn=>btn.onclick=()=>{const m=MISSIONS.find(x=>x.id===btn.dataset.mission);forceCloseModal();runAction(()=>{m.run(state);state.metrics.missions++;if(!m.repeat&&!state.completedMissions.includes(m.id))state.completedMissions.push(m.id);addLog('good',`${m.repeat?'完成日常':'完成委託'}・${m.name}`,m.description,m.reward);if(m.repeat)toast('日常委託完成；可再次承接，不列入右側追蹤');pushChat('','工具人有料');});});
+    const missionCards = missions => missions.map(m=>{
+      const ready=missionReady(m),chapterTag=m.repeat?'日常':CHAPTERS[m.chapter]?.number||'江湖';
+      return `<article class="shop-item mission-item"><div class="item-icon">${m.repeat?'日':'帖'}</div><div><div class="mission-chapter-tag">${chapterTag}</div><h4>${esc(m.name)}${m.repeat?' · 可重複':''}</h4><p>${esc(m.description)}<br>報酬：${esc(m.reward)}</p>${missionProgressHtml(m)}<button class="buy-button" data-mission="${m.id}" ${ready&&state.ap>0?'':'disabled'}>${ready?(state.ap>0?'完成任務並領取':'今日無行動'):esc(missionBlocker(m))}</button></div></article>`;
+    }).join('');
+    openModal({kicker:'糖門江湖帖',title:'不是按一下就算做完',body:`<div class="mission-note">主線江湖帖必須先完成下方實戰、修行或日數條件，達標後才能花 1 行動交付；完成後會從追蹤移除。日常可重複，但不計入泰山要求的 15 張主線帖。</div><h3 class="mission-group-title">主線江湖帖・已完成 ${state.completedMissions.length} / 15</h3><div class="item-grid">${story.length?missionCards(story):'<p class="empty-state">目前可見的主線江湖帖已完成，推進小回目後會出現新委託。</p>'}</div><h3 class="mission-group-title">日常委託・可重複、不列入追蹤</h3><div class="item-grid">${missionCards(daily)}</div>`,afterOpen:()=>{
+      document.querySelectorAll('[data-mission]').forEach(btn=>btn.onclick=()=>{const m=MISSIONS.find(x=>x.id===btn.dataset.mission);if(!missionReady(m))return;forceCloseModal();runAction(()=>{m.run(state);state.metrics.missions++;if(!m.repeat&&!state.completedMissions.includes(m.id))state.completedMissions.push(m.id);addLog('good',`${m.repeat?'完成日常':'完成江湖帖'}・${m.name}`,m.description,m.reward);if(m.repeat)toast('日常委託完成；可再次承接，不列入右側追蹤');pushChat('','工具人有料');});});
     }});
   }
 
@@ -706,13 +890,15 @@
   }
 
   function openStoryInfo() {
-    const ch=chapter(),boss=currentBoss();
-    openModal({kicker:`${ch.number}・江湖帖`,title:ch.title,body:`<div class="story-box"><h4>本回故事</h4><p>${ch.summary}</p><p>登場：${ch.cast.join('、')}</p></div><div class="requirements-box"><h4>通關方向</h4><p>${ch.goal}</p></div><div class="requirements-box"><h4>守關者・${boss.name}</h4><ul>${boss.requirements.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><p>你可以繼續修行、打怪、解任務或購物；準備好再去斷腿崖挑戰，不會被劇情強迫推進。</p>`});
+    const ch=chapter(),section=currentSection(),boss=currentBoss();
+    const roadmap=ch.sections.map((part,index)=>`<div class="chapter-step ${index<state.chapterStep?'done':index===state.chapterStep?'current':'locked'}"><i>${index<state.chapterStep?'✓':index+1}</i><div><b>${part.number}・${esc(part.title)}</b><small>${index<state.chapterStep?'已完成':index===state.chapterStep?esc(part.summary):'尚未開啟'}</small></div></div>`).join('');
+    const sectionReqs=section.boss?boss.requirements:(section.requirements||[]);
+    openModal({kicker:`${chapterDisplay(ch,section)}・江湖進度`,title:`${ch.title}｜${section.title}`,body:`<div class="chapter-overview"><span>全篇規模</span><b>五大章・二十小回</b><em>目前第 ${state.bossIndex+1} 章，章內 ${state.chapterStep+1} / ${ch.sections.length}</em></div><div class="story-box"><h4>本回故事</h4><p>${esc(section.summary)}</p><p>登場：${ch.cast.join('、')}</p></div><div class="chapter-roadmap">${roadmap}</div><div class="requirements-box"><h4>${section.boss?'守關特殊素質':'本回推進條件'}</h4><ul>${sectionReqs.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><p>${section.boss?'所有特殊素質達標後，才能自行決定何時挑戰守關者。':'條件達成後，再完成一次有效行動就會推進下一小回；每次只推進一回，不會連跳劇情。'}</p>`});
   }
 
   function openBossChallenge() {
     const boss=currentBoss(),ready=bossReady(boss);
-    openModal({kicker:`守關試煉・${chapter().number}`,title:`${boss.icon} ${boss.name}`,body:`<p>${boss.title}</p><div class="requirements-box"><h4>特殊素質門檻</h4><ul>${boss.requirements.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><p>特殊機制：${boss.mechanic}</p>${ready?'<p class="warning">Boss 戰會消耗 1 行動。戰敗死亡只能帶著跨世成就與一項根骨轉生。</p>':'<p class="warning">條件未滿時無法靠運氣硬闖。這是門檻，不是成功率。</p>'}`,actions:[{label:ready?'踢館・開始 Boss 戰':'條件不足',sub:ready?'我已看過招式與行囊':'先去修行、接任務或商城整備',primary:ready,disabled:!ready||state.ap<=0,onClick:()=>{forceCloseModal();startEncounter(true);}},{label:'再準備一下',sub:'保留進度，自己決定何時挑戰',onClick:forceCloseModal}]});
+    openModal({kicker:`守關試煉・${chapterDisplay()}`,title:`${boss.icon} ${boss.name}`,body:`<p>${boss.title}</p><div class="requirements-box"><h4>特殊素質門檻</h4><ul>${boss.requirements.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><p>特殊機制：${boss.mechanic}</p>${ready?'<p class="warning">Boss 戰會消耗 1 行動。戰敗死亡只能帶著跨世成就與一項根骨轉生。</p>':'<p class="warning">必須先完成本章前三個小回目與全部特殊素質，無法靠運氣跳關。</p>'}`,actions:[{label:ready?'踢館・開始 Boss 戰':'條件不足',sub:ready?'我已看過招式與行囊':'先完成小回目、修行、江湖帖與裝備整備',primary:ready,disabled:!ready||state.ap<=0,onClick:()=>{forceCloseModal();startEncounter(true);}},{label:'再準備一下',sub:'保留進度，自己決定何時挑戰',onClick:forceCloseModal}]});
   }
 
   function scaledMonster(monster) {
@@ -843,8 +1029,8 @@
       const xp=gainXp(state,Math.round(foe.xp));state.coins+=foe.reward;state.fame+=1;
       addLog('good',`擊敗・${foe.name}`,'你不是靠按下一頁贏的，是看招、出招和活著離開。',`糖錢 +${foe.reward} · 經驗 +${xp}`);
       checkAchievements();const newAchievements=state.achievements.filter(id=>!achievementBefore.includes(id)).map(id=>ACHIEVEMENTS.find(a=>a.id===id)?.name).filter(Boolean);
-      save();render();pushChat('hype',state.hp<=10?'一滴血！這能贏？':'打得好！');
-      showBattleResult({foe,xp,coins:foe.reward,levelBefore,newAchievements});return;
+      const transition=advanceChapterStep();save();render();pushChat('hype',state.hp<=10?'一滴血！這能贏？':'打得好！');
+      showBattleResult({foe,xp,coins:foe.reward,levelBefore,newAchievements,next:transition?()=>showChapterTransition(transition):null});return;
     }
     const levelBefore=state.level, achievementBefore=[...state.achievements];
     if(b.damageTaken===0)state.metrics.noHitBoss++;
@@ -864,8 +1050,8 @@
   function openBossStory(id) {
     const scene=BOSS_CHOICES[id];
     openModal({kicker:scene.kicker,title:scene.title,body:`<p>${scene.text}</p><p class="warning">這個選擇會刻進泰山最後一戰與結局，不可在本世重選。</p>`,closable:false,actions:scene.choices.map(choice=>({label:choice.label,sub:choice.sub,onClick:()=>{
-      choice.apply(state);state.choices.push({boss:id,choice:choice.label});state.pendingStory=null;state.bossIndex++;state.location='outer';state.ap=maxAp(state);state.day++;state.hp=maxHp(state);state.qi=maxQi(state);state.stress=Math.max(0,state.stress-18);
-      addLog('gold',`故事選擇・${choice.label}`,scene.title,choice.sub);checkAchievements();save();forceCloseModal();render();pushChat('system',`系統：${chapter().number}「${chapter().title}」已開啟。`);
+      choice.apply(state);state.choices.push({boss:id,choice:choice.label});state.pendingStory=null;state.bossIndex++;state.chapterStep=0;state.location='outer';state.ap=maxAp(state);state.day++;state.hp=maxHp(state);state.qi=maxQi(state);state.stress=Math.max(0,state.stress-18);
+      addLog('gold',`故事選擇・${choice.label}`,scene.title,choice.sub);checkAchievements();save();forceCloseModal();render();pushChat('system',`系統：${chapter().number}「${chapter().title}」已開啟，共有四個小回目。`);
     }}))});
   }
 
@@ -943,7 +1129,7 @@
     if(state.pendingStory){openBossStory(state.pendingStory);return;}
     if(state.pendingFinal){openFinalChoice();return;}
     if(!showTutorial)return;
-    openModal({kicker:'序章・糖門招生',title:'不是每次失敗都叫大中計',body:`<p>${esc(state.name)}，糖門不問你過去遲到幾次、按錯幾張牌，只問一件事：下一招要不要自己選？</p><div class="story-box"><h4>遊玩循環</h4><p>每一天有有限行動。到不同場域修行、打怪、接任務、開台與購物；Boss 條件達成後，再自行決定何時去斷腿崖。</p></div><p>戰鬥時先看敵人意圖：紅光要防禦、紫光要看破。死亡後必須轉生，但能永久帶走一項根骨與所有成就。</p>`,actions:[{label:'我自己選路',sub:'開始第一天的糖門修行',primary:true,onClick:forceCloseModal}]});
+    openModal({kicker:'序章・糖門招生',title:'不是每次失敗都叫大中計',body:`<p>${esc(state.name)}，糖門不問你過去遲到幾次、按錯幾張牌，只問一件事：下一招要不要自己選？</p><div class="story-box"><h4>五大章・二十小回</h4><p>每一大章包含三回養成與故事考驗，第四回才是守關 Boss。修行、打怪、存活日數與指定江湖帖都會成為推進條件，無法直接跳關。</p></div><p>每一天有有限行動。戰鬥時先看敵人意圖：紅光要防禦、紫光要看破。死亡後必須轉生，但能永久帶走一項根骨與所有成就。</p>`,actions:[{label:'我自己選路',sub:'從第一章・第一回開始糖門修行',primary:true,onClick:forceCloseModal}]});
   }
 
   document.querySelectorAll('.origin').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.origin').forEach(x=>x.classList.remove('active'));btn.classList.add('active');selectedOrigin=btn.dataset.origin;});
@@ -970,6 +1156,6 @@
   });
 
   const saved=loadSave();$('continue-game').hidden=!saved;
-  if(saved)$('continue-game').textContent=`繼續第 ${saved.day} 日・${CHAPTERS[Math.min(saved.bossIndex,4)].title}`;
+  if(saved){const savedChapter=CHAPTERS[Math.min(saved.bossIndex,4)],savedSection=savedChapter.sections[Math.min(saved.chapterStep||0,3)];$('continue-game').textContent=`繼續第 ${saved.day} 日・${savedChapter.number}${savedSection.number}`;}
 
 })();
