@@ -7,7 +7,7 @@
   <meta name="author" content="吉米狗">
   <meta name="description" content="糖門單角色養成 RPG：修行、打怪、任務、商城、Boss 試煉、死亡轉生與多重結局。">
   <title>瘸俠傳：糖門再起｜羅正男的一生</title>
-  <link rel="stylesheet" href="styles.css?v=4.5.0">
+  <link rel="stylesheet" href="styles.css?v=4.6.0">
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -39,13 +39,13 @@
         <fieldset>
           <legend>開局性格</legend>
           <button type="button" class="origin active" data-origin="talent">
-            <b>六天傳說</b><small>牌感出眾，心眼 +2；但自律偏低</small>
+            <b>六天傳說</b><small>心眼 +2、自律 -1、混沌 +1；看破詭計能繼續成長</small>
           </button>
           <button type="button" class="origin" data-origin="local">
-            <b>大中計體質</b><small>根骨 +2，瀕死逆轉時更有節目</small>
+            <b>大中計體質</b><small>根骨 +2、氣血上限 +8、節目 +1；瀕死時輸出 +40%</small>
           </button>
           <button type="button" class="origin" data-origin="promise">
-            <b>明天一定</b><small>俠名與糖錢較多，承諾會反噬</small>
+            <b>明天一定</b><small>糖錢 +70、俠名 +5、節目 +2、信義歸零；每天必須開台</small>
           </button>
         </fieldset>
 
@@ -86,6 +86,7 @@
           </div>
           <div class="character-name"><h2 id="player-name-view">羅正男</h2><p id="title-view">糖門外院弟子</p></div>
           <div class="level-row"><b id="level-view">LV. 1</b><div class="xp-track"><i id="xp-bar"></i></div><small id="xp-view">0 / 60</small></div>
+          <div id="origin-build" class="origin-build" title="開局被動"><i>眼</i><span><b>六天傳說</b><small>看破成長 0/3</small></span></div>
         </div>
 
         <div class="resource-stack">
@@ -192,6 +193,6 @@
       <span class="action-copy"><b></b><small></small></span><span class="action-cost"></span>
     </button>
   </template>
-  <script src="game.js?v=4.5.0"></script>
+  <script src="game.js?v=4.6.0"></script>
 </body>
 </html>
