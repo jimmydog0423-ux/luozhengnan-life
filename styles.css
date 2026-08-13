@@ -50,6 +50,11 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outl
 .feature-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 26px 0; }
 .feature-row span { border: 1px solid rgba(217,164,65,.35); padding: 5px 11px; color: var(--gold); font-size: 11px; font-weight: 700; letter-spacing: .08em; }
 blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--red); color: #928674; font-family: var(--serif); }
+.creator-promo { width: min(520px,100%); margin-top: 18px; padding: 13px 16px; display: grid; gap: 3px; border: 1px solid rgba(217,164,65,.3); background: linear-gradient(120deg,rgba(217,164,65,.09),rgba(190,48,40,.05)); color: inherit; text-decoration: none; transition: border-color .18s ease, transform .18s ease, background .18s ease; }
+.creator-promo:hover { border-color: var(--gold); background: linear-gradient(120deg,rgba(217,164,65,.15),rgba(190,48,40,.08)); transform: translateY(-2px); }
+.creator-promo span { color: var(--gold); font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+.creator-promo b { color: var(--cream); font: 800 15px/1.5 var(--serif); }
+.creator-promo small { color: #8f8371; font-size: 11px; line-height: 1.5; }
 .start-card { background: linear-gradient(145deg, rgba(37,27,24,.96), rgba(17,12,11,.98)); border: 1px solid rgba(232,221,194,.18); box-shadow: var(--shadow); padding: clamp(24px,4vw,42px); position: relative; }
 .start-card::before { content: ""; position: absolute; inset: 8px; border: 1px solid rgba(217,164,65,.08); pointer-events: none; }
 .card-kicker { color: var(--red); font-size: 10px; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 9px; }
@@ -341,6 +346,16 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .boss-rule-preview.blocked, .boss-rule-box.blocked { border-color: rgba(190,48,40,.55); background: rgba(190,48,40,.1); }
 .boss-rule-preview.blocked h4, .boss-rule-preview.blocked strong, .boss-rule-box.blocked > b, .boss-rule-box.blocked strong { color: #ef7b72; }
 .boss-rule-box > b { display: block; margin-bottom: 5px; color: var(--gold); letter-spacing: .06em; }
+.elite-rule-box { border-color: rgba(190,48,40,.4); background: rgba(190,48,40,.08); }
+.elite-rule-box > b { color: #ef7b72; }
+.boss-clue, .goatless-danger { margin: 12px 0; padding: 14px; border: 1px solid rgba(190,48,40,.48); background: rgba(190,48,40,.09); }
+.boss-clue b, .goatless-danger strong { display: block; color: #ef7b72; }
+.boss-clue p, .goatless-danger p { margin: 6px 0 0; color: #c8bba4; line-height: 1.7; }
+.boss-clue small { display: block; margin-top: 7px; color: #8f8371; }
+.death-clue { box-shadow: inset 3px 0 #be3028; }
+.event-result { line-height: 1.7; }
+.event-result > strong { color: var(--gold); }
+.danger-notice { border-color: rgba(190,48,40,.42); background: rgba(190,48,40,.09); color: #ef7b72; }
 .warning { color: #e07870; border-left: 2px solid var(--red); padding-left: 10px; }
 .chapter-overview { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 12px; margin-bottom: 14px; padding: 12px 14px; border: 1px solid rgba(217,164,65,.25); background: rgba(217,164,65,.06); }
 .chapter-overview span { color: #8f8472; font-size: 10px; }

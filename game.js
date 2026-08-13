@@ -18,7 +18,7 @@
     insight: '每 1 點使真氣上限 +3、提高看破反擊；達 10 可看清詭計。'
   };
   const ROUTE_NAMES = { discipline: '自律', integrity: '信義', ties: '人情', show: '節目', chaos: '混沌' };
-  const METRIC_DEFAULTS = { actions:0, training:0, wins:0, missions:0, streams:0, purchases:0, oneHpWins:0, noHitBoss:0, masterSessions:0, mentorMeals:0, brotherTraining:0, mountainGoat:0 };
+  const METRIC_DEFAULTS = { actions:0, training:0, wins:0, missions:0, streams:0, purchases:0, oneHpWins:0, noHitBoss:0, masterSessions:0, mentorMeals:0, brotherTraining:0, mountainGoat:0, eliteWins:0, forcedWins:0, hiddenEvents:0, streamIncidents:0 };
   const MOUNTAIN_GOAT_RATE = .00001;
 
   const LOCATIONS = {
@@ -45,7 +45,7 @@
     market: {
       name: '叉叉市集', region: '江湖 · 商路', danger: 1, stamp: '買', icon: '市',
       description: '武器、飯盒、銅鏡和真假不明的流量法器都能買到。老闆說概不賒帳。',
-      effects: ['商城開放', '裝備整備', '奇聞交換'], unlock: s => s.bossIndex >= 1
+      effects: ['商城開放', '裝備整備', '奇聞交換'], unlock: s => s.level >= 3
     },
     cliff: {
       name: '斷腿崖', region: '糖門 · 登山口', danger: 3, stamp: '戰', icon: '崖',
@@ -163,6 +163,7 @@
       combatRule: '力道達 10 或身法達 9，才能對棉被精造成傷害；否則所有攻勢都是 0。紅光重擊穿透 75% 防禦，命中後再破甲 2 次。',
       combatCheck: s => stat(s,'strength') >= 10 || stat(s,'agility') >= 9,
       combatValue: s => `力道 ${stat(s,'strength')}/10・身法 ${stat(s,'agility')}/9（擇一）`, reward: '破曉腰牌',
+      requiredItem:'clock', itemHint:'叉叉市集有個賣舊鐘的攤販，聲稱那只鐘連死人都叫得醒。',
       requirements: [
         { label: '等級達 4', check: s => s.level >= 4, value: s => `LV.${s.level}` },
         { label: '自律達 6', check: s => s.routes.discipline >= 6, value: s => `${s.routes.discipline}/6` },
@@ -173,9 +174,9 @@
       id: 'green', name: '綠衣邪僧・拉札', icon: '🟢', title: '亮了就按的致命誘惑', hp: 142, attack: 17,
       mechanic: '黃光法衣常駐免傷，必須先在紫色詭計時成功「看破」才能打開破綻。',
       combatRule: '法衣閉合時所有傷害為 0。對紫光使用「看破」後，當回合與接下來 2 回合可正常造成傷害；詭計另穿透 45% 防禦。', reward: '黃光心印',
+      requiredItem:'mirror', itemHint:'糖偉健那張「四十包零傳說」江湖帖，似乎藏著一面能辨認黃光的銅鏡。',
       requirements: [
         { label: '心眼達 16', check: s => stat(s, 'insight') >= 16, value: s => `${stat(s,'insight')}/16` },
-        { label: '持有驗牌銅鏡', check: s => hasItem(s, 'mirror'), value: s => hasItem(s,'mirror') ? '已持有' : '未取得' },
         { label: '完成本章前三回', check: s => s.chapterStep >= 3, value: s => `${s.chapterStep}/3` }
       ]
     },
@@ -183,6 +184,7 @@
       id: 'crows', name: '金烏上豬・銀烏下豬', icon: '🐗', title: '張家雙王的兄弟連擊', hp: 205, attack: 22,
       mechanic: '雙王陣會互相代擋，必須用糖門滑劍破陣；每三回合還會發動無視防禦的夾擊。',
       combatRule: '陣形閉合時所有傷害為 0。「糖門滑劍」可破陣，當回合與接下來 2 回合可輸出。每第 3 回合的雙烏夾擊造成至少 18% 最大氣血傷害，防禦只能減半。', reward: '同門心印',
+      requiredItem:'boneblade', itemHint:'糖虧皮教完第三招後留下的那把斷腿骨劍，可能是切開雙王陣的媒介。',
       requirements: [
         { label: '根骨達 20', check: s => stat(s, 'vitality') >= 20, value: s => `${stat(s,'vitality')}/20` },
         { label: '人情達 14', check: s => s.routes.ties >= 14, value: s => `${s.routes.ties}/14` },
@@ -193,6 +195,7 @@
       id: 'copies', name: '萬面分身・演算法', icon: '👥', title: '每一張臉都說自己是本尊', hp: 268, attack: 27,
       mechanic: '演算法會記住你上一個命中的招式；連續使用同一種輸出，第二次起傷害歸零。',
       combatRule: '普通攻擊、糖門滑劍與看破反擊必須交替使用；重複上一個命中招式會被分身完整複製，傷害變成 0。詭計穿透 60% 防禦。', reward: '本真心印',
+      requiredItem:'ledger', itemHint:'起丘山莊的蟹老闆留了一本帳，真實的時間與金流能讓分身露出破綻。',
       requirements: [
         { label: '俠名達 35', check: s => s.fame >= 35, value: s => `${s.fame}/35` },
         { label: '信義達 16', check: s => s.routes.integrity >= 16, value: s => `${s.routes.integrity}/16` },
@@ -205,6 +208,7 @@
       combatRule: '四維最高值與最低值相差不得超過 12，否則所有傷害為 0。每第 3 回合至少造成 20% 最大氣血傷害，防禦只能減少 35%；心印仍會提高你的輸出。',
       combatCheck: s => Math.max(...Object.keys(STAT_NAMES).map(k=>stat(s,k)))-Math.min(...Object.keys(STAT_NAMES).map(k=>stat(s,k))) <= 12,
       combatValue: s => { const values=Object.keys(STAT_NAMES).map(k=>stat(s,k));return `目前差距 ${Math.max(...values)-Math.min(...values)}/12`; }, reward: '自己的結局',
+      requiredItem:'taishanpass', itemHint:'集齊十五張主線江湖帖、二十五場實戰並活到第二十日，才能換到真正的泰山路引。',
       requirements: [
         { label: '等級達 17', check: s => s.level >= 17, value: s => `LV.${s.level}` },
         { label: '取得至少三枚心印', check: s => s.vows.length >= 3, value: s => `${s.vows.length}/3` },
@@ -218,7 +222,7 @@
   const ITEMS = {
     rice: { name: '米特飯盒', icon: '🍱', kind: 'consumable', price: 28, description: '戰鬥中恢復 38 氣血。' },
     pill: { name: '糖門回氣丹', icon: '🟡', kind: 'consumable', price: 42, description: '戰鬥中恢復 24 真氣。' },
-    mirror: { name: '驗牌銅鏡', icon: '🪞', kind: 'key', price: 160, description: '確認核心卡有沒有亮黃。綠衣邪僧的必要物。' },
+    mirror: { name: '驗牌銅鏡', icon: '🪞', kind: 'key', price: 160, description: '確認核心卡有沒有亮黃。真正的用途得在江湖裡自己試。' },
     clock: { name: '破曉鬧鐘', icon: '⏰', kind: 'charm', price: 90, description: '每日行動 +1，自律修行更穩定。', bonuses: { maxAp: 1 } },
     boneblade: { name: '斷腿骨劍', icon: '🗡️', kind: 'weapon', price: 120, description: '攻擊 +7。名稱很痛，傷害也很痛。', bonuses: { attack: 7 } },
     ankleguard: { name: '玄鐵護踝', icon: '🥾', kind: 'armor', price: 145, description: '防禦 +5、氣血上限 +24。', bonuses: { defense: 5, maxHp: 24 } },
@@ -228,6 +232,14 @@
     bondseal: { name: '同門心印', icon: '🤝', kind: 'relic', price: 0, description: '一個人很會打，不等於能走到最後。' },
     trueseal: { name: '本真心印', icon: '🪪', kind: 'relic', price: 0, description: '你說過的話，終於能替你證明你是誰。' },
     taishanpass: { name: '泰山路引', icon: '🗺️', kind: 'key', price: 0, description: '十五張江湖帖與二十五場實戰換來的登頂資格。' }
+  };
+
+  const MARTIAL_ARTS = {
+    sugar_slash:{name:'糖門滑劍',icon:'🍬',qi:10,price:0,description:'糖門入門劍技。能破架，也能切開部分陣勢。',unlocked:()=>true},
+    limp_whirl:{name:'斷腿旋風斬',icon:'🩼',qi:16,price:135,description:'以身法帶動連斬；威力高但反震會損失 6% 最大氣血。',unlocked:s=>s.level>=5&&stat(s,'agility')>=10,requirement:s=>`需要 LV.5、身法 10｜目前 LV.${s.level}、身法 ${stat(s,'agility')}`},
+    iron_body:{name:'糖門鐵骨功',icon:'🪨',qi:12,price:150,description:'以根骨震傷對手，同時架起兩回合護體。',unlocked:s=>stat(s,'vitality')>=14,requirement:s=>`需要根骨 14｜目前 ${stat(s,'vitality')}`},
+    yellow_flash:{name:'黃光照破',icon:'🟨',qi:18,price:190,description:'以心眼反照虛招；撞上詭計時能免去敵方回合。',unlocked:s=>stat(s,'insight')>=15&&hasItem(s,'mirror'),requirement:s=>`需要心眼 15 與一面能辨黃光的鏡子`},
+    forbidden:{name:'盜版易筋經・逆頁',icon:'📕',qi:24,price:0,secret:true,description:'來路不明的禁招。威力極高，每次施展都會累積大量心火。',unlocked:()=>false}
   };
 
   const MASTER_WORKOUTS = [
@@ -359,6 +371,14 @@
 
   const MONSTER_STYLE_NAMES = { swift:'迅捷型', trick:'詭計型', guard:'防守型', brute:'重擊型' };
 
+  const FORCED_EVENTS = [
+    {id:'deadline4',day:4,title:'第四日・催台鬼叩門',text:'你拖了三天還沒交出進度，催台鬼直接撞進外院。這場不能逃。',foe:{name:'催台鬼差',icon:'📣',hp:78,attack:13,reward:52,xp:46,style:'swift',elite:true,flavor:'越拖延，牠的追擊越快。'}},
+    {id:'deadline8',day:8,title:'第八日・平台審查官',text:'平台把你的修行進度判定為低品質內容，派審查官當場驗收。',foe:{name:'平台審查官',icon:'👁️',hp:118,attack:18,reward:82,xp:70,style:'trick',elite:true,flavor:'牠會把不專心的每一招標成無效內容。'}},
+    {id:'deadline12',day:12,title:'第十二日・雙烏先遣軍',text:'封山時間已到，先遣軍不管你練完沒有，直接踏破山門。',foe:{name:'雙烏豬騎',icon:'🐗',hp:166,attack:24,reward:116,xp:92,style:'brute',elite:true,flavor:'這不是正式守關戰，只是戰帖。'}},
+    {id:'deadline16',day:16,title:'第十六日・萬面追殺令',text:'分身發現你還沒完成證據鏈，決定先把本尊從搜尋結果抹掉。',foe:{name:'萬面刪除者',icon:'🫥',hp:218,attack:29,reward:155,xp:118,style:'guard',elite:true,flavor:'牠會把你的重複操作變成自己的養分。'}},
+    {id:'deadline20',day:20,title:'第二十日・泰山落石劫',text:'登頂期限已到。山路自行封閉，巨靈從石階中站起來清場。',foe:{name:'十八盤鎮山巨靈',icon:'🗿',hp:286,attack:35,reward:220,xp:155,style:'brute',elite:true,flavor:'不夠強的人，連最後一戰的門都看不到。'}}
+  ];
+
   const ACHIEVEMENTS = [
     { id:'first', icon:'👣', name:'不是跑馬燈', description:'完成第一次自主行動。', test:s=>s.metrics.actions>=1 },
     { id:'train10', icon:'🥋', name:'有練真的有差', description:'修行 10 次。', test:s=>s.metrics.training>=10 },
@@ -371,6 +391,10 @@
     { id:'rich', icon:'🪙', name:'不是免費仔', description:'同時持有 500 糖錢。', test:s=>s.coins>=500 },
     { id:'redhot', icon:'🔥', name:'紅溫但還活著', description:'心火達到 80。', test:s=>s.stress>=80 },
     { id:'onehp', icon:'🩸', name:'差一點大中計', description:'以 10 點以下氣血贏得戰鬥。', test:s=>s.metrics.oneHpWins>=1 },
+    { id:'martial3', icon:'📕', name:'不只會普通攻擊', description:'同一世學會至少三門武學。', test:s=>s.martialArts.length>=3 },
+    { id:'elite5', icon:'👹', name:'精英解題班', description:'破解並擊敗 5 名精英怪。', test:s=>s.metrics.eliteWins>=5 },
+    { id:'deadline', icon:'⏳', name:'時限內還活著', description:'贏下第一次無法逃跑的時限事件。', test:s=>s.metrics.forcedWins>=1 },
+    { id:'blackmarket', icon:'🕳️', name:'便宜真的有理由', description:'觸發一次低機率隱藏江湖事件。', test:s=>s.metrics.hiddenEvents>=1 },
     { id:'untouched', icon:'🪶', name:'無傷不是外掛', description:'無傷擊敗一名 Boss。', test:s=>s.metrics.noHitBoss>=1 },
     { id:'sleep', icon:'⏰', name:'今天真的有開', description:'擊敗睡魔・棉被精。', test:s=>s.defeatedBosses.includes('sleep') },
     { id:'green', icon:'🟨', name:'它有亮黃', description:'擊敗綠衣邪僧。', test:s=>s.defeatedBosses.includes('green') },
@@ -450,6 +474,8 @@
       reincarnations: legacy.reincarnations || 0,
       legacyStats: legacy.legacyStats || { strength:0, agility:0, vitality:0, insight:0 },
       metrics: { ...METRIC_DEFAULTS }, trainingPartners: [], mealsEaten: [],
+      martialArts:['sugar_slash'], companionBond:{krapy:0,toyz:0,eason:0,overload:0,nl:0}, dayActions:0,
+      triggeredEvents:[], bossItemHints:Array.isArray(legacy.bossItemHints)?[...legacy.bossItemHints]:[], streamBanDays:0, streamBanSetDay:0, delayedThreat:null,
       log: [], live: true, fateDay: 0, buff: null, ended: false, finalChoice: null,
       pendingStory: null, pendingFinal: false
     };
@@ -474,6 +500,15 @@
     s.metrics = { ...METRIC_DEFAULTS, ...(s.metrics||{}) };
     s.trainingPartners = Array.isArray(s.trainingPartners) ? s.trainingPartners : [];
     s.mealsEaten = Array.isArray(s.mealsEaten) ? s.mealsEaten : [];
+    s.martialArts = Array.isArray(s.martialArts) ? s.martialArts : ['sugar_slash'];
+    if(!s.martialArts.includes('sugar_slash'))s.martialArts.unshift('sugar_slash');
+    s.companionBond = {krapy:0,toyz:0,eason:0,overload:0,nl:0,...(s.companionBond||{})};
+    s.triggeredEvents = Array.isArray(s.triggeredEvents) ? s.triggeredEvents : [];
+    s.bossItemHints = Array.isArray(s.bossItemHints) ? s.bossItemHints : [];
+    s.streamBanDays = Number.isFinite(s.streamBanDays) ? s.streamBanDays : 0;
+    s.streamBanSetDay = Number.isFinite(s.streamBanSetDay) ? s.streamBanSetDay : 0;
+    s.dayActions = Number.isFinite(s.dayActions) ? s.dayActions : 0;
+    s.delayedThreat ||= null;
     s.buff ||= null;
     s.ended ||= false;
     s.pendingStory ||= null;
@@ -702,7 +737,9 @@
         {icon:'帖',name:'承接任務',desc:'山莊任務能解鎖關鍵道具。',cost:'依任務',fn:openMissions}, commonEnd
       ],
       market: [
-        {icon:'買',name:'進入商城',desc:'購買丹藥、兵器、護具與 Boss 關鍵物。',cost:'不耗行動',fn:openShop},
+        {icon:'買',name:'進入商城',desc:'購買丹藥、兵器、護具與第一章的可疑鬧鐘。',cost:'不耗行動',fn:openShop},
+        {icon:'武',name:'江湖武學鋪',desc:'花糖錢拜師學招；習得後可在戰鬥中主動施展。',cost:'不耗行動',fn:openMartialHall},
+        {icon:'黑',name:'黑市暗巷',desc:'價格很便宜，貨源、後果與巡捕都不保證。',cost:'依交易',fn:openBlackMarket},
         {icon:'聞',name:'打聽奇聞',desc:'可能撿到便宜，也可能被當盤子。',cost:'行動 -1',fn:marketRumor},
         {icon:'獵',name:'市集緝怪',desc:'選擇一名市集惡徒，賺取較多糖錢。',cost:'選擇後行動 -1',fn:openWildEncounter},
         {icon:'囊',name:'整理行囊',desc:'使用消耗品或切換已購裝備。',cost:'不耗行動',fn:openInventory}, commonEnd
@@ -744,7 +781,8 @@
       $('boss-progress').textContent = '5 / 5'; $('boss-preview').innerHTML = '<h3 class="boss-name">泰山已破</h3><p class="boss-tagline">結局不只一種。下一世仍能重新選擇。</p>'; return;
     }
     $('boss-progress').textContent = `${state.defeatedBosses.length} / 5`;
-    $('boss-preview').innerHTML = `<h3 class="boss-name">${boss.icon} ${boss.name}</h3><p class="boss-tagline">${boss.title}</p><div class="req-list">${boss.requirements.map(req=>`<div class="req ${req.check(state)?'ok':''}"><span>${req.check(state)?'✓':'○'} ${req.label}</span><b>${req.value(state)}</b></div>`).join('')}${boss.combatCheck?`<div class="req combat ${boss.combatCheck(state)?'ok':'blocked'}"><span>${boss.combatCheck(state)?'✓':'!'} 戰中輸出檢定</span><b>${esc(boss.combatValue(state))}</b></div>`:''}</div>`;
+    const learnedHint=state.bossItemHints.includes(boss.id)?`<div class="req combat blocked"><span>前世遺留線索</span><b>${esc(boss.itemHint)}</b></div>`:'';
+    $('boss-preview').innerHTML = `<h3 class="boss-name">${boss.icon} ${boss.name}</h3><p class="boss-tagline">${boss.title}</p><div class="req-list">${boss.requirements.map(req=>`<div class="req ${req.check(state)?'ok':''}"><span>${req.check(state)?'✓':'○'} ${req.label}</span><b>${req.value(state)}</b></div>`).join('')}<div class="req combat"><span>？ 守關異象</span><b>破解方式尚未明朗</b></div>${learnedHint}</div>`;
   }
 
   function missionReady(m) { return m.can(state) && (m.requirements||[]).every(req=>req.check(state)); }
@@ -808,7 +846,8 @@
   }
 
   function clanCard({ id, icon, role='', name, title='', focus='', effect='' }, type) {
-    return `<button class="clan-card" data-clan-${type}="${id}" ${state.ap>0?'':'disabled'}><span class="clan-avatar">${icon}</span><span class="clan-card-copy">${role?`<small>${esc(role)}</small>`:''}<b>${esc(name)}</b>${title?`<em>${esc(title)}</em>`:''}<span>${esc(focus||effect)}</span></span><i>行動 -1</i></button>`;
+    const bond=type==='partner'?`友好 ${state.companionBond[id]||0} · `:'';
+    return `<button class="clan-card" data-clan-${type}="${id}" ${state.ap>0?'':'disabled'}><span class="clan-avatar">${icon}</span><span class="clan-card-copy">${role?`<small>${esc(role)}</small>`:''}<b>${esc(name)}</b>${title?`<em>${esc(title)}</em>`:''}<span>${esc(focus||effect)}</span></span><i>${bond}行動 -1</i></button>`;
   }
 
   function openClanTraining() {
@@ -914,7 +953,7 @@
       } else {
         const key=Math.random()<.5?'agility':'insight';state.stats[key]++;state.routes.ties+=2;state.stress=clamp(state.stress-10,0,100);const heal=Math.min(14,maxHp(state)-state.hp);state.hp=Math.min(maxHp(state),state.hp+14);xp=gainXp(state,24);delta=`${STAT_NAMES[key]} +1 · 人情 +2 · 心火 -10 · 氣血 +${heal} · 經驗 +${xp}`;note='小師妹沒有放水，只是在你跌倒時真的有伸手。';
       }
-      state.metrics.training++;state.metrics.brotherTraining++;if(!state.trainingPartners.includes(id))state.trainingPartners.push(id);
+      state.metrics.training++;state.metrics.brotherTraining++;state.companionBond[id]=(state.companionBond[id]||0)+1;if(!state.trainingPartners.includes(id))state.trainingPartners.push(id);
       addLog('good',`${partner.role}互動・${partner.title}`,partner.quote,delta);pushChat('',id==='overload'?'搬這個到底有沒有勞健保':'糖門團練，感情有料');
       return {result:{kicker:`${partner.role}・互動訓練結算`,title:`${partner.name}｜${partner.title}`,icon:partner.icon,quote:partner.quote,delta,note:`${note}・同門圖鑑 ${state.trainingPartners.length}/${BROTHER_SESSIONS.length}`}};
     });
@@ -939,13 +978,20 @@
     runAction(()=>{state.stats.insight++;state.routes.discipline+=2;state.stress=clamp(state.stress+3,0,100);gainXp(state,20);addLog('gold','關台復盤','這次先確認黃光，也確認自己到底答應過什麼。','心眼 +1 · 自律 +2 · 經驗 +20');});
   }
   function streamAction() {
+    if(state.streamBanDays>0)return toast(`頻道仍被停權 ${state.streamBanDays} 日，今天不能開台`);
     runAction(()=>{
       const bonus = 1 + gearBonus(state,'stream'); const coins=Math.round(42*1.35*bonus+roll(0,25));
-      state.coins+=coins;state.fame+=roll(2,5);state.routes.show+=2;state.metrics.streams++;
+      state.coins+=coins;state.fame+=roll(2,5);state.routes.show+=2;state.metrics.streams++;state.metrics.streamIncidents++;
       const extraStress=state.equipped.charm==='mic'?2:0;state.stress=clamp(state.stress+9+extraStress,0,100);
-      if(Math.random()<.3){state.routes.chaos+=2;addLog('bad','聊天室突然暴走','一個無害話題被剪成跨台戰爭，但觀看人數確實變多。',`糖錢 +${coins} · 混沌 +2 · 心火 +${9+extraStress}`);}
-      else addLog('good','水蛇洞準時開台','你真的在公告時間出現，聊天室一度不知道該刷什麼。',`糖錢 +${coins} · 俠名上升 · 節目 +2`);
-      pushChat('hype',pick(['這台居然準時？','大台！大台！','免費仔說話！','斗內了，做效果']));
+      const incident=pick([
+        {title:'水蛇洞準時開台',text:'你真的在公告時間出現，聊天室一度不知道該刷什麼。',good:true,run:()=>{}},
+        {title:'哈梗寄來存證信函',text:'昨晚那句玩笑被剪成二十秒短片。信封比斗內還早到。',run:()=>{const fee=Math.min(state.coins,roll(35,80));state.coins-=fee;state.routes.integrity=Math.max(0,state.routes.integrity-1);state.stress=clamp(state.stress+12,0,100);}},
+        {title:'惡意檢舉潮',text:'開台十分鐘後畫面被平台切斷，頻道進入兩日審查。',run:()=>{state.streamBanDays=2;state.streamBanSetDay=state.day;state.fame=Math.max(0,state.fame-3);state.routes.chaos+=3;}},
+        {title:'標題涉嫌誤導',text:'平台撤掉本場收益，還寄來一封沒有人看得懂的規範通知。',run:()=>{state.coins=Math.max(0,state.coins-coins);state.routes.integrity=Math.max(0,state.routes.integrity-2);}},
+        {title:'精華意外爆紅',text:'一段完全沒設計的摔倒畫面被推上首頁。',good:true,run:()=>{state.coins+=90;state.fame+=8;state.routes.show+=3;}}
+      ]);incident.run();
+      addLog(incident.good?'good':'bad',incident.title,incident.text,incident.good?`糖錢變化已結算 · 節目上升`:'官司、檢舉或平台處分已生效');
+      pushChat(incident.good?'hype':'',incident.good?'這段要剪！':'律師函有料？');
     });
   }
   function memeAlchemy() {
@@ -969,8 +1015,10 @@
   }
   function cliffMeditate() {
     runAction(()=>{
-      if(Math.random()<.68){const key=pick(Object.keys(STAT_NAMES));state.stats[key]++;const xp=gainXp(state,38);state.routes.discipline++;addLog('good','斷腿崖悟道','山風很冷，但你真的想通了一招。',`${STAT_NAMES[key]} +1 · 經驗 +${xp}`);}
-      else{const dmg=roll(16,30);state.hp-=dmg;gainXp(state,18);addLog('bad','悟到一半滑倒','這裡叫斷腿崖不是沒有理由。',`氣血 -${dmg} · 經驗 +18`);}
+      const omen=Math.random();
+      if(omen<.002&&!state.martialArts.includes('forbidden')){state.martialArts.push('forbidden');state.stats.insight+=3;state.routes.chaos+=5;state.metrics.hiddenEvents++;addLog('gold','崖壁逆頁顯字','雷光照出石壁上倒寫的經脈圖，你只看一眼就再也忘不掉。','心眼 +3 · 習得隱藏禁招');}
+      else if(omen<.68){const key=pick(Object.keys(STAT_NAMES));state.stats[key]++;const xp=gainXp(state,38);state.routes.discipline++;addLog('good','斷腿崖悟道','山風很冷，但你真的想通了一招。',`${STAT_NAMES[key]} +1 · 經驗 +${xp}`);}
+      else{const percent=roll(45,105),dmg=Math.ceil(maxHp(state)*percent/100);state.hp-=dmg;gainXp(state,18);addLog('bad','悟到一半墜崖','斷腿崖依最大氣血結算摔傷；根骨高也只是從更高的地方摔下來。',`氣血 -${dmg}（最大氣血 ${percent}%） · 經驗 +18`);}
     });
   }
 
@@ -979,7 +1027,8 @@
       level:s.level, xp:s.xp, points:s.points, hp:s.hp, qi:s.qi, stress:s.stress,
       coins:s.coins, fame:s.fame, ap:s.ap, stats:{...s.stats}, routes:{...s.routes},
       inventory:{...s.inventory}, owned:[...s.owned], vows:[...s.vows],
-      completedMissions:[...s.completedMissions], achievements:[...s.achievements]
+      completedMissions:[...s.completedMissions], achievements:[...s.achievements],
+      martialArts:[...s.martialArts], companionBond:{...s.companionBond}, streamBanDays:s.streamBanDays
     };
   }
 
@@ -1008,6 +1057,9 @@
     itemIds.forEach(id=>add(ITEMS[id]?.name||id,(after.inventory[id]||0)-(before.inventory[id]||0),(after.inventory[id]||0)>=(before.inventory[id]||0)?'good':'bad'));
     after.owned.filter(id=>!before.owned.includes(id)).forEach(id=>changes.push({label:ITEMS[id]?.name||id,value:'獲得',tone:'good'}));
     after.vows.filter(vow=>!before.vows.includes(vow)).forEach(vow=>changes.push({label:vow,value:'獲得',tone:'good'}));
+    after.martialArts.filter(id=>!before.martialArts.includes(id)).forEach(id=>changes.push({label:MARTIAL_ARTS[id]?.name||id,value:'習得',tone:'good'}));
+    Object.entries(after.companionBond).forEach(([id,value])=>add(`${BROTHER_SESSIONS.find(x=>x.id===id)?.name||id}友好`,value-(before.companionBond[id]||0),'good'));
+    add('禁播日數',after.streamBanDays-before.streamBanDays,after.streamBanDays>before.streamBanDays?'bad':'good');
     add('主線江湖帖',after.completedMissions.length-before.completedMissions.length,'good');
     add('行動',after.ap-before.ap,'cost');
     return changes;
@@ -1032,7 +1084,7 @@
     if (busy || state.ended) return;
     if (state.ap <= 0) return toast('今天已經沒有行動力，收功入夜吧');
     const before=actionSnapshot(state);
-    busy = true; state.ap--; state.metrics.actions++; render();
+    busy = true; state.ap--; state.metrics.actions++;state.dayActions++; render();
     $('cooldown').hidden = false; const bar=$('cooldown').querySelector('i'); bar.style.animation='none'; void bar.offsetWidth; bar.style.animation='';
     setTimeout(()=>{
       const outcome=callback()||{},entry=state.log[0]; busy=false; $('cooldown').hidden=true;
@@ -1050,14 +1102,46 @@
 
   function endDay() {
     if (busy || state.ended) return;
-    state.day++; state.ap=maxAp(state);state.qi=maxQi(state);state.hp=Math.min(maxHp(state),state.hp+Math.floor(maxHp(state)*.12));state.stress=clamp(state.stress-10,0,100);
+    const neglected=state.dayActions<2;
+    if(neglected){state.routes.discipline=Math.max(0,state.routes.discipline-1);state.fame=Math.max(0,state.fame-2);state.stress=clamp(state.stress+22,0,100);addLog('bad','荒廢一日','今天幾乎沒有修行就收功。江湖不會等你把行程表排好。','自律 -1 · 俠名 -2 · 心火 +22');}
+    const banStartedToday=state.streamBanSetDay===state.day;
+    state.day++;state.dayActions=0;state.ap=maxAp(state);state.qi=maxQi(state);state.hp=Math.min(maxHp(state),state.hp+Math.floor(maxHp(state)*.12));state.stress=clamp(state.stress-(neglected?0:10),0,100);if(state.streamBanDays>0&&!banStartedToday)state.streamBanDays--;
     const events=[
       {title:'米特姨送飯',text:'門口多了一個飯盒。家人不懂江湖，但知道你會餓。',delta:'飯盒 +1 · 人情 +1',fn:()=>{addItem(state,'rice');state.routes.ties++;}},
       {title:'明天一定的代價',text:'你又想發一張宏大的行程表，最後忍住只寫明天幾點開。',delta:'自律 +1 · 信義 +1',fn:()=>{state.routes.discipline++;state.routes.integrity++;}},
       {title:'普通的一晚',text:'沒有炎上、沒有神抽、沒有警察。普通得像一種稀有事件。',delta:'氣血與真氣恢復',fn:()=>{}},
       {title:'高金生路過',text:'一個用你頭貼的人在門外說自己才是本尊。你決定明天再處理。',delta:'俠名 +2 · 混沌 +1',fn:()=>{state.fame+=2;state.routes.chaos++;}}
     ];
-    const e=pick(events);e.fn();addLog('gold',e.title,e.text,e.delta);checkAchievements();const transition=advanceChapterStep();save();render();pushChat('system',`系統：第 ${state.day} 日開始，行動力已恢復。`);if(transition)showChapterTransition(transition);
+    const e=pick(events);e.fn();addLog('gold',e.title,e.text,e.delta);checkAchievements();save();render();pushChat('system',`系統：第 ${state.day} 日開始，行動力已恢復。`);
+    if(state.stress>=100){save();render();showDeath('你連續荒廢修行，心火在期限逼近時徹底失控。');return;}
+    if(resolveRelationshipCrisis())return;
+    if(openTimedEvent())return;
+    const transition=advanceChapterStep();save();render();
+    if(transition)showChapterTransition(transition);
+    else openModal({kicker:`第 ${state.day} 日・晨間事件`,title:e.title,body:`<div class="event-result"><p>${esc(e.text)}</p><strong>${esc(e.delta)}</strong>${neglected?'<div class="result-notice danger-notice">昨日行動不足：自律與俠名下降，心火受到懲罰。</div>':''}</div>`,actions:[{label:'開始今天',sub:`行動力 ${state.ap}/${maxAp(state)}${state.streamBanDays?`・禁播剩 ${state.streamBanDays} 日`:''}`,primary:true,onClick:forceCloseModal}]});
+  }
+
+  function resolveRelationshipCrisis(){
+    if(state.day===9&&!state.triggeredEvents.includes('poison9')){
+      state.triggeredEvents.push('poison9');
+      if((state.companionBond.toyz||0)<2){
+        addLog('bad','第九日・丹毒發作','你獨自亂吃丹藥，二師兄糖偉健與你毫無交情，藥房的門始終沒有打開。','友好不足 · 無藥可救');save();render();showDeath('丹毒攻心。你從未與糖偉健建立足夠交情，他沒有把唯一的解藥交給一個只在需要時才上門的人。');return true;
+      }
+      addItem(state,'pill',2);state.stress=Math.max(0,state.stress-15);addLog('good','第九日・二師兄送解藥','糖偉健嘴上說浪費，但還是把真正的解藥丟到你懷裡。','回氣丹 +2 · 心火 -15');save();render();openModal({kicker:'同門危機・關係判定通過',title:'藥房的門打開了',body:`<div class="story-box"><h4>糖偉健友好 ${state.companionBond.toyz}</h4><p>你過去的互動不是裝飾。二師兄願意救你，這一世得以繼續。</p></div>`,closable:false,actions:[{label:'收下解藥',sub:'繼續第九日修行',primary:true,onClick:forceCloseModal}]});return true;
+    }
+    if(state.day===15&&!state.triggeredEvents.includes('ambush15')){
+      state.triggeredEvents.push('ambush15');const total=Object.values(state.companionBond).reduce((a,b)=>a+b,0);
+      if(total<6){const loss=Math.min(state.coins,95),damage=Math.ceil(maxHp(state)*.42);state.coins-=loss;state.hp=Math.max(1,state.hp-damage);addLog('bad','第十五日・無人守夜','你一直獨來獨往，夜襲時沒有人替你叫醒第二班崗哨。','氣血重創 · 糖錢遭劫');}
+      else{state.routes.ties+=3;addLog('good','第十五日・同門守夜','五名同門輪流站崗，刺客連你的門都沒摸到。','人情 +3');}
+      save();render();
+    }
+    return false;
+  }
+
+  function openTimedEvent(){
+    const event=FORCED_EVENTS.find(x=>x.id===state.delayedThreat)||FORCED_EVENTS.find(x=>x.day===state.day&&!state.triggeredEvents.includes(x.id));
+    if(!event)return false;state.delayedThreat=event.id;save();
+    openModal({kicker:'時限事件・強制迎戰',title:event.title,body:`<div class="goatless-danger"><p>${esc(event.text)}</p><strong>敵人會依目前等級與章節強化。此戰不可撤退，也不會因你還沒練好而延期。</strong></div>`,closable:false,actions:[{label:'應戰',sub:'不消耗今日行動；失敗仍視為死亡',primary:true,onClick:()=>{forceCloseModal();startEncounter(false,{...event.foe,eventId:event.id},true);}}]});return true;
   }
 
   function openMissions() {
@@ -1072,10 +1156,47 @@
   }
 
   function openShop() {
-    const sell=['rice','pill','mirror','clock','boneblade','ankleguard','mic'];
+    const sell=['rice','pill','clock','ankleguard','mic'];
     openModal({kicker:'叉叉商城',title:'糖錢要花在刀口上',body:`<p>裝備購買後會自動穿上，同部位可以在行囊切換。商城不消耗行動。</p><div class="item-grid">${sell.map(id=>{const item=ITEMS[id],owned=item.kind==='consumable'?false:state.owned.includes(id);return `<article class="shop-item"><div class="item-icon">${item.icon}</div><div><h4>${item.name}</h4><p>${item.description}</p><button class="buy-button" data-buy="${id}" ${owned||state.coins<item.price?'disabled':''}>${owned?'已持有':`${item.price} 糖錢`}</button></div></article>`;}).join('')}</div>`,afterOpen:()=>{
       document.querySelectorAll('[data-buy]').forEach(btn=>btn.onclick=()=>buyItem(btn.dataset.buy));
     }});
+  }
+
+  function openMartialHall(){
+    const arts=Object.entries(MARTIAL_ARTS).filter(([,art])=>!art.secret);
+    openModal({kicker:'叉叉市集・江湖武學鋪',title:'招式不是升級就自己長出來',body:`<div class="mission-note">每一門武學都有修習條件。學會後會出現在戰鬥指令中；同時最多顯示糖門滑劍與最近習得的三門武學。</div><div class="item-grid">${arts.map(([id,art])=>{const learned=state.martialArts.includes(id),ready=art.unlocked(state);return `<article class="shop-item martial-item"><div class="item-icon">${art.icon}</div><div><h4>${esc(art.name)}</h4><p>${esc(art.description)}<br>真氣消耗：${art.qi}</p><button class="buy-button" data-learn="${id}" ${learned||!ready||state.coins<art.price?'disabled':''}>${learned?'已習得':ready?(state.coins>=art.price?`${art.price} 糖錢`:'糖錢不足'):esc(art.requirement?.(state)||'尚未符合')}</button></div></article>`;}).join('')}</div>`,afterOpen:()=>document.querySelectorAll('[data-learn]').forEach(btn=>btn.onclick=()=>learnMartialArt(btn.dataset.learn))});
+  }
+
+  function learnMartialArt(id){
+    const art=MARTIAL_ARTS[id];if(!art||state.martialArts.includes(id)||!art.unlocked(state)||state.coins<art.price)return;
+    state.coins-=art.price;state.martialArts.push(id);addLog('gold',`習得武學・${art.name}`,art.description,`糖錢 -${art.price} · 新技能`);checkAchievements();save();render();toast(`習得武學：${art.name}`);forceCloseModal();openMartialHall();
+  }
+
+  function openBlackMarket(){
+    openModal({kicker:'叉叉市集・無牌暗巷',title:'便宜通常有便宜的理由',body:'<p>攤販不留姓名、不給收據，也不回答貨是從哪裡來。每項交易都有可能拿到好東西、買到廢物，或把巡捕一起帶回糖門。</p>',actions:[
+      {label:'買無封面內功殘頁・45 糖錢',sub:'可能是絕世武學，也可能把經脈練歪。',disabled:state.coins<45,onClick:()=>blackMarketTrade('manual',45)},
+      {label:'買來路不明大補丹・22 糖錢',sub:'便宜、立即見效；藥效不保證往哪個方向走。',disabled:state.coins<22,onClick:()=>blackMarketTrade('pill',22)},
+      {label:'接一筆無紀錄搬運・不收費',sub:'成功賺大錢；失敗可能被巡捕帶走。',onClick:()=>blackMarketTrade('job',0)},
+      {label:'離開暗巷',sub:'今天先不拿大中計',onClick:forceCloseModal}
+    ]});
+  }
+
+  function blackMarketTrade(type,cost){
+    forceCloseModal();runAction(()=>{
+      state.coins-=cost;state.metrics.hiddenEvents++;const chance=Math.random();let title='',text='',delta='';
+      if(type==='manual'){
+        if(chance<.015&&!state.martialArts.includes('forbidden')){state.martialArts.push('forbidden');state.stats.strength+=5;state.stats.agility+=5;title='殘頁竟是真貨';text='逆頁真氣貫通雙臂，你悟出一門不該存在的禁招。';delta='力道 +5 · 身法 +5 · 習得隱藏武學';}
+        else if(chance<.07){const moved=state.stats.strength+state.stats.agility+state.stats.insight-3;state.stats.strength=1;state.stats.agility=1;state.stats.insight=1;state.stats.vitality+=moved;state.hp=maxHp(state);title='盜版易筋經走火';text='口訣最後一頁印反了。全身功力被硬生生洗進根骨。';delta='力道、身法、心眼歸 1 · 其餘點數全入根骨';}
+        else{state.stress=clamp(state.stress+16,0,100);gainXp(state,26);title='殘頁只有封面能看';text='你練了一晚，只悟到印刷廠的油墨味。';delta='經驗 +26 · 心火 +16';}
+      }else if(type==='pill'){
+        if(chance<.42){state.stats.vitality+=2;state.hp=maxHp(state);title='黑市大補丹有效';text='丹藥難吃得像真的，經脈居然也真的撐開。';delta='根骨 +2 · 氣血回滿';}
+        else{const damage=Math.ceil(maxHp(state)*.38);state.hp-=damage;state.stress=clamp(state.stress+12,0,100);title='丹藥成分不明';text='藥效非常猛烈，方向完全相反。';delta=`氣血 -${damage} · 心火 +12`;}
+      }else{
+        if(chance<.48){const reward=roll(110,210);state.coins+=reward;state.routes.chaos+=3;title='黑貨平安送達';text='沒有人問箱子裡是什麼，你也決定不要知道。';delta=`糖錢 +${reward} · 混沌 +3`;}
+        else{const fine=Math.min(state.coins,roll(55,130));state.coins-=fine;state.fame=Math.max(0,state.fame-4);state.streamBanDays=Math.max(state.streamBanDays,2);state.streamBanSetDay=state.day;title='巡捕破門';text='貨主跑得比你快。你被帶去做筆錄，直播權限也遭暫停。';delta=`糖錢 -${fine} · 俠名 -4 · 禁播 2 日`;}
+      }
+      addLog(/真貨|有效|送達/.test(title)?'good':'bad',title,text,delta);return{};
+    });
   }
   function buyItem(id) {
     const item=ITEMS[id];if(!item||state.coins<item.price)return;
@@ -1111,12 +1232,21 @@
 
   function openBossChallenge() {
     const boss=currentBoss(),ready=bossReady(boss);
-    openModal({kicker:`守關試煉・${chapterDisplay()}`,title:`${boss.icon} ${boss.name}`,body:`<p>${boss.title}</p><div class="requirements-box"><h4>入場門檻</h4><ul>${boss.requirements.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><div class="boss-rule-preview ${boss.combatCheck&&!boss.combatCheck(state)?'blocked':''}"><h4>戰中破防規則</h4><p>${esc(boss.combatRule)}</p>${boss.combatCheck?`<strong>${boss.combatCheck(state)?'✓ 目前可正常造成傷害':'! 目前不符合，進場後傷害將是 0'}・${esc(boss.combatValue(state))}</strong>`:''}</div><p>特殊機制：${boss.mechanic}</p>${ready?'<p class="warning">Boss 戰會消耗 1 行動。入場門檻通過不代表配點能輸出，請先看清上方戰中規則。</p>':'<p class="warning">必須先完成本章前三個小回目與全部入場門檻，無法靠運氣跳關。</p>'}`,actions:[{label:ready?'踢館・開始 Boss 戰':'條件不足',sub:ready?'我已看過破防規則與行囊':'先完成小回目、修行、江湖帖與裝備整備',primary:ready,disabled:!ready||state.ap<=0,onClick:()=>{forceCloseModal();startEncounter(true);}},{label:'再準備一下',sub:'保留進度，自己決定何時挑戰',onClick:forceCloseModal}]});
+    const clue=state.bossItemHints.includes(boss.id)?`<div class="boss-clue"><b>前世留下的線索</b><p>${esc(boss.itemHint)}</p></div>`:'';
+    openModal({kicker:`守關試煉・${chapterDisplay()}`,title:`${boss.icon} ${boss.name}`,body:`<p>${boss.title}</p><div class="requirements-box"><h4>入場門檻</h4><ul>${boss.requirements.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><div class="boss-rule-preview"><h4>未知守關異象</h4><p>這名守關者藏著無法靠面板直接看穿的規則，也可能需要某件江湖物品。第一次交手前不會公布答案。</p></div>${clue}${ready?'<p class="warning">Boss 戰會消耗 1 行動。若準備不足，死亡後才會得到關鍵線索。</p>':'<p class="warning">必須先完成本章前三個小回目與全部入場門檻，無法靠運氣跳關。</p>'}`,actions:[{label:ready?'踢館・開始 Boss 戰':'條件不足',sub:ready?'接受未知機制與死亡風險':'先完成小回目、修行與江湖帖',primary:ready,disabled:!ready||state.ap<=0,onClick:()=>{forceCloseModal();startEncounter(true);}},{label:'再準備一下',sub:'保留進度，自己決定何時挑戰',onClick:forceCloseModal}]});
   }
 
   function scaledMonster(monster) {
-    const foe = { ...monster }, scale = 1 + state.bossIndex * .08;
-    foe.hp = Math.round(foe.hp * scale); foe.attack = Math.round(foe.attack * scale);
+    const foe = { ...monster };
+    const levelScale=1+Math.max(0,state.level-1)*.055,chapterScale=1+state.bossIndex*.2;
+    foe.hp=Math.round(foe.hp*levelScale*chapterScale);
+    foe.attack=Math.round(foe.attack*(1+Math.max(0,state.level-1)*.032+state.bossIndex*.13));
+    foe.reward=Math.round(foe.reward*(1+state.bossIndex*.18+Math.max(0,state.level-1)*.025));
+    foe.xp=Math.round(foe.xp*(1+state.bossIndex*.15+Math.max(0,state.level-1)*.018));
+    const eliteChance=Math.min(.34,.08+state.bossIndex*.045+state.level*.006);
+    foe.elite=monster.elite===true||Math.random()<eliteChance;
+    if(foe.elite){foe.name=`精英・${foe.name}`;foe.hp=Math.round(foe.hp*1.38);foe.attack=Math.round(foe.attack*1.2);foe.reward=Math.round(foe.reward*1.55);foe.xp=Math.round(foe.xp*1.45);foe.hiddenMechanic=monster.style;}
+    foe.scaled=true;
     return foe;
   }
 
@@ -1127,28 +1257,30 @@
     openModal({
       kicker:`${LOCATIONS[state.location].name}・野怪名冊`,
       title:'這一場要打誰？',
-      body:`<p>每個場域有五種野怪與不同出招傾向。選定後才消耗 1 行動；不滿意可以免費換一批。</p>`,
+      body:`<p>野怪會依你的等級與目前章節同步成長。少數敵人帶有「精英」氣息，但牠們真正的本事只能進場後自己摸索。</p>`,
       actions:[
         ...candidates.map(monster => {
           const preview = scaledMonster(monster);
-          return { label:`${monster.icon} ${monster.name}`, sub:`${MONSTER_STYLE_NAMES[monster.style]}・氣血 ${preview.hp}・攻勢 ${preview.attack}｜${monster.flavor}`, onClick:()=>{forceCloseModal();startEncounter(false,monster);} };
+          return { label:`${preview.icon} ${preview.name}`, sub:`${preview.elite?'精英異象・':''}${MONSTER_STYLE_NAMES[preview.style]}・氣血 ${preview.hp}・攻勢 ${preview.attack}｜${preview.flavor}`, onClick:()=>{forceCloseModal();startEncounter(false,preview);} };
         }),
         { label:'換一批野怪', sub:'不消耗行動，重新抽出三名對手', onClick:()=>{forceCloseModal();openWildEncounter();} }
       ]
     });
   }
 
-  function startEncounter(isBoss, chosenFoe = null) {
-    if(busy||state.ap<=0||state.ended)return toast(state.ap<=0?'今日行動已用完':'現在無法戰鬥');
+  function startEncounter(isBoss, chosenFoe = null, forced = false) {
+    if(busy||(!forced&&state.ap<=0)||state.ended)return toast(!forced&&state.ap<=0?'今日行動已用完':'現在無法戰鬥');
     if(isBoss&&!bossReady())return openBossChallenge();
-    state.ap--;state.metrics.actions++;save();render();
+    if(!forced){state.ap--;state.metrics.actions++;state.dayActions++;}
+    save();render();
     let foe;
     if(isBoss){const b=currentBoss();foe={...b,boss:true,coinReward:100+b.hp,xp:90+b.hp/3};}
-    else{const pool=ENEMIES[state.location]||ENEMIES.outer;foe=scaledMonster(chosenFoe||pick(pool));}
+    else{const pool=ENEMIES[state.location]||ENEMIES.outer;foe=chosenFoe?.scaled?{...chosenFoe}:scaledMonster(chosenFoe||pick(pool));foe.forced=forced;}
     const openingLog=[`${foe.name} 擋住去路。先看招，再出手。`, ...(foe.flavor?[foe.flavor]:[])];
-    if(foe.boss&&foe.combatRule)openingLog.push(`戰中規則：${foe.combatRule}`);
+    if(foe.boss&&foe.combatRule)openingLog.push(`守關者的氣息不對勁。先交手，別相信第一次看見的破綻。`);
+    if(foe.elite)openingLog.push('這隻精英怪身上有異常氣息，牠似乎在等你犯某種錯。');
     if(foe.id==='taishan')openingLog.push(`${state.vows.length} 枚心印化為加護：造成傷害提升，信義與人情減少所受傷害。`);
-    currentBattle={foe,foeHp:foe.hp,turn:1,intent:nextIntent(foe,1),foeGuard:false,playerGuard:false,damageTaken:0,openTurns:0,armorBrokenTurns:0,lastDamageAction:null,log:openingLog,busy:false};
+    currentBattle={foe,foeHp:foe.hp,turn:1,intent:nextIntent(foe,1),foeGuard:false,playerGuard:false,damageTaken:0,openTurns:0,armorBrokenTurns:0,ironTurns:0,lastDamageAction:null,log:openingLog,busy:false};
     renderBattle();
   }
 
@@ -1173,26 +1305,25 @@
 
   function bossRuleState(b=currentBattle) {
     if(!b?.foe?.boss)return '';
-    if(b.foe.id==='sleep')return b.foe.combatCheck(state)?'攻勢檢定通過':'棉被結界封鎖中・你的傷害會是 0';
-    if(b.foe.id==='green')return b.openTurns>0?`黃光破綻開啟・剩 ${b.openTurns} 回合`:'黃光法衣閉合・等待紫光看破';
-    if(b.foe.id==='crows')return b.openTurns>0?`雙王陣已破・剩 ${b.openTurns} 回合`:'雙王陣閉合・需要糖門滑劍';
-    if(b.foe.id==='copies')return b.lastDamageAction?`演算法已記住：${{attack:'普通攻擊',skill:'糖門滑劍',focus:'看破反擊',counter:'防守反擊'}[b.lastDamageAction]||b.lastDamageAction}`:'演算法尚未記住你的招式';
-    if(b.foe.id==='taishan')return b.foe.combatCheck(state)?`${b.foe.combatValue(state)}・配點平衡`:`${b.foe.combatValue(state)}・失衡封鎖傷害`;
-    return '';
+    if(b.missingItem)return '你的攻勢始終差了一個關鍵媒介。';
+    if(b.openTurns>0)return `你抓到短暫破綻・剩 ${b.openTurns} 回合`;
+    if(b.lastDamageAction)return '守關者開始記住你的出招習慣。';
+    return '異象未解・留意戰鬥紀錄中的反應';
   }
 
   function applyBossDamageRule(action,damage,b=currentBattle) {
     if(!b.foe.boss||damage<=0)return damage;
+    if(b.foe.requiredItem&&!hasItem(state,b.foe.requiredItem)){b.missingItem=true;b.log.push('攻勢在命中前被無形力量抹去：傷害 0。你似乎少了一件能與此地共鳴的東西。');return 0;}
     if(b.foe.id==='sleep'&&!b.foe.combatCheck(state)){
-      b.log.push('棉被結界吞掉整道攻勢：傷害 0。力道 10 或身法 9 才能破開。');return 0;
+      b.log.push('棉被結界吞掉整道攻勢：傷害 0。它似乎不是只靠耐打就能破開。');return 0;
     }
     if(b.foe.id==='green'){
       if(action==='focus'&&b.intent==='trick'){b.openTurns=3;b.log.push('黃光被看破！法衣裂開 3 回合。');}
       if(b.openTurns<=0){b.log.push('黃光法衣仍閉合，這一招傷害 0。等待紫光再用看破。');return 0;}
     }
     if(b.foe.id==='crows'){
-      if(action==='skill'){b.openTurns=3;b.log.push('糖門滑劍切開雙王陣，破綻維持 3 回合！');}
-      if(b.openTurns<=0){b.log.push('金銀雙烏互相代擋，這一招傷害 0。使用糖門滑劍破陣。');return 0;}
+      if(action==='sugar_slash'){b.openTurns=3;b.log.push('某種熟悉的滑劍軌跡切開雙王陣，破綻維持 3 回合！');}
+      if(b.openTurns<=0){b.log.push('金銀雙烏互相代擋，這一招傷害 0。陣眼似乎害怕某種糖門劍路。');return 0;}
     }
     if(b.foe.id==='copies'){
       if(b.lastDamageAction===action){b.log.push('演算法複製了相同招式：傷害 0。請更換輸出方式。');return 0;}
@@ -1204,6 +1335,15 @@
     return damage;
   }
 
+  function applyEliteDamageRule(action,damage,b=currentBattle){
+    if(!b?.foe?.elite||damage<=0)return damage;
+    if(b.foe.hiddenMechanic==='guard'&&b.foeWasGuarding&&action!=='martial:sugar_slash'){b.log.push('精英怪的鐵壁吞掉攻勢，傷害 0。');return 0;}
+    if(b.foe.hiddenMechanic==='trick'&&b.intent==='trick'&&action!=='focus'&&action!=='martial:yellow_flash'){b.log.push('你打中的只是誘餌，傷害 0。');return 0;}
+    if(b.foe.hiddenMechanic==='swift'&&b.lastDamageAction===action){b.log.push('精英怪已看穿重複招式，這一擊被完全閃過。');return 0;}
+    if(b.foe.hiddenMechanic==='brute'&&b.turn%3===0&&action!=='guard'&&action!=='martial:iron_body'){b.log.push('霸體震開你的正面攻勢，傷害 0。');return 0;}
+    b.lastDamageAction=action;return damage;
+  }
+
   function tickBossRule(b=currentBattle) {
     if(!b?.foe?.boss)return;
     if((b.foe.id==='green'||b.foe.id==='crows')&&b.openTurns>0)b.openTurns--;
@@ -1212,7 +1352,9 @@
   function renderBattle() {
     const b=currentBattle,foe=b.foe;
     modalClosable=false;$('modal-kicker').textContent=foe.boss?'守關 Boss 戰':'江湖遭遇';$('modal-title').textContent=foe.name;$('modal-close').hidden=true;
-    $('modal-body').innerHTML=`<div class="battle"><div class="battle-foes"><div class="fighter player"><div class="avatar">瘸</div><b>${esc(state.name)}</b><div class="battle-hp"><i style="width:${state.hp/maxHp(state)*100}%"></i></div><small>氣血 ${state.hp}/${maxHp(state)} · 真氣 ${state.qi}/${maxQi(state)}</small></div><div class="versus">對</div><div class="fighter"><div class="avatar">${foe.icon}</div><b>${foe.name}</b><div class="battle-hp"><i style="width:${b.foeHp/foe.hp*100}%"></i></div><small>氣血 ${Math.max(0,b.foeHp)}/${foe.hp}</small></div></div>${foe.boss?`<div class="boss-rule-box ${foe.combatCheck&&!foe.combatCheck(state)?'blocked':''}"><b>本戰特殊規則</b><p>${esc(foe.combatRule)}</p><strong>${esc(bossRuleState(b))}</strong></div>`:''}<div class="intent-box"><i>${INTENTS[b.intent].icon}</i><div><b>敵方意圖：${INTENTS[b.intent].name}</b><small>${intentHint()}</small></div></div>${state.live?'<div class="poll-hint">實況提示：請觀眾刷 1–5，實況主用數字鍵執行聊天室的選擇。</div>':''}<div class="battle-log">${b.log.slice(-6).map(x=>`<div>${esc(x)}</div>`).join('')}</div><div class="battle-actions"><button class="battle-button" data-battle="attack"><b>1. 普通攻擊</b><small>穩定傷害；敏捷提供暴擊</small></button><button class="battle-button" data-battle="guard"><b>2. 防禦</b><small>可減傷，但部分 Boss 會穿透或破甲</small></button><button class="battle-button" data-battle="skill" ${state.qi<10?'disabled':''}><b>3. 糖門滑劍</b><small>真氣 10；破防、高傷害</small></button><button class="battle-button" data-battle="focus"><b>4. 看破</b><small>破解詭計；回復 7 真氣</small></button><button class="battle-button" data-battle="rice" ${(state.inventory.rice||0)<1?'disabled':''}><b>5. 米特飯盒</b><small>剩 ${state.inventory.rice||0}；恢復 38 氣血</small></button><button class="battle-button" data-battle="flee" ${foe.boss?'disabled':''}><b>6. 戰略撤退</b><small>保命；行動不退還</small></button></div></div>`;
+    const allLearned=(state.martialArts||[]).filter(id=>MARTIAL_ARTS[id]);
+    const learnedIds=['sugar_slash',...allLearned.filter(id=>id!=='sugar_slash').slice(-3)].filter((id,index,list)=>list.indexOf(id)===index);
+    $('modal-body').innerHTML=`<div class="battle"><div class="battle-foes"><div class="fighter player"><div class="avatar">瘸</div><b>${esc(state.name)}</b><div class="battle-hp"><i style="width:${state.hp/maxHp(state)*100}%"></i></div><small>氣血 ${state.hp}/${maxHp(state)} · 真氣 ${state.qi}/${maxQi(state)}</small></div><div class="versus">對</div><div class="fighter"><div class="avatar">${foe.icon}</div><b>${foe.name}</b><div class="battle-hp"><i style="width:${b.foeHp/foe.hp*100}%"></i></div><small>氣血 ${Math.max(0,b.foeHp)}/${foe.hp}</small></div></div>${foe.boss?`<div class="boss-rule-box"><b>守關異象</b><p>此戰藏有特殊破解條件。死亡後會留下線索。</p><strong>${esc(bossRuleState(b))}</strong></div>`:''}${foe.elite&&!foe.boss?'<div class="boss-rule-box elite-rule-box"><b>精英小 Boss 異象</b><p>這名敵人的反應不尋常，重複同一套打法可能會付出代價。</p></div>':''}<div class="intent-box"><i>${INTENTS[b.intent].icon}</i><div><b>敵方意圖：${INTENTS[b.intent].name}</b><small>${intentHint()}</small></div></div>${state.live?'<div class="poll-hint">實況提示：請觀眾刷數字，實況主用數字鍵執行聊天室的選擇。</div>':''}<div class="battle-log">${b.log.slice(-6).map(x=>`<div>${esc(x)}</div>`).join('')}</div><div class="battle-actions"><button class="battle-button" data-battle="attack"><b>1. 普通攻擊</b><small>穩定傷害；身法提供暴擊</small></button><button class="battle-button" data-battle="guard"><b>2. 防禦</b><small>可減傷，但部分攻勢會穿透</small></button>${learnedIds.map((id,index)=>{const art=MARTIAL_ARTS[id];return `<button class="battle-button" data-battle="martial:${id}" ${state.qi<art.qi?'disabled':''}><b>${index+3}. ${art.icon} ${art.name}</b><small>真氣 ${art.qi}・${esc(art.description)}</small></button>`;}).join('')}<button class="battle-button" data-battle="focus"><b>${learnedIds.length+3}. 看破</b><small>破解詭計；回復 7 真氣</small></button><button class="battle-button" data-battle="rice" ${(state.inventory.rice||0)<1?'disabled':''}><b>${learnedIds.length+4}. 米特飯盒</b><small>剩 ${state.inventory.rice||0}；恢復 38 氣血</small></button><button class="battle-button" data-battle="flee" ${foe.boss||foe.forced?'disabled':''}><b>${learnedIds.length+5}. 戰略撤退</b><small>${foe.forced?'事件戰無法撤退':'保命；行動不退還'}</small></button></div></div>`;
     document.querySelector('.fighter.player .avatar').innerHTML=`<img class="battle-avatar" src="roger.png" alt="${esc(state.name)}">`;
     $('modal-actions').innerHTML='';$('modal').hidden=false;
     document.querySelectorAll('[data-battle]').forEach(btn=>btn.onclick=()=>battleTurn(btn.dataset.battle));
@@ -1221,13 +1363,18 @@
   function battleTurn(action) {
     const b=currentBattle;if(!b||b.busy)return;b.busy=true;
     if(action==='flee'){addLog('bad','戰略撤退',`你從${b.foe.name}面前退回安全處。`,'行動不退還');forceCloseModal();save();render();pushChat('','跑了跑了');return;}
-    let damage=0,skipEnemy=false;
+    let damage=0,skipEnemy=false;b.foeWasGuarding=b.foeGuard;
     if(action==='attack'){
       damage=attackPower()+roll(-3,5);if(Math.random()<stat(state,'agility')*.012){damage=Math.round(damage*1.7);b.log.push('身法觸發暴擊！');}
       if(b.foeGuard){damage=Math.ceil(damage*.45);b.foeGuard=false;b.log.push('對手的架勢擋掉大半攻勢。');}
     }
-    if(action==='skill'){
-      state.qi-=10;damage=Math.round(attackPower()*1.55+stat(state,'agility')*.7+roll(0,7));b.foeGuard=false;b.log.push('糖門滑劍破開架勢！');
+    if(action.startsWith('martial:')){
+      const id=action.split(':')[1],art=MARTIAL_ARTS[id];if(!art||!state.martialArts.includes(id)||state.qi<art.qi){b.busy=false;return;}state.qi-=art.qi;
+      if(id==='sugar_slash'){damage=Math.round(attackPower()*1.55+stat(state,'agility')*.7+roll(0,7));b.foeGuard=false;b.log.push('糖門滑劍破開架勢！');}
+      if(id==='limp_whirl'){damage=Math.round(attackPower()*2.15+stat(state,'agility')*1.1);const recoil=Math.ceil(maxHp(state)*.06);state.hp=Math.max(1,state.hp-recoil);b.log.push(`斷腿旋風斬連斬命中，反震損失 ${recoil} 氣血。`);}
+      if(id==='iron_body'){damage=Math.round(defensePower()*2.5+stat(state,'vitality'));b.ironTurns=2;b.playerGuard=true;b.log.push('糖門鐵骨功震傷敵人，護體維持 2 回合。');}
+      if(id==='yellow_flash'){damage=Math.round(stat(state,'insight')*2.35+12);if(b.intent==='trick'){skipEnemy=true;b.log.push('黃光照破鎖住詭計，敵方本回合失手！');}}
+      if(id==='forbidden'){damage=Math.round(attackPower()*3.1+stat(state,'vitality')*1.6);state.stress=clamp(state.stress+18,0,100);b.log.push('逆頁真氣暴走，心火 +18！');}
     }
     if(action==='guard'){b.playerGuard=true;b.log.push('你穩住下盤，等待對方出招。');}
     if(action==='focus'){
@@ -1238,12 +1385,21 @@
     if(action==='rice'&&consumeItem(state,'rice')){state.hp=Math.min(maxHp(state),state.hp+38);b.log.push('米特飯盒恢復 38 氣血。');}
     if(state.buff?.id==='rage'&&damage>0){damage=Math.round(damage*1.3);state.stress=clamp(state.stress+5,0,100);useBuff(state);b.log.push('紅溫聖旨讓傷害暴增！');}
     if(b.foe.id==='taishan'&&damage>0)damage=Math.round(damage*(1+state.vows.length*.06));
-    if(damage>0&&b.foe.boss)damage=applyBossDamageRule(action,damage,b);
+    if(damage>0&&b.foe.boss)damage=applyBossDamageRule(action.replace('martial:',''),damage,b);
+    if(damage>0&&b.foe.elite)damage=applyEliteDamageRule(action,damage,b);
     if(damage>0){b.foeHp=Math.max(0,b.foeHp-damage);b.log.push(`你造成 ${damage} 點傷害。`);}
     if(b.foeHp<=0){battleWin();return;}
     if(!skipEnemy) enemyTurn(action);
     if(!currentBattle)return;
-    if(state.hp<=0){save();render();setTimeout(()=>showDeath(`你敗給了「${b.foe.name}」。江湖沒有讀檔鍵，只有下一世。`),250);return;}
+    if(state.hp<=0){
+      let deathClue='';
+      if(b.foe.boss&&b.foe.requiredItem&&!hasItem(state,b.foe.requiredItem)){
+        if(!state.bossItemHints.includes(b.foe.id))state.bossItemHints.push(b.foe.id);
+        const item=ITEMS[b.foe.requiredItem];
+        deathClue=`臨死前你看見「${item?.name||'某件關鍵物'}」的殘影。${b.foe.itemHint}`;
+      }
+      save();render();setTimeout(()=>showDeath(`你敗給了「${b.foe.name}」。江湖沒有讀檔鍵，只有下一世。`,deathClue),250);return;
+    }
     tickBossRule(b);b.turn++;b.intent=nextIntent(b.foe,b.turn);b.busy=false;save();render();renderBattle();
   }
 
@@ -1251,9 +1407,15 @@
     const b=currentBattle,intent=b.intent,base=b.foe.attack+roll(-2,4);let dmg=0,penetration=0,ignoreDefense=false,guardRate=intent==='heavy'?.22:.48,applyArmorBreak=false;
     if(intent==='attack')dmg=base;
     if(intent==='heavy')dmg=Math.round(base*1.75);
-    if(intent==='guard'){b.foeGuard=true;b.log.push(`${b.foe.name} 架起防守。`);return;}
+    if(intent==='guard'){
+      b.foeGuard=true;
+      if(b.foe.elite&&b.foe.hiddenMechanic==='guard'){const heal=Math.ceil(b.foe.hp*.07);b.foeHp=Math.min(b.foe.hp,b.foeHp+heal);b.log.push(`${b.foe.name} 架勢一沉，傷口竟恢復 ${heal} 點。`);}
+      else b.log.push(`${b.foe.name} 架起防守。`);
+      return;
+    }
     if(intent==='trick'){
       dmg=Math.round(base*.65);state.qi=Math.max(0,state.qi-8);state.stress=clamp(state.stress+(b.foe.id==='copies'?15:8),0,100);b.log.push('詭計命中：真氣流失，心火上升。');
+      if(b.foe.elite&&b.foe.hiddenMechanic==='trick'){const lost=Math.floor(state.qi*.35);state.qi=Math.max(0,state.qi-lost);b.log.push(`精英詭計再吞掉 ${lost} 真氣。`);}
     }
     const brokenBefore=b.armorBrokenTurns>0;
     if(b.foe.id==='sleep'&&intent==='heavy'){penetration=.75;applyArmorBreak=true;b.log.push('棉被重壓穿透 75% 防禦，並撕開你的護體架勢！');}
@@ -1261,6 +1423,8 @@
     if(b.foe.id==='copies'&&intent==='trick')penetration=.6;
     if(b.foe.id==='crows'&&b.turn%3===0){dmg=Math.max(dmg,Math.ceil(maxHp(state)*.18));ignoreDefense=true;guardRate=.5;b.log.push('雙烏夾擊！至少造成最大氣血 18% 的穿透傷害。');}
     if(b.foe.id==='taishan'&&b.turn%3===0){dmg=Math.max(dmg,Math.ceil(maxHp(state)*.2));ignoreDefense=true;guardRate=.65;b.log.push('問心天劫！至少造成最大氣血 20% 的穿透傷害。');}
+    if(b.foe.elite&&b.foe.hiddenMechanic==='brute'&&intent==='heavy'){dmg=Math.max(dmg,Math.ceil(maxHp(state)*.24));penetration=Math.max(penetration,.65);b.log.push('精英重壓直撼經脈，傷害依最大氣血計算！');}
+    if(b.foe.elite&&b.foe.hiddenMechanic==='swift'&&b.turn%3===0){dmg=Math.round(dmg*1.65);b.log.push('殘影在第三回合重疊成第二次追擊！');}
     if(b.playerGuard){
       dmg=Math.round(dmg*guardRate);
       if(intent==='heavy'){
@@ -1272,6 +1436,7 @@
     }
     const effectiveDefense=ignoreDefense?0:Math.round(defensePower()*(1-penetration)*(brokenBefore?.25:1));
     dmg=Math.max(1,dmg-effectiveDefense);
+    if(b.ironTurns>0){dmg=Math.max(1,Math.round(dmg*.52));b.ironTurns--;b.log.push(`鐵骨護體吸收衝擊・剩 ${b.ironTurns} 回合。`);}
     if(b.foe.id==='taishan')dmg=Math.max(1,Math.round(dmg*(1-Math.min(.3,state.routes.integrity*.008+state.routes.ties*.004))));
     state.hp=Math.max(0,state.hp-dmg);b.damageTaken+=dmg;b.log.push(`${b.foe.name} 造成 ${dmg} 點傷害。`);
     if(brokenBefore)b.armorBrokenTurns--;
@@ -1296,11 +1461,14 @@
     if(!foe.boss){
       const levelBefore=state.level, achievementBefore=[...state.achievements];
       state.metrics.wins++;if(state.hp<=10)state.metrics.oneHpWins++;
-      const xp=gainXp(state,Math.round(foe.xp));state.coins+=foe.reward;state.fame+=1;
-      addLog('good',`擊敗・${foe.name}`,'你不是靠按下一頁贏的，是看招、出招和活著離開。',`糖錢 +${foe.reward} · 經驗 +${xp}`);
+      if(foe.elite)state.metrics.eliteWins++;
+      if(foe.forced){state.metrics.forcedWins++;state.delayedThreat=null;if(foe.eventId&&!state.triggeredEvents.includes(foe.eventId))state.triggeredEvents.push(foe.eventId);}
+      const bonus=foe.elite?18:0,reward=foe.reward+bonus;
+      const xp=gainXp(state,Math.round(foe.xp));state.coins+=reward;state.fame+=foe.elite?2:1;
+      addLog('good',`擊敗・${foe.name}`,foe.forced?'你在期限壓力下解開異象，硬是把這場不能逃的戰鬥活了下來。':'你不是靠按下一頁贏的，是看招、出招和活著離開。',`糖錢 +${reward} · 經驗 +${xp}${foe.elite?' · 精英破解':''}`);
       checkAchievements();const newAchievements=state.achievements.filter(id=>!achievementBefore.includes(id)).map(id=>ACHIEVEMENTS.find(a=>a.id===id)?.name).filter(Boolean);
       const transition=advanceChapterStep();save();render();pushChat('hype',state.hp<=10?'一滴血！這能贏？':'打得好！');
-      showBattleResult({foe,xp,coins:foe.reward,levelBefore,newAchievements,next:transition?()=>showChapterTransition(transition):null});return;
+      showBattleResult({foe,xp,coins:reward,levelBefore,newAchievements,next:transition?()=>showChapterTransition(transition):null});return;
     }
     const levelBefore=state.level, achievementBefore=[...state.achievements];
     if(b.damageTaken===0)state.metrics.noHitBoss++;
@@ -1322,6 +1490,8 @@
     openModal({kicker:scene.kicker,title:scene.title,body:`<p>${scene.text}</p><p class="warning">這個選擇會刻進泰山最後一戰與結局，不可在本世重選。</p>`,closable:false,actions:scene.choices.map(choice=>({label:choice.label,sub:choice.sub,onClick:()=>{
       choice.apply(state);state.choices.push({boss:id,choice:choice.label});state.pendingStory=null;state.bossIndex++;state.chapterStep=0;state.location='outer';state.ap=maxAp(state);state.day++;state.hp=maxHp(state);state.qi=maxQi(state);state.stress=Math.max(0,state.stress-18);
       addLog('gold',`故事選擇・${choice.label}`,scene.title,choice.sub);checkAchievements();save();forceCloseModal();render();pushChat('system',`系統：${chapter().number}「${chapter().title}」已開啟，共有四個小回目。`);
+      if(resolveRelationshipCrisis())return;
+      openTimedEvent();
     }}))});
   }
 
@@ -1361,9 +1531,9 @@
     openModal({kicker:`0.001% 特殊事件・已收入結局圖鑑 ${collection.length} 種`,title:e.title,closable:false,body:`<div class="ending-rank game-over-rank">${e.rank}</div><p class="ending-summary">${e.text}</p><div class="story-box"><h4>本世已永久結束</h4><p>這不是羅瘸死亡，因此不能轉生續接。糖門失去掌門後故事中止，只能清除本世進度並從標題重新開始。</p></div>`,actions:[{label:'回到標題重新開始',sub:'清除本世進度；結局圖鑑仍會保留',primary:true,onClick:()=>{localStorage.removeItem(SAVE_KEY);location.reload();}}]});
   }
 
-  function showDeath(reason) {
+  function showDeath(reason, clue = '') {
     currentBattle=null;modalClosable=false;
-    openModal({kicker:'死亡・本世修行中止',title:'羅瘸倒下了',body:`<p>${reason}</p><div class="story-box"><h4>死亡規則</h4><p>等級、裝備、糖錢與本世故事歸零；已解鎖成就、結局圖鑑與轉生次數保留。你還能選一項四維，永久 +2 帶進下一世。</p></div>`,closable:false,actions:[{label:'接受死亡，選擇轉生根骨',sub:'這不是讀檔；下一世會更強',primary:true,onClick:()=>showRebirth(false)}]});
+    openModal({kicker:'死亡・本世修行中止',title:'羅瘸倒下了',body:`<p>${esc(reason)}</p>${clue?`<div class="boss-clue death-clue"><b>死亡留下的守關線索</b><p>${esc(clue)}</p><small>這條線索會跨世保留，下一世可在 Boss 頁再次查看。</small></div>`:''}<div class="story-box"><h4>死亡規則</h4><p>等級、裝備、糖錢與本世故事歸零；已解鎖成就、結局圖鑑、守關線索與轉生次數保留。你還能選一項四維，永久 +2 帶進下一世。</p></div>`,closable:false,actions:[{label:'接受死亡，選擇轉生根骨',sub:'這不是讀檔；下一世會更強',primary:true,onClick:()=>showRebirth(false)}]});
   }
 
   function showRebirth(fromEnding=false) {
@@ -1371,7 +1541,7 @@
   }
   function rebirth(key) {
     const legacyStats={...state.legacyStats,[key]:(state.legacyStats[key]||0)+2};
-    const legacy={achievements:[...state.achievements],reincarnations:state.reincarnations+1,legacyStats};
+    const legacy={achievements:[...state.achievements],bossItemHints:[...state.bossItemHints],reincarnations:state.reincarnations+1,legacyStats};
     const oldName=state.name,oldOrigin=state.origin;state=freshState(oldName,oldOrigin,legacy);state.routes.chaos+=1;
     addLog('gold',`第 ${state.reincarnations+1} 世・傷疤還在`,`你帶著上一世的${STAT_NAMES[key]}回到糖門門口。`,`永久${STAT_NAMES[key]} +2`);
     save();forceCloseModal();$('game').hidden=false;render();seedChat();pushChat('system',`系統：第 ${state.reincarnations+1} 世開始。死亡紀錄不會被刪除。`);
@@ -1405,6 +1575,7 @@
     if(state.hp<=0||state.stress>=100){showDeath('上次關閉頁面時，本世已經倒下。死亡紀錄仍然有效。');return;}
     if(state.pendingStory){openBossStory(state.pendingStory);return;}
     if(state.pendingFinal){openFinalChoice();return;}
+    if(state.delayedThreat){openTimedEvent();return;}
     if(!showTutorial)return;
     openModal({kicker:'序章・糖門招生',title:'不是每次失敗都叫大中計',body:`<p>${esc(state.name)}，糖門不問你過去遲到幾次、按錯幾張牌，只問一件事：下一招要不要自己選？</p><div class="story-box"><h4>五大章・二十小回</h4><p>每一大章包含三回養成與故事考驗，第四回才是守關 Boss。修行、打怪、存活日數與指定江湖帖都會成為推進條件，無法直接跳關。</p></div><p>每一天有有限行動。戰鬥時先看敵人意圖：紅光要防禦、紫光要看破。死亡後必須轉生，但能永久帶走一項根骨與所有成就。</p>`,actions:[{label:'我自己選路',sub:'從第一章・第一回開始糖門修行',primary:true,onClick:forceCloseModal}]});
   }
