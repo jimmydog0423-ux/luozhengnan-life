@@ -157,7 +157,10 @@
   const BOSSES = [
     {
       id: 'sleep', name: '睡魔・棉被精', icon: '🛏️', title: '永遠差五分鐘的心魔', hp: 96, attack: 12,
-      mechanic: '蓄力時必須防禦；詭計會吸走真氣。', reward: '破曉腰牌',
+      mechanic: '棉被結界會封死沒有攻勢的配點；蓄力重擊還會穿透防禦並留下破甲。',
+      combatRule: '力道達 10 或身法達 9，才能對棉被精造成傷害；否則所有攻勢都是 0。紅光重擊穿透 75% 防禦，命中後再破甲 2 次。',
+      combatCheck: s => stat(s,'strength') >= 10 || stat(s,'agility') >= 9,
+      combatValue: s => `力道 ${stat(s,'strength')}/10・身法 ${stat(s,'agility')}/9（擇一）`, reward: '破曉腰牌',
       requirements: [
         { label: '等級達 4', check: s => s.level >= 4, value: s => `LV.${s.level}` },
         { label: '自律達 6', check: s => s.routes.discipline >= 6, value: s => `${s.routes.discipline}/6` },
@@ -166,7 +169,8 @@
     },
     {
       id: 'green', name: '綠衣邪僧・拉札', icon: '🟢', title: '亮了就按的致命誘惑', hp: 142, attack: 17,
-      mechanic: '詭計頻繁。用「看破」識破綠光，否則心火暴增。', reward: '黃光心印',
+      mechanic: '黃光法衣常駐免傷，必須先在紫色詭計時成功「看破」才能打開破綻。',
+      combatRule: '法衣閉合時所有傷害為 0。對紫光使用「看破」後，當回合與接下來 2 回合可正常造成傷害；詭計另穿透 45% 防禦。', reward: '黃光心印',
       requirements: [
         { label: '心眼達 16', check: s => stat(s, 'insight') >= 16, value: s => `${stat(s,'insight')}/16` },
         { label: '持有驗牌銅鏡', check: s => hasItem(s, 'mirror'), value: s => hasItem(s,'mirror') ? '已持有' : '未取得' },
@@ -175,7 +179,8 @@
     },
     {
       id: 'crows', name: '金烏上豬・銀烏下豬', icon: '🐗', title: '張家雙王的兄弟連擊', hp: 205, attack: 22,
-      mechanic: '重擊連發。防住紅色蓄力，才能讓雙王互撞。', reward: '同門心印',
+      mechanic: '雙王陣會互相代擋，必須用糖門滑劍破陣；每三回合還會發動無視防禦的夾擊。',
+      combatRule: '陣形閉合時所有傷害為 0。「糖門滑劍」可破陣，當回合與接下來 2 回合可輸出。每第 3 回合的雙烏夾擊造成至少 18% 最大氣血傷害，防禦只能減半。', reward: '同門心印',
       requirements: [
         { label: '根骨達 20', check: s => stat(s, 'vitality') >= 20, value: s => `${stat(s,'vitality')}/20` },
         { label: '人情達 14', check: s => s.routes.ties >= 14, value: s => `${s.routes.ties}/14` },
@@ -184,7 +189,8 @@
     },
     {
       id: 'copies', name: '萬面分身・演算法', icon: '👥', title: '每一張臉都說自己是本尊', hp: 268, attack: 27,
-      mechanic: '會以假話擾亂心神。心眼越高，意圖提示越明確。', reward: '本真心印',
+      mechanic: '演算法會記住你上一個命中的招式；連續使用同一種輸出，第二次起傷害歸零。',
+      combatRule: '普通攻擊、糖門滑劍與看破反擊必須交替使用；重複上一個命中招式會被分身完整複製，傷害變成 0。詭計穿透 60% 防禦。', reward: '本真心印',
       requirements: [
         { label: '俠名達 35', check: s => s.fame >= 35, value: s => `${s.fame}/35` },
         { label: '信義達 16', check: s => s.routes.integrity >= 16, value: s => `${s.routes.integrity}/16` },
@@ -193,7 +199,10 @@
     },
     {
       id: 'taishan', name: '最終大 Boss・泰山', icon: '⛰️', title: '沒有捷徑的萬丈問心', hp: 360, attack: 33,
-      mechanic: '每三招改變架勢；你的心印與最高道路會化成戰鬥加護。', reward: '自己的結局',
+      mechanic: '泰山拒絕極端配點。四維失衡時完全無法造成傷害，每三回合還會降下無視防禦的問心天劫。',
+      combatRule: '四維最高值與最低值相差不得超過 12，否則所有傷害為 0。每第 3 回合至少造成 20% 最大氣血傷害，防禦只能減少 35%；心印仍會提高你的輸出。',
+      combatCheck: s => Math.max(...Object.keys(STAT_NAMES).map(k=>stat(s,k)))-Math.min(...Object.keys(STAT_NAMES).map(k=>stat(s,k))) <= 12,
+      combatValue: s => { const values=Object.keys(STAT_NAMES).map(k=>stat(s,k));return `目前差距 ${Math.max(...values)-Math.min(...values)}/12`; }, reward: '自己的結局',
       requirements: [
         { label: '等級達 17', check: s => s.level >= 17, value: s => `LV.${s.level}` },
         { label: '取得至少三枚心印', check: s => s.vows.length >= 3, value: s => `${s.vows.length}/3` },
@@ -701,7 +710,7 @@
       $('boss-progress').textContent = '5 / 5'; $('boss-preview').innerHTML = '<h3 class="boss-name">泰山已破</h3><p class="boss-tagline">結局不只一種。下一世仍能重新選擇。</p>'; return;
     }
     $('boss-progress').textContent = `${state.defeatedBosses.length} / 5`;
-    $('boss-preview').innerHTML = `<h3 class="boss-name">${boss.icon} ${boss.name}</h3><p class="boss-tagline">${boss.title}</p><div class="req-list">${boss.requirements.map(req=>`<div class="req ${req.check(state)?'ok':''}"><span>${req.check(state)?'✓':'○'} ${req.label}</span><b>${req.value(state)}</b></div>`).join('')}</div>`;
+    $('boss-preview').innerHTML = `<h3 class="boss-name">${boss.icon} ${boss.name}</h3><p class="boss-tagline">${boss.title}</p><div class="req-list">${boss.requirements.map(req=>`<div class="req ${req.check(state)?'ok':''}"><span>${req.check(state)?'✓':'○'} ${req.label}</span><b>${req.value(state)}</b></div>`).join('')}${boss.combatCheck?`<div class="req combat ${boss.combatCheck(state)?'ok':'blocked'}"><span>${boss.combatCheck(state)?'✓':'!'} 戰中輸出檢定</span><b>${esc(boss.combatValue(state))}</b></div>`:''}</div>`;
   }
 
   function missionReady(m) { return m.can(state) && (m.requirements||[]).every(req=>req.check(state)); }
@@ -898,7 +907,7 @@
 
   function openBossChallenge() {
     const boss=currentBoss(),ready=bossReady(boss);
-    openModal({kicker:`守關試煉・${chapterDisplay()}`,title:`${boss.icon} ${boss.name}`,body:`<p>${boss.title}</p><div class="requirements-box"><h4>特殊素質門檻</h4><ul>${boss.requirements.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><p>特殊機制：${boss.mechanic}</p>${ready?'<p class="warning">Boss 戰會消耗 1 行動。戰敗死亡只能帶著跨世成就與一項根骨轉生。</p>':'<p class="warning">必須先完成本章前三個小回目與全部特殊素質，無法靠運氣跳關。</p>'}`,actions:[{label:ready?'踢館・開始 Boss 戰':'條件不足',sub:ready?'我已看過招式與行囊':'先完成小回目、修行、江湖帖與裝備整備',primary:ready,disabled:!ready||state.ap<=0,onClick:()=>{forceCloseModal();startEncounter(true);}},{label:'再準備一下',sub:'保留進度，自己決定何時挑戰',onClick:forceCloseModal}]});
+    openModal({kicker:`守關試煉・${chapterDisplay()}`,title:`${boss.icon} ${boss.name}`,body:`<p>${boss.title}</p><div class="requirements-box"><h4>入場門檻</h4><ul>${boss.requirements.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><div class="boss-rule-preview ${boss.combatCheck&&!boss.combatCheck(state)?'blocked':''}"><h4>戰中破防規則</h4><p>${esc(boss.combatRule)}</p>${boss.combatCheck?`<strong>${boss.combatCheck(state)?'✓ 目前可正常造成傷害':'! 目前不符合，進場後傷害將是 0'}・${esc(boss.combatValue(state))}</strong>`:''}</div><p>特殊機制：${boss.mechanic}</p>${ready?'<p class="warning">Boss 戰會消耗 1 行動。入場門檻通過不代表配點能輸出，請先看清上方戰中規則。</p>':'<p class="warning">必須先完成本章前三個小回目與全部入場門檻，無法靠運氣跳關。</p>'}`,actions:[{label:ready?'踢館・開始 Boss 戰':'條件不足',sub:ready?'我已看過破防規則與行囊':'先完成小回目、修行、江湖帖與裝備整備',primary:ready,disabled:!ready||state.ap<=0,onClick:()=>{forceCloseModal();startEncounter(true);}},{label:'再準備一下',sub:'保留進度，自己決定何時挑戰',onClick:forceCloseModal}]});
   }
 
   function scaledMonster(monster) {
@@ -933,8 +942,9 @@
     if(isBoss){const b=currentBoss();foe={...b,boss:true,coinReward:100+b.hp,xp:90+b.hp/3};}
     else{const pool=ENEMIES[state.location]||ENEMIES.outer;foe=scaledMonster(chosenFoe||pick(pool));}
     const openingLog=[`${foe.name} 擋住去路。先看招，再出手。`, ...(foe.flavor?[foe.flavor]:[])];
+    if(foe.boss&&foe.combatRule)openingLog.push(`戰中規則：${foe.combatRule}`);
     if(foe.id==='taishan')openingLog.push(`${state.vows.length} 枚心印化為加護：造成傷害提升，信義與人情減少所受傷害。`);
-    currentBattle={foe,foeHp:foe.hp,turn:1,intent:nextIntent(foe,1),foeGuard:false,playerGuard:false,damageTaken:0,log:openingLog,busy:false};
+    currentBattle={foe,foeHp:foe.hp,turn:1,intent:nextIntent(foe,1),foeGuard:false,playerGuard:false,damageTaken:0,openTurns:0,armorBrokenTurns:0,lastDamageAction:null,log:openingLog,busy:false};
     renderBattle();
   }
 
@@ -957,10 +967,48 @@
     return '對方的動作真假難辨。心眼 10 可看清完整提示。';
   }
 
+  function bossRuleState(b=currentBattle) {
+    if(!b?.foe?.boss)return '';
+    if(b.foe.id==='sleep')return b.foe.combatCheck(state)?'攻勢檢定通過':'棉被結界封鎖中・你的傷害會是 0';
+    if(b.foe.id==='green')return b.openTurns>0?`黃光破綻開啟・剩 ${b.openTurns} 回合`:'黃光法衣閉合・等待紫光看破';
+    if(b.foe.id==='crows')return b.openTurns>0?`雙王陣已破・剩 ${b.openTurns} 回合`:'雙王陣閉合・需要糖門滑劍';
+    if(b.foe.id==='copies')return b.lastDamageAction?`演算法已記住：${{attack:'普通攻擊',skill:'糖門滑劍',focus:'看破反擊',counter:'防守反擊'}[b.lastDamageAction]||b.lastDamageAction}`:'演算法尚未記住你的招式';
+    if(b.foe.id==='taishan')return b.foe.combatCheck(state)?`${b.foe.combatValue(state)}・配點平衡`:`${b.foe.combatValue(state)}・失衡封鎖傷害`;
+    return '';
+  }
+
+  function applyBossDamageRule(action,damage,b=currentBattle) {
+    if(!b.foe.boss||damage<=0)return damage;
+    if(b.foe.id==='sleep'&&!b.foe.combatCheck(state)){
+      b.log.push('棉被結界吞掉整道攻勢：傷害 0。力道 10 或身法 9 才能破開。');return 0;
+    }
+    if(b.foe.id==='green'){
+      if(action==='focus'&&b.intent==='trick'){b.openTurns=3;b.log.push('黃光被看破！法衣裂開 3 回合。');}
+      if(b.openTurns<=0){b.log.push('黃光法衣仍閉合，這一招傷害 0。等待紫光再用看破。');return 0;}
+    }
+    if(b.foe.id==='crows'){
+      if(action==='skill'){b.openTurns=3;b.log.push('糖門滑劍切開雙王陣，破綻維持 3 回合！');}
+      if(b.openTurns<=0){b.log.push('金銀雙烏互相代擋，這一招傷害 0。使用糖門滑劍破陣。');return 0;}
+    }
+    if(b.foe.id==='copies'){
+      if(b.lastDamageAction===action){b.log.push('演算法複製了相同招式：傷害 0。請更換輸出方式。');return 0;}
+      b.lastDamageAction=action;
+    }
+    if(b.foe.id==='taishan'&&!b.foe.combatCheck(state)){
+      b.log.push(`泰山拒絕失衡之力：${b.foe.combatValue(state)}，傷害 0。`);return 0;
+    }
+    return damage;
+  }
+
+  function tickBossRule(b=currentBattle) {
+    if(!b?.foe?.boss)return;
+    if((b.foe.id==='green'||b.foe.id==='crows')&&b.openTurns>0)b.openTurns--;
+  }
+
   function renderBattle() {
     const b=currentBattle,foe=b.foe;
     modalClosable=false;$('modal-kicker').textContent=foe.boss?'守關 Boss 戰':'江湖遭遇';$('modal-title').textContent=foe.name;$('modal-close').hidden=true;
-    $('modal-body').innerHTML=`<div class="battle"><div class="battle-foes"><div class="fighter player"><div class="avatar">瘸</div><b>${esc(state.name)}</b><div class="battle-hp"><i style="width:${state.hp/maxHp(state)*100}%"></i></div><small>氣血 ${state.hp}/${maxHp(state)} · 真氣 ${state.qi}/${maxQi(state)}</small></div><div class="versus">對</div><div class="fighter"><div class="avatar">${foe.icon}</div><b>${foe.name}</b><div class="battle-hp"><i style="width:${b.foeHp/foe.hp*100}%"></i></div><small>氣血 ${Math.max(0,b.foeHp)}/${foe.hp}</small></div></div><div class="intent-box"><i>${INTENTS[b.intent].icon}</i><div><b>敵方意圖：${INTENTS[b.intent].name}</b><small>${intentHint()}</small></div></div>${state.live?'<div class="poll-hint">實況提示：請觀眾刷 1–5，實況主用數字鍵執行聊天室的選擇。</div>':''}<div class="battle-log">${b.log.slice(-5).map(x=>`<div>${esc(x)}</div>`).join('')}</div><div class="battle-actions"><button class="battle-button" data-battle="attack"><b>1. 普通攻擊</b><small>穩定傷害；敏捷提供暴擊</small></button><button class="battle-button" data-battle="guard"><b>2. 防禦</b><small>重擊剋星；成功會反制</small></button><button class="battle-button" data-battle="skill" ${state.qi<10?'disabled':''}><b>3. 糖門滑劍</b><small>真氣 10；破防、高傷害</small></button><button class="battle-button" data-battle="focus"><b>4. 看破</b><small>破解詭計；回復 7 真氣</small></button><button class="battle-button" data-battle="rice" ${(state.inventory.rice||0)<1?'disabled':''}><b>5. 米特飯盒</b><small>剩 ${state.inventory.rice||0}；恢復 38 氣血</small></button><button class="battle-button" data-battle="flee" ${foe.boss?'disabled':''}><b>6. 戰略撤退</b><small>保命；行動不退還</small></button></div></div>`;
+    $('modal-body').innerHTML=`<div class="battle"><div class="battle-foes"><div class="fighter player"><div class="avatar">瘸</div><b>${esc(state.name)}</b><div class="battle-hp"><i style="width:${state.hp/maxHp(state)*100}%"></i></div><small>氣血 ${state.hp}/${maxHp(state)} · 真氣 ${state.qi}/${maxQi(state)}</small></div><div class="versus">對</div><div class="fighter"><div class="avatar">${foe.icon}</div><b>${foe.name}</b><div class="battle-hp"><i style="width:${b.foeHp/foe.hp*100}%"></i></div><small>氣血 ${Math.max(0,b.foeHp)}/${foe.hp}</small></div></div>${foe.boss?`<div class="boss-rule-box ${foe.combatCheck&&!foe.combatCheck(state)?'blocked':''}"><b>本戰特殊規則</b><p>${esc(foe.combatRule)}</p><strong>${esc(bossRuleState(b))}</strong></div>`:''}<div class="intent-box"><i>${INTENTS[b.intent].icon}</i><div><b>敵方意圖：${INTENTS[b.intent].name}</b><small>${intentHint()}</small></div></div>${state.live?'<div class="poll-hint">實況提示：請觀眾刷 1–5，實況主用數字鍵執行聊天室的選擇。</div>':''}<div class="battle-log">${b.log.slice(-6).map(x=>`<div>${esc(x)}</div>`).join('')}</div><div class="battle-actions"><button class="battle-button" data-battle="attack"><b>1. 普通攻擊</b><small>穩定傷害；敏捷提供暴擊</small></button><button class="battle-button" data-battle="guard"><b>2. 防禦</b><small>可減傷，但部分 Boss 會穿透或破甲</small></button><button class="battle-button" data-battle="skill" ${state.qi<10?'disabled':''}><b>3. 糖門滑劍</b><small>真氣 10；破防、高傷害</small></button><button class="battle-button" data-battle="focus"><b>4. 看破</b><small>破解詭計；回復 7 真氣</small></button><button class="battle-button" data-battle="rice" ${(state.inventory.rice||0)<1?'disabled':''}><b>5. 米特飯盒</b><small>剩 ${state.inventory.rice||0}；恢復 38 氣血</small></button><button class="battle-button" data-battle="flee" ${foe.boss?'disabled':''}><b>6. 戰略撤退</b><small>保命；行動不退還</small></button></div></div>`;
     document.querySelector('.fighter.player .avatar').innerHTML=`<img class="battle-avatar" src="roger.png" alt="${esc(state.name)}">`;
     $('modal-actions').innerHTML='';$('modal').hidden=false;
     document.querySelectorAll('[data-battle]').forEach(btn=>btn.onclick=()=>battleTurn(btn.dataset.battle));
@@ -986,26 +1034,44 @@
     if(action==='rice'&&consumeItem(state,'rice')){state.hp=Math.min(maxHp(state),state.hp+38);b.log.push('米特飯盒恢復 38 氣血。');}
     if(state.buff?.id==='rage'&&damage>0){damage=Math.round(damage*1.3);state.stress=clamp(state.stress+5,0,100);useBuff(state);b.log.push('紅溫聖旨讓傷害暴增！');}
     if(b.foe.id==='taishan'&&damage>0)damage=Math.round(damage*(1+state.vows.length*.06));
+    if(damage>0&&b.foe.boss)damage=applyBossDamageRule(action,damage,b);
     if(damage>0){b.foeHp=Math.max(0,b.foeHp-damage);b.log.push(`你造成 ${damage} 點傷害。`);}
     if(b.foeHp<=0){battleWin();return;}
     if(!skipEnemy) enemyTurn(action);
     if(!currentBattle)return;
     if(state.hp<=0){save();render();setTimeout(()=>showDeath(`你敗給了「${b.foe.name}」。江湖沒有讀檔鍵，只有下一世。`),250);return;}
-    b.turn++;b.intent=nextIntent(b.foe,b.turn);b.busy=false;save();render();renderBattle();
+    tickBossRule(b);b.turn++;b.intent=nextIntent(b.foe,b.turn);b.busy=false;save();render();renderBattle();
   }
 
   function enemyTurn(playerAction) {
-    const b=currentBattle,intent=b.intent,base=b.foe.attack+roll(-2,4);let dmg=0;
+    const b=currentBattle,intent=b.intent,base=b.foe.attack+roll(-2,4);let dmg=0,penetration=0,ignoreDefense=false,guardRate=intent==='heavy'?.22:.48,applyArmorBreak=false;
     if(intent==='attack')dmg=base;
     if(intent==='heavy')dmg=Math.round(base*1.75);
     if(intent==='guard'){b.foeGuard=true;b.log.push(`${b.foe.name} 架起防守。`);return;}
     if(intent==='trick'){
       dmg=Math.round(base*.65);state.qi=Math.max(0,state.qi-8);state.stress=clamp(state.stress+(b.foe.id==='copies'?15:8),0,100);b.log.push('詭計命中：真氣流失，心火上升。');
     }
-    if(b.playerGuard){const rate=intent==='heavy'?.22:.48;dmg=Math.round(dmg*rate);if(intent==='heavy'){b.foeHp=Math.max(0,b.foeHp-Math.round(defensePower()*.8));b.log.push('完美防住重擊，對手失去平衡！');}b.playerGuard=false;}
-    dmg=Math.max(1,dmg-defensePower());
+    const brokenBefore=b.armorBrokenTurns>0;
+    if(b.foe.id==='sleep'&&intent==='heavy'){penetration=.75;applyArmorBreak=true;b.log.push('棉被重壓穿透 75% 防禦，並撕開你的護體架勢！');}
+    if(b.foe.id==='green'&&intent==='trick')penetration=.45;
+    if(b.foe.id==='copies'&&intent==='trick')penetration=.6;
+    if(b.foe.id==='crows'&&b.turn%3===0){dmg=Math.max(dmg,Math.ceil(maxHp(state)*.18));ignoreDefense=true;guardRate=.5;b.log.push('雙烏夾擊！至少造成最大氣血 18% 的穿透傷害。');}
+    if(b.foe.id==='taishan'&&b.turn%3===0){dmg=Math.max(dmg,Math.ceil(maxHp(state)*.2));ignoreDefense=true;guardRate=.65;b.log.push('問心天劫！至少造成最大氣血 20% 的穿透傷害。');}
+    if(b.playerGuard){
+      dmg=Math.round(dmg*guardRate);
+      if(intent==='heavy'){
+        let counter=Math.round(defensePower()*.8);
+        if(b.foe.boss)counter=applyBossDamageRule('counter',counter,b);
+        if(counter>0){b.foeHp=Math.max(0,b.foeHp-counter);b.log.push(`完美防住重擊，反制造成 ${counter} 點傷害！`);}
+      }
+      b.playerGuard=false;
+    }
+    const effectiveDefense=ignoreDefense?0:Math.round(defensePower()*(1-penetration)*(brokenBefore?.25:1));
+    dmg=Math.max(1,dmg-effectiveDefense);
     if(b.foe.id==='taishan')dmg=Math.max(1,Math.round(dmg*(1-Math.min(.3,state.routes.integrity*.008+state.routes.ties*.004))));
     state.hp=Math.max(0,state.hp-dmg);b.damageTaken+=dmg;b.log.push(`${b.foe.name} 造成 ${dmg} 點傷害。`);
+    if(brokenBefore)b.armorBrokenTurns--;
+    if(applyArmorBreak){b.armorBrokenTurns=2;b.log.push('破甲生效：接下來 2 次敵方攻勢只計算 25% 防禦。');}
     if(b.foeHp<=0){battleWin();}
   }
 

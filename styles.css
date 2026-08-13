@@ -228,6 +228,9 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .req-list { display: grid; gap: 5px; }
 .req { display: flex; justify-content: space-between; color: #887d6c; font-size: 8px; }
 .req.ok { color: var(--jade); }
+.req.combat { margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(217,164,65,.2); color: var(--gold); gap: 10px; }
+.req.combat b { text-align: right; }
+.req.combat.blocked { color: #e07870; }
 .quest-mini, .achievement-mini { margin-top: 11px; display: grid; gap: 7px; }
 .mini-row { display: flex; gap: 7px; align-items: flex-start; color: #8e8372; font-size: 9px; }
 .mini-row i { width: 5px; height: 5px; margin-top: 5px; border-radius: 50%; background: var(--gold); flex: 0 0 auto; }
@@ -294,6 +297,14 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 .requirements-box ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
 .requirements-box li { display: flex; justify-content: space-between; color: #8f8472; font-size: 10px; }
 .requirements-box li.ok { color: var(--jade); }
+.boss-rule-preview, .boss-rule-box { border: 1px solid rgba(217,164,65,.34); background: rgba(217,164,65,.075); padding: 13px 14px; }
+.boss-rule-preview { margin: 12px 0; }
+.boss-rule-preview h4 { margin: 0 0 7px; color: var(--gold); font-size: 12px; letter-spacing: .08em; }
+.boss-rule-preview p, .boss-rule-box p { margin: 0; color: #c7baa4; line-height: 1.65; }
+.boss-rule-preview strong, .boss-rule-box strong { display: block; margin-top: 7px; color: var(--gold); font-size: 12px; }
+.boss-rule-preview.blocked, .boss-rule-box.blocked { border-color: rgba(190,48,40,.55); background: rgba(190,48,40,.1); }
+.boss-rule-preview.blocked h4, .boss-rule-preview.blocked strong, .boss-rule-box.blocked > b, .boss-rule-box.blocked strong { color: #ef7b72; }
+.boss-rule-box > b { display: block; margin-bottom: 5px; color: var(--gold); letter-spacing: .06em; }
 .warning { color: #e07870; border-left: 2px solid var(--red); padding-left: 10px; }
 .chapter-overview { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 12px; margin-bottom: 14px; padding: 12px 14px; border: 1px solid rgba(217,164,65,.25); background: rgba(217,164,65,.06); }
 .chapter-overview span { color: #8f8472; font-size: 10px; }
