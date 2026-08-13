@@ -1,689 +1,191 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0e0e10">
-<meta name="author" content="吉米狗">
-<meta name="description" content="從北投少年、職業牌手到迷因實況主：具備多路線、資源管理、機率判定、動態事件與十多種結局的台灣網路人生模擬。">
-<title>羅正男的一生｜人生大中計模擬器</title>
-<style>
-:root{
-  --bg:#0e0e10;--panel:#18181b;--panel2:#1f1f23;--surface:#26262c;--edge:#303036;
-  --text:#efeff1;--dim:#adadb8;--gold:#bf94ff;--green:#00f593;
-  --red:#ff4f4d;--blue:#1f69ff;--purple:#9147ff;--purple-dark:#5c16c5;
-  --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
-  --sans:Inter,"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--sans)}
-body{font-size:15px;line-height:1.62;background-image:linear-gradient(90deg,transparent 0 75%,#111114 75%)}
-button,input{font:inherit}button{cursor:pointer}
-#start{position:fixed;inset:0;z-index:90;background:#0e0e10;overflow:auto}
-#start:before{content:"";position:fixed;inset:0 0 auto;height:4px;background:linear-gradient(90deg,#772ce8,#a970ff,#772ce8)}
-.start-wrap{width:min(720px,100%);margin:auto;padding:52px 24px 64px}
-.start-wrap:before{content:"瀏覽頻道  /  互動實況人生";display:block;color:var(--dim);font-size:12px;font-weight:700;letter-spacing:.12em;margin-bottom:22px}
-.snake-mark{width:84px;height:84px;border-radius:50%;position:relative;background:linear-gradient(145deg,#a970ff,#5c16c5);box-shadow:0 0 0 6px #26262c,0 14px 38px #0009}
-.snake-mark:before{content:"LIVE";position:absolute;inset:0;display:grid;place-items:center;font:900 18px var(--sans);letter-spacing:.06em;color:white}
-.snake-mark:after{content:"";position:absolute;right:2px;bottom:5px;width:18px;height:18px;border-radius:50%;background:#eb0400;border:4px solid #0e0e10}
-h1{font-size:clamp(38px,9vw,64px);line-height:1.04;letter-spacing:-.025em;margin-top:25px}
-h1 em{display:block;color:var(--gold);font-style:normal;font-size:.37em;letter-spacing:.1em;margin-top:12px}
-.lead{color:var(--dim);font-size:14px;margin:18px 0 30px;max-width:640px}
-.field{margin-top:20px}.field label{display:block;color:var(--text);font-size:12px;font-weight:700;letter-spacing:.04em;margin-bottom:7px}
-.field input{width:100%;border:2px solid var(--edge);background:#0e0e10;color:var(--text);padding:11px 13px;border-radius:6px;outline:none;transition:.15s}
-.field input:hover{border-color:#53535f}.field input:focus{border-color:var(--purple);box-shadow:0 0 0 2px var(--purple)}
-.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}.difficulties{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.mode,.difficulty{position:relative;border:2px solid transparent;background:var(--panel2);color:var(--dim);padding:15px;border-radius:7px;text-align:left;transition:.15s}
-.difficulty{padding:12px}.mode:hover,.difficulty:hover{background:#26262c}.mode b,.difficulty b{display:block;color:var(--text);font-size:14px;margin-bottom:5px}.mode span,.difficulty span{font-size:11px;line-height:1.45;display:block}
-.mode.on,.difficulty.on{border-color:var(--purple);background:#241b33}.mode.on:after,.difficulty.on:after{content:"✓";position:absolute;right:11px;top:9px;color:var(--gold);font-weight:900}.mode.on b,.difficulty.on b{color:var(--gold)}
-.btn{display:block;width:100%;border:0;background:#3a3a3d;color:var(--text);border-radius:4px;padding:12px 14px;margin-top:9px;text-align:left;font-weight:700;transition:background .14s,transform .14s}
-.btn:hover{background:#4e4e54}.btn:active{transform:scale(.985)}
-.btn.main{background:var(--purple);text-align:center;color:#fff}.btn.main:hover{background:#772ce8}
-.btn.warn{box-shadow:inset 3px 0 var(--red)}.btn small{display:block;color:var(--dim);font-size:11.5px;font-weight:500;margin-top:3px}
-.btn:disabled{cursor:not-allowed;opacity:.46;background:#242428}.btn:disabled:hover{background:#242428}.choice-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.choice-tag{font:800 9px var(--mono);color:var(--gold);background:#2c2040;border-radius:999px;padding:2px 6px}.choice-tag.risk{color:#ff9b99;background:#3a1b20}.choice-tag.cost{color:#ffca61;background:#352b17}.choice-tag.locked{color:#adadb8;background:#303036}
-.start-note{font-size:11.5px;color:var(--dim);margin-top:18px;padding:12px 14px;border-left:4px solid var(--purple);background:var(--panel)}
-.credits{text-align:center;color:var(--dim);font-size:11px;margin-top:24px}.credits strong{display:block;color:var(--text);font-size:13px}.credits small{display:block;margin-top:4px}.credits a{color:var(--gold)}
-#app{display:none;width:min(820px,100%);min-height:100vh;margin:auto;padding-bottom:190px}
-#board{position:sticky;top:0;z-index:40;background:#18181bf5;backdrop-filter:blur(12px);border-bottom:1px solid var(--edge);box-shadow:0 4px 16px #0008;padding:10px 14px 9px}
-.board-top{display:flex;align-items:center;gap:8px}.identity{min-width:0;flex:1;position:relative;padding-left:14px}.identity:before{content:"";position:absolute;left:0;top:6px;width:7px;height:7px;border-radius:50%;background:#eb0400;box-shadow:0 0 8px #eb0400}.identity b{font-size:17px;letter-spacing:.01em}.identity small{display:block;color:var(--dim);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#era-badge{font:800 9px var(--sans);letter-spacing:.06em;color:#fff;background:#eb0400;border-radius:4px;padding:4px 7px;white-space:nowrap}
-#restart,#status-toggle{border:0;background:#3a3a3d;color:var(--text);border-radius:4px;padding:6px 9px;font-weight:700}#restart:hover,#status-toggle:hover{background:#4e4e54}
-.board-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:9px}
-.board-cell{background:#0e0e10;border:1px solid var(--edge);border-radius:5px;padding:6px 4px;text-align:center;min-width:0}
-.board-cell b{display:block;color:var(--gold);font:800 15px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.board-cell span{color:var(--dim);font-size:9.5px;letter-spacing:.04em}
-.life-line{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:6px}.life-chip{display:flex;justify-content:center;gap:5px;background:#111114;border-radius:3px;padding:3px 5px;color:var(--dim);font-size:9.5px}.life-chip b{color:var(--text);font:800 10px var(--mono)}.life-chip.danger b{color:#ff8280}.life-chip.good b{color:var(--green)}
-#stats{display:none;background:#111114;border-top:1px solid var(--edge);padding:11px 13px 12px;margin:9px -14px -9px}
-#stats.open{display:block}.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px}.stat{display:grid;grid-template-columns:52px 1fr 28px;align-items:center;gap:7px;font-size:11px;color:var(--dim)}
-.meter{height:6px;border-radius:2px;background:#303036;overflow:hidden}.meter i{display:block;height:100%;background:var(--purple);transition:.3s}.stat strong{font:700 11px var(--mono);color:var(--text);text-align:right}
-.shadow-line{margin-top:10px;padding-top:9px;border-top:1px solid var(--edge);display:flex;flex-wrap:wrap;gap:7px}.chip{font:700 10px var(--mono);border:1px solid var(--edge);border-radius:999px;padding:3px 8px;color:var(--dim)}.chip.hot{color:#ff8280;border-color:#7d2928}.chip.good{color:var(--green);border-color:#187b54}
-#log{padding:18px 16px 26px;display:flex;flex-direction:column;gap:12px}
-.era-head{text-align:left;color:var(--gold);font:800 11px var(--sans);letter-spacing:.12em;padding:14px 2px 2px}.era-head:before{content:"◆";color:var(--purple);margin-right:8px}.era-head:after{display:none}
-.card{background:var(--panel);border:0;border-left:4px solid #3a3a3d;border-radius:6px;padding:14px 15px;animation:rise .24s ease;overflow-wrap:anywhere;box-shadow:0 3px 12px #0004}
-@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.card:hover{background:#1f1f23}.card h3{font-size:17px;line-height:1.35;margin:4px 0 7px}.card h4{font-size:10px;letter-spacing:.13em;color:var(--dim);display:flex;align-items:center;gap:7px}.card h4:before{content:"";width:8px;height:8px;border-radius:2px;background:var(--blue)}
-.card.gold{border-left-color:#ffb31a}.card.bad{border-left-color:var(--red)}.card.good{border-left-color:var(--green)}.card.purple{border-left-color:var(--purple)}.card.gold h4:before{background:#ffb31a}.card.bad h4:before{background:var(--red)}.card.good h4:before{background:var(--green)}.card.purple h4:before{background:var(--purple)}
-.card p{font-size:14px}.card p+p{margin-top:7px}.yearline{color:var(--gold);font:700 11px var(--mono);letter-spacing:.08em}
-.fact{display:inline-block;margin-top:9px;font-size:10.5px;background:#26262c;color:var(--dim);border-radius:999px;padding:3px 8px}.fact.public{color:#70a7ff}.fact.memory{color:#ffca61}.fact.meme{color:#bf94ff}.fact.fiction{color:var(--green)}
-.delta{margin-top:8px;font:700 11px var(--mono);color:var(--dim)}.up{color:var(--green)}.down{color:#ff8280}.gold{color:#ffca61}
-.chat{background:#111114;border:1px solid var(--edge);border-radius:5px;padding:10px 11px;font-size:11.5px;color:#dedee3}.chat:before{content:"實況聊天室";display:block;color:var(--dim);font-size:9px;font-weight:800;letter-spacing:.1em;margin-bottom:5px}.chat b{color:var(--gold)}.chat span{display:block}.chat span+span{margin-top:3px}.chat .system{color:#bf94ff}
-.meme-card{display:flex;align-items:center;gap:12px;background:#201a2c;border-left-color:var(--purple)}.meme-icon{font-size:29px}.meme-card b{color:var(--gold)}
-.event-card{background:#191623;border-left-color:#a970ff}.event-card h4:after{content:" RANDOM";color:#ffca61;font:800 9px var(--mono)}.perk-card{display:flex;align-items:center;gap:12px;background:#15231f;border-left-color:var(--green)}.perk-icon{font-size:28px}.route-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}.route{background:#111114;border-radius:4px;padding:7px 5px;text-align:center;color:var(--dim);font-size:9px}.route b{display:block;color:var(--gold);font:800 14px var(--mono)}.ending-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.ending-grid div{background:#111114;border-radius:4px;padding:7px 9px;color:var(--dim);font-size:10px}.ending-grid b{display:block;color:var(--text);font-size:12px}
-#actions{position:fixed;z-index:50;left:50%;bottom:0;transform:translateX(-50%);width:min(820px,100%);background:#18181bf5;border-top:1px solid var(--edge);padding:11px 14px calc(13px + env(safe-area-inset-bottom));backdrop-filter:blur(12px);max-height:47vh;overflow:auto}
-#actions .prompt{font-size:11px;color:var(--dim);font-weight:800;letter-spacing:.08em;margin:1px 2px 5px}.progress{height:3px;background:#303036;position:fixed;top:0;left:0;right:0;z-index:100}.progress i{display:block;height:100%;background:var(--purple);transition:.35s}
-.ending{border-left-color:#ffb31a;background:#211d16}.ending .rank{font:900 44px var(--mono);color:#ffca61;line-height:1}.ending ul{margin:10px 0 0 20px;color:var(--dim);font-size:13px}
-.modal{position:fixed;inset:0;z-index:120;background:#000c;display:none;place-items:center;padding:20px}.modal.open{display:grid}.modal-box{max-width:520px;width:100%;max-height:82vh;overflow:auto;background:var(--panel);border:1px solid var(--edge);border-radius:7px;padding:20px;box-shadow:0 18px 50px #000}.modal-box h2{color:var(--text);margin-bottom:8px}.modal-box p,.modal-box li{font-size:13px;color:var(--dim)}.modal-box ul{margin:8px 0 0 18px}
-.version{position:fixed;right:8px;bottom:5px;z-index:140;font:9px var(--mono);color:#73737c;pointer-events:none}
-@media(min-width:960px){body{background:#0e0e10}#app{width:calc(100% - 340px);max-width:none;margin:0;padding-bottom:32px}#board{padding-left:max(18px,calc((100vw - 340px - 900px)/2));padding-right:max(18px,calc((100vw - 340px - 900px)/2))}#log{max-width:900px;margin:auto;padding:22px 20px 36px}#actions{left:auto;right:0;top:0;bottom:0;transform:none;width:340px;max-height:none;border-top:0;border-left:1px solid var(--edge);padding:60px 14px 18px;background:#18181b}#actions:before{content:"選擇聊天室";position:absolute;left:0;right:0;top:0;height:48px;display:grid;place-items:center;border-bottom:1px solid var(--edge);color:var(--text);font-size:12px;font-weight:800;letter-spacing:.08em}.progress{right:340px}}
-@media(max-width:520px){.start-wrap{padding:34px 18px 52px}.snake-mark{width:70px;height:70px}.modes,.difficulties{grid-template-columns:1fr}.board-cell b{font-size:13px}.life-line{grid-template-columns:repeat(3,1fr)}.stat-grid{grid-template-columns:1fr}.route-grid{grid-template-columns:repeat(3,1fr)}#app{padding-bottom:210px}.btn{padding:11px 12px}.card h3{font-size:16px}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#100c0b">
+  <meta name="author" content="吉米狗">
+  <meta name="description" content="糖門單角色養成 RPG：修行、打怪、任務、商城、Boss 試煉、死亡轉生與多重結局。">
+  <title>瘸俠傳：糖門再起｜羅正男的一生</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="progress"><i id="progress-bar" style="width:0"></i></div>
-<section id="start">
-  <div class="start-wrap">
-    <div class="snake-mark"></div>
-    <h1 id="logo">羅正男的一生<em>人生大中計模擬器</em></h1>
-    <p class="lead">從北投少年、六天傳說、蛛網與起圈戰隊，到冬季冠軍、金字塔流放、叉叉娛樂與一萬個分身。每局都有不同事故與選項；你必須管理體力、健康、壓力、時間、關係及信用，才能決定這次人生會成為冠軍、老闆、迷因，還是提早大中計。</p>
-    <div class="field"><label for="player-name">實況名稱</label><input id="player-name" maxlength="12" value="羅正男" autocomplete="off"></div>
-    <div class="field"><label>世界規則</label><div class="modes">
-      <button class="mode on" data-mode="history"><b>史實模式</b><span>關鍵公開事件固定；你的選擇改變代價、關係與最後評價。</span></button>
-      <button class="mode" data-mode="whatif"><b>如果當時</b><span>高風險判定可以改寫部分節點；所有替代結果均屬架空。</span></button>
-    </div></div>
-    <div class="field"><label>人生難度</label><div class="difficulties">
-      <button class="difficulty" data-difficulty="story"><b>精華剪輯</b><span>較少事故，判定寬鬆，適合先看完整故事。</span></button>
-      <button class="difficulty on" data-difficulty="local"><b>Local 本傳</b><span>資源、事故與成功率採標準規則。</span></button>
-      <button class="difficulty" data-difficulty="hell"><b>究極大中計</b><span>事故密集、壓力更高，失敗也可能變成流量。</span></button>
-    </div></div>
-    <button id="start-btn" class="btn main" style="margin-top:24px">開始這段人生 ▸</button>
-    <div class="start-note">本作是以公開生平與台灣實況迷因文化為原型的虛構改編。藍色為公開紀錄、黃色為當事人回憶、紫色為社群迷因、綠色為架空選擇。選項可能需要資產、時間、體力、關係或路線能力；未證實傳聞不會由旁白當成事實。</div>
-    <div class="credits"><strong>Created by 吉米狗</strong><small>人生模擬玩法概念參考 <a href="https://github.com/LeoGGcat/yakyulife" target="_blank" rel="noopener">YaKyoLife</a>（CC BY-NC 4.0）</small></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <section id="start-screen" class="start-screen">
+    <div class="start-shell">
+      <div class="start-copy">
+        <div class="eyebrow"><span class="live-dot"></span> 糖門實況武俠 RPG · 吉米狗製作</div>
+        <div class="seal" aria-hidden="true"><span>糖</span><i>門</i></div>
+        <h1>瘸俠傳<small>糖門再起</small></h1>
+        <p class="start-lead">你不是來看羅正男的人生跑馬燈。你要親手把一個會遲到、會爆氣、卻也真的能站上世界舞台的北投奇才，練成敢上泰山的糖門俠客。</p>
+        <div class="feature-row">
+          <span>自由養成</span><span>戰鬥讀招</span><span>死亡轉生</span><span>多線結局</span>
+        </div>
+        <blockquote>「這次不是無腦點到結局。沒有準備，就別上山。」</blockquote>
+      </div>
+
+      <form id="start-form" class="start-card">
+        <div class="card-kicker">建立你的羅瘸</div>
+        <label for="player-name">江湖名號</label>
+        <input id="player-name" maxlength="10" value="羅正男" autocomplete="off">
+
+        <fieldset>
+          <legend>開局性格</legend>
+          <button type="button" class="origin active" data-origin="talent">
+            <b>六天傳說</b><small>牌感出眾，心眼 +2；但自律偏低</small>
+          </button>
+          <button type="button" class="origin" data-origin="local">
+            <b>大中計體質</b><small>根骨 +2，瀕死逆轉時更有節目</small>
+          </button>
+          <button type="button" class="origin" data-origin="promise">
+            <b>明天一定</b><small>俠名與糖錢較多，承諾會反噬</small>
+          </button>
+        </fieldset>
+
+        <button id="new-game" class="primary-cta" type="submit">踏入糖門 <span>→</span></button>
+        <button id="continue-game" class="ghost-cta" type="button" hidden>繼續上次修行</button>
+        <p class="fine-print">單機遊玩 · 自動存於目前瀏覽器 · 重整不會消失 · 鍵盤 1–9 可選操作。本作為受台灣電競、直播文化與網路迷因啟發的虛構改編。</p>
+      </form>
+    </div>
+  </section>
+
+  <div id="game" class="game" hidden>
+    <header class="topbar">
+      <div class="brand-lockup">
+        <button id="mobile-menu" class="icon-button mobile-only" aria-label="開啟角色面板">☰</button>
+        <div class="mini-seal">糖</div>
+        <div><b>瘸俠傳</b><small>糖門再起</small></div>
+      </div>
+      <div class="run-status">
+        <span id="day-label">第 1 日</span>
+        <span class="divider">／</span>
+        <b id="chapter-label">第一回</b>
+      </div>
+      <div class="top-actions">
+        <button id="live-toggle" class="live-toggle" aria-pressed="true"><span class="live-dot"></span> 實況中</button>
+        <button id="save-button" class="icon-button" title="儲存">存</button>
+        <button id="restart-button" class="icon-button" title="重新開始">↺</button>
+      </div>
+    </header>
+
+    <div class="game-grid">
+      <aside id="character-panel" class="character-panel">
+        <button id="close-mobile-menu" class="panel-close mobile-only" aria-label="關閉角色面板">×</button>
+        <div class="character-card">
+          <div class="portrait" aria-hidden="true">
+            <div class="portrait-moon"></div><div class="portrait-hair"></div><div class="portrait-face">羅</div>
+            <span id="rebirth-badge" class="rebirth-badge">初世</span>
+          </div>
+          <div class="character-name"><h2 id="player-name-view">羅正男</h2><p id="title-view">糖門外院弟子</p></div>
+          <div class="level-row"><b id="level-view">LV. 1</b><div class="xp-track"><i id="xp-bar"></i></div><small id="xp-view">0 / 60</small></div>
+        </div>
+
+        <div class="resource-stack">
+          <div class="resource"><span>氣血</span><div class="bar hp"><i id="hp-bar"></i></div><b id="hp-view">80/80</b></div>
+          <div class="resource"><span>真氣</span><div class="bar qi"><i id="qi-bar"></i></div><b id="qi-view">30/30</b></div>
+          <div class="resource"><span>心火</span><div class="bar stress"><i id="stress-bar"></i></div><b id="stress-view">0</b></div>
+        </div>
+
+        <section class="panel-section">
+          <div class="section-heading"><span>四維</span><button id="allocate-open" class="text-button">配點 <b id="points-view">0</b></button></div>
+          <div id="stats-grid" class="stats-grid"></div>
+        </section>
+
+        <section class="panel-section currency-grid">
+          <div><span>糖錢</span><b id="coins-view">0</b></div>
+          <div><span>俠名</span><b id="fame-view">0</b></div>
+          <div><span>行動</span><b id="ap-view">6/6</b></div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-heading"><span>行囊與裝備</span><button id="inventory-open" class="text-button">查看</button></div>
+          <div id="equipment-mini" class="equipment-mini"></div>
+        </section>
+      </aside>
+
+      <main class="world-panel">
+        <section class="story-banner">
+          <div>
+            <span id="chapter-number" class="chapter-number">第一回</span>
+            <h2 id="chapter-title">斷腿入糖門</h2>
+            <p id="chapter-summary">被聊天室威脅打斷腿之後，你陰錯陽差踏進糖門。</p>
+          </div>
+          <button id="story-button" class="story-button"><span>本回目標</span><b>查看江湖帖</b></button>
+        </section>
+
+        <section class="location-stage">
+          <div class="location-art" aria-hidden="true">
+            <div class="sun"></div><div class="mountain m1"></div><div class="mountain m2"></div><div class="pagoda"><i></i><i></i><i></i></div>
+            <div id="danger-stamp" class="danger-stamp">安</div>
+          </div>
+          <div class="location-copy">
+            <div class="location-meta"><span id="location-region">糖門 · 山腳</span><span id="danger-label">凶險 Ⅰ</span></div>
+            <h1 id="location-name">糖門外院</h1>
+            <p id="location-description">木樁、藥爐與被欠薪的雜役都在這裡。最安全，也最容易把一天修掉。</p>
+            <div id="location-effects" class="location-effects"></div>
+          </div>
+        </section>
+
+        <nav id="map-nav" class="map-nav" aria-label="江湖地圖"></nav>
+
+        <section class="command-deck">
+          <div class="command-heading">
+            <div><span class="kicker">今日安排</span><h3>你要怎麼變強？</h3></div>
+            <div id="cooldown" class="cooldown" hidden><span>收招</span><div><i></i></div></div>
+          </div>
+          <div id="actions-grid" class="actions-grid"></div>
+        </section>
+
+        <section class="journey-log">
+          <div class="command-heading"><div><span class="kicker">本世紀錄</span><h3>江湖快報</h3></div><button id="clear-log" class="text-button">收起舊聞</button></div>
+          <div id="log-list" class="log-list"></div>
+        </section>
+      </main>
+
+      <aside class="stream-panel">
+        <div class="stream-head">
+          <div><span class="live-dot"></span><b>糖門台</b><small id="viewer-count">2486 人觀看</small></div>
+          <button id="fate-button" class="fate-button">抽聊天室聖旨</button>
+        </div>
+        <div id="chat-feed" class="chat-feed" aria-live="polite"></div>
+
+        <section class="side-card boss-card">
+          <div class="side-title"><span>登山進度</span><b id="boss-progress">0 / 5</b></div>
+          <div id="boss-preview"></div>
+        </section>
+
+        <section class="side-card">
+          <div class="side-title"><span>任務追蹤</span><button id="quests-open" class="text-button">全部</button></div>
+          <div id="quest-mini" class="quest-mini"></div>
+        </section>
+
+        <section class="side-card">
+          <div class="side-title"><span>成就</span><button id="achievements-open" class="text-button">圖鑑</button></div>
+          <div id="achievement-mini" class="achievement-mini"></div>
+        </section>
+      </aside>
+    </div>
   </div>
-</section>
 
-<main id="app">
-  <header id="board">
-    <div class="board-top">
-      <div class="identity"><b id="name-view">羅正男</b><small id="subtitle">北投未報到青年</small></div>
-      <span id="era-badge">序章</span>
-      <button id="status-toggle" title="展開狀態">狀態</button>
-      <button id="restart" title="重新開始">↺</button>
-    </div>
-    <div class="board-grid">
-      <div class="board-cell"><b id="year-view">1992</b><span>年份</span></div>
-      <div class="board-cell"><b id="age-view">0</b><span>年齡</span></div>
-      <div class="board-cell"><b id="cash-view">0</b><span>資產（萬）</span></div>
-      <div class="board-cell"><b id="legend-view">0</b><span>羅傑指數</span></div>
-    </div>
-    <div class="life-line" id="life-line"></div>
-    <section id="stats"><div class="stat-grid" id="stat-grid"></div><div class="shadow-line" id="shadow-line"></div></section>
-  </header>
-  <section id="log"></section>
-</main>
-<footer id="actions" style="display:none"></footer>
-<div class="modal" id="info-modal"><div class="modal-box"><h2>取材與改編原則</h2><p>《羅正男的一生》由吉米狗製作，使用虛構姓名、隊伍、平台與卡牌名稱，將公開可查的人生節點改寫為遊戲事件。</p><ul><li>重大賽果與制度處分依官方或多方新聞核心呈現。</li><li>聊天室梗只作為群體對白，不替真人私生活下結論。</li><li>封禁原因、社宅與噪音等未有完整官方定案者，保持不確定措辭。</li><li>父親、住址及非公眾人物資訊不重建、不擴散。</li></ul><button class="btn main" id="modal-close">了解</button></div></div>
-<div class="version">吉米狗 · v3.0.0</div>
-<script>
-(()=>{
-'use strict';
-const PUBLIC={label:'公開紀錄',cls:'public'},MEMORY={label:'當事人回憶',cls:'memory'},MEME={label:'社群迷因',cls:'meme'},FICTION={label:'架空選擇',cls:'fiction'};
-const STAT_NAMES={sense:'牌感',practice:'練習',spirit:'精神',credit:'信用',integrity:'誠信',fame:'名聲',fans:'人氣'};
-const REL_NAMES={mother:'米特姨',crab:'蟹老闆',shaxy:'薛西',nl:'熊班長'};
-const HIDDEN_NAMES={lazy:'怠惰',promise:'承諾債',platform:'平台風險',pollution:'分身污染'};
-const LIFE_NAMES={energy:'體力',health:'健康',stress:'壓力',time:'本章時間'};
-const ROUTE_NAMES={pro:'競技',creator:'實況',manager:'經營',family:'家庭',chaos:'混亂'};
-const DIFFICULTIES={
-  story:{label:'精華剪輯',risk:-12,event:.34,drain:.7,reward:1.12},
-  local:{label:'Local 本傳',risk:0,event:.56,drain:1,reward:1},
-  hell:{label:'究極大中計',risk:14,event:.78,drain:1.3,reward:.9}
-};
-const O=(t,s,out,mods={},hidden={},rel={},cash=0,extra={})=>({t,s,out,mods,hidden,rel,cash,...extra});
-const CHAPTERS=[
- {key:'beitou',year:1992,age:0,era:'序章｜沒有報到的人',title:'北投存檔點',tone:'purple',fact:MEMORY,
-  text:'羅正男出生於臺北北投。關於童年，公開資料只留下零碎輪廓：學校生活不是他的主場，電玩卻很早成為理解世界的方式。人物圖鑑裡，「父親」一欄保持空白；聊天室後來稱那位缺席角色去當了獵人，但那只是二創。',
-  choices:[
-   O('把空白留白','不替不知道的事補答案。','你把家庭欄位鎖起來。不是每一個問號都需要被聊天室填滿。',{credit:4,integrity:5},{},{mother:5}),
-   O('先按開始再說','人生資料不完整也能開局。','畫面閃過「資料不足」，北投少年仍然拿起了控制器。',{sense:4,spirit:3},{lazy:2},{mother:2})]},
- {key:'no_checkin',year:2013,age:21,era:'序章｜沒有報到的人',title:'大學沒有按下確認',tone:'bad',fact:MEMORY,
-  text:'申請了大學，卻沒有真的去報到。服役之後，他試過咖啡店、便利商店與速食店；正常工作的規則都看得懂，身體卻像永遠對不上班表。直到朋友傳來一款新卡牌遊戲。',
-  choices:[
-   O('再試一份正常工作','信用比較安全，精神會持續流失。','你又撐過一張班表，最後仍在打卡鐘前敗下陣來。至少你更確定：問題不是不肯工作，而是還沒找到能長久投入的事。',{credit:5,spirit:-8,practice:3},{lazy:-2},{mother:5},3),
-   O('下載《魔牌傳說》','家人信任下降，未知道路解鎖。','安裝條跑完。你還不知道，這次按下確認會比大學報到重要得多。',{sense:8,spirit:5,credit:-3},{lazy:4},{mother:-4},-1)]},
- {key:'forty_packs',year:2014,age:22,era:'第一幕｜天賦報到',title:'四十包，零張傳說',tone:'bad',fact:MEMORY,
-  text:'第一次買四十包卡，最高稀有度一張都沒有。右手運氣沒有報到，但他開始看高手直播、研究便宜牌組，從有限資源裡拆出勝率。',
-  choices:[
-   O('抄一套便宜獵人','穩定學習，先理解再創新。','你把每一張卡的用途抄在紙上。卡不閃，曲線卻很漂亮。',{sense:9,practice:8,spirit:2},{lazy:-2},{},-4,{unlock:'四十包零傳說'}),
-   O('靠競技場養帳號','高風險，把爛右手當訓練。','你用一次次選牌補回卡池。輸掉的金幣變成牌感，這是第一筆真正的遊戲投資。',{sense:12,practice:5,spirit:-5},{},{},-2,{unlock:'右手不可靠'})]},
- {key:'six_days',year:2014,age:22,era:'第一幕｜天賦報到',title:'六天傳說',tone:'gold',fact:PUBLIC,
-  text:'接觸遊戲不久，他用獵人牌組在六天內登上傳說。正常道路上累積多年的挫折，被一個排名圖示瞬間反轉。',
-  choices:[
-   O('睡醒再打晉級局','保留精神，少一點節目效果。','你第一次主動離開牌桌。隔天回來，晉級畫面仍然在那裡等你。',{sense:8,practice:9,spirit:8,credit:4},{lazy:-4},{mother:5},0,{unlock:'六天傳說'}),
-   O('一路排到天亮','更快、更熱，也更像未來的你。','清晨的光從窗簾縫裡照進來，傳說圖示同時亮起。聊天室還不存在，但熬夜傳說已經開始了。',{sense:12,practice:6,spirit:-12,fans:4},{lazy:6},{mother:-2},0,{unlock:'六天傳說'})]},
- {key:'asia_one',year:2014,age:22,era:'第一幕｜天賦報到',title:'亞洲第一與蛛網合約',tone:'good',fact:PUBLIC,
-  text:'約五個月後，他登上亞洲天梯頂端，收到蛛網戰隊（華義原型）的職業邀約。米特姨第一個反應是：「有人付錢叫你打遊戲，這是不是詐騙？」',
-  choices:[
-   O('拿合約與報導回家','用可以查證的東西說服家人。','她把合約看了又看，最後問的不是遊戲，而是公司有沒有勞健保。你第一次穿上職業隊服。',{credit:9,fame:10,fans:6,integrity:4},{lazy:-2},{mother:14},12,{unlock:'職業選手'}),
-   O('先領到薪水再解釋','現金最有說服力，但溝通稍晚。','第一筆薪水進帳後，米特姨終於相信這不是網路詐騙，只是仍不懂為什麼上班不用出門。',{credit:5,fame:8,fans:5},{},{mother:9},12,{unlock:'職業選手'})]},
- {key:'sweden',year:2015,age:23,era:'第一幕｜天賦報到',title:'一張萬用紙條去瑞典',tone:'gold',fact:MEMORY,
-  text:'第一次搭飛機就錯過班機，轉機時又在荷蘭海關被攔。英文不足，他拿出經理寫好的萬用紙條，最後壓線抵達瑞典賽場並拿下亞軍。',
-  choices:[
-   O('保存紙條，照流程求援','危機管理比硬撐重要。','紙條在海關人員之間傳了一圈。你終於在比賽當天抵達，面對快睡著的世界級對手，最後帶回亞軍。',{sense:10,practice:7,credit:8,fame:14,fans:10,spirit:-6},{},{mother:10},85,{unlock:'萬用紙條'}),
-   O('用遊戲術語硬闖海關','成功率低，節目效果極高。','海關聽不懂「傳說第一」，你也聽不懂他的問題。幸好最後仍有人看懂紙條；亞軍和這段旅程一起成為第一批國際精華。',{sense:10,credit:-2,fame:12,fans:14,spirit:-10},{platform:2},{mother:7},78,{unlock:'第一次出國就大中計'})]},
- {key:'ahq',year:2016,age:24,era:'第二幕｜起圈喜劇宇宙',title:'從蛛網巢到起圈宿舍',tone:'good',fact:PUBLIC,
-  text:'蛛網合約告一段落，他加盟資源更完整的起圈戰隊（起Q／ahq 原型）。蟹老闆、薛西、阿威、大哥湯與紹安陸續登場；宿舍、節目、訓練與個人直播第一次擠進同一張行程表。',
-  choices:[
-   O('簽下完整戰隊行程','資源與信用上升，自由下降。','你在合約上簽名。蟹老闆得到一位明星選手，你得到一套從未真正習慣過的制度。',{practice:9,credit:8,fame:12,fans:8,spirit:-4},{lazy:-3},{crab:12,shaxy:8},25,{unlock:'起圈五唬將'}),
-   O('保留個人直播優先權','人氣成長較快，管理衝突提早埋下。','戰隊答應讓你保留彈性。每個人都以為「彈性」的意思跟自己一樣。',{sense:4,credit:2,fame:9,fans:13},{lazy:5,promise:4},{crab:5,shaxy:9},28,{unlock:'起圈五唬將'})]},
- {key:'dog_advisor',year:2016,age:24,era:'第二幕｜起圈喜劇宇宙',title:'狗頭軍師與五唬將',tone:'purple',fact:MEME,
-  text:'薛西在語音裡當軍師，阿威負責爆料，大哥湯成為技術標竿。贏了每個人都有功，輸了所有人都知道戰犯是誰。聊天室替戰隊整理出五唬將與七宗罪。',
-  choices:[
-   O('聽軍師，但保留最後決定','信任與牌感同步成長。','「怎麼辦啦薛西？」成為求救句，也成為一種默契。你聽完建議，最後仍由自己的右手負責。',{sense:8,practice:7,credit:4,fans:8},{},{shaxy:12,crab:3},0,{unlock:'怎麼辦啦薛西'}),
-   O('贏了算我的，輸了抓軍師','節目效果驚人，信任開始磨損。','語音裡吵成一團，聊天室笑成一團。剪輯師第一次發現：牌局只是素材，抓戰犯才是正片。',{sense:4,credit:-6,fans:14},{lazy:3},{shaxy:-4},0,{unlock:'狗頭軍師受害者'})]},
- {key:'promises',year:2017,age:25,era:'第二幕｜起圈喜劇宇宙',title:'五十個承諾',tone:'purple',fact:MEME,
-  text:'「明天一定開」、「這把贏了就抽」、「下週有新節目」。承諾可以立刻提高期待，履約卻需要真的起床。觀眾開始替他整理開台紀錄與五十大謊言。',
-  choices:[
-   O('少承諾，真的準時一次','短期熱度較低，信用大幅回升。','八點整，開台畫面準時亮起。聊天室反而懷疑帳號是不是被盜了。',{practice:4,credit:13,fans:4,spirit:-5},{lazy:-8,promise:-8},{crab:5},5,{unlock:'薛丁格的開台'}),
-   O('先說明天一定再說','期待、訂閱與承諾債一起增加。','「不準時我就是狗。」隔天你晚了兩小時，聊天室整排汪汪。迷因第一次比信用更值錢。',{credit:-10,fans:15,fame:3,spirit:4},{lazy:10,promise:16},{crab:-5},9,{unlock:'五十大承諾'})]},
- {key:'lulu',year:2017,age:25,era:'第二幕｜起圈喜劇宇宙',title:'一頓飯，八年連載',tone:'purple',fact:MEME,
-  text:'朋友露露（LULU 迷因線的合成角色）出現在直播環境，也曾和他一起吃飯。可以確認的事情到此為止；聊天室卻自行續寫出曖昧、交往、錯過、結婚、沒結婚與「又有機會」的長篇連載。',
-  choices:[
-   O('冷靜澄清只是朋友','圈外誤解下降，聊天室妄想反而增加。','你解釋得越完整，觀眾截圖越多。戀愛值沒有變，二創資料庫卻多了三頁。',{credit:5,fame:2,fans:8},{pollution:3},{},0,{unlock:'羅女郎宇宙'}),
-   O('真假、確實、有料','不回答，讓聊天室自己寫。','四句敷衍回覆被剪成循環播放。沒有人得到答案，所有人都得到素材。',{credit:-2,fans:12},{promise:2,pollution:6},{},0,{unlock:'冷靜真假確實有料'})]},
- {key:'push',year:2017,age:25,era:'第二幕｜起圈喜劇宇宙',title:'二費生物與世紀之推',tone:'bad',fact:MEMORY,
-  text:'節目上為了起手牌與薛西爭執，火爆值穿過安全線，主角推了對方。那一推很短，後續的聊天室壽命卻很長。',
-  choices:[
-   O('立刻停下並道歉','史實事件仍留下，關係損失較小。','「剛才真的過頭了。」薛西沒有立刻笑，卻也沒有離開。推人稱號永久解鎖，信任還有修復空間。',{credit:5,integrity:5,fame:-4,fans:9},{pollution:4},{shaxy:-5},0,{unlock:'推人杰'}),
-   O('嘴硬說是節目效果','熱度上升，信用與關係受損。','聊天室把片段做成無限循環。你說是效果，薛西的表情說明那一刻並不好笑。',{credit:-10,integrity:-4,fame:-6,fans:15},{pollution:8},{shaxy:-14},0,{unlock:'推人杰'})]},
- {key:'green_card',year:2017,age:25,era:'第二幕｜起圈喜劇宇宙',title:'綠色核心卡',tone:'bad',fact:PUBLIC,
-  text:'明星表演賽上，核心卡的條件尚未滿足，主角卻直接把牌打出去。效果沒有啟動，對手在鏡頭另一邊鼓掌。那張綠色的卡成為終身技術檢查題。',
-  choices:[
-   O('重新讀牌，承認失誤','牌技不會因一次失誤消失。','你盯著卡面沉默兩秒，然後自己笑出來。聊天室的「==」從此有了固定使用時機。',{sense:4,practice:8,credit:5,fame:-5,fans:10},{},{shaxy:3},0,{unlock:'綠色核心卡'}),
-   O('這局做效果啦','信用下降，精華價值大增。','剪輯師在你說完之前就按下標記。多年後，新觀眾仍會先認識這張卡，再認識你的冠軍。',{sense:2,credit:-7,fame:-6,fans:15},{promise:2,pollution:5},{},0,{unlock:'表演賽之王'})]},
- {key:'thirty_million',year:2018,age:26,era:'第二幕｜起圈喜劇宇宙',title:'麻將桌、空宿舍與三千萬',tone:'bad',fact:MEMORY,
-  text:'上班打麻將、少回宿舍、中國聯賽只打一季，最後快速搬回家。蟹老闆多年後提到整支牌隊累計投資超過三千萬元；聊天室故意把「戰隊總投入」改寫成羅正男的私人欠款。',
-  choices:[
-   O('正式交接再離隊','自由仍會到來，舊關係保留較完整。','你把設備與行程一項項交回去。帳本沒有變成私人債務，但蟹老闆的耐心確實見底。',{credit:8,fame:-2,fans:5,spirit:10},{lazy:3},{crab:-8,shaxy:2},8,{unlock:'三千萬不是私人欠款'}),
-   O('先搬了再說','精神立即恢復，信用重傷。','宿舍房間突然空了。多年後蟹老闆在聊天室喊「還我錢」，你提議上船捕魚抵債；真正的勞資衝突變成雙方都會接的老梗。',{credit:-15,fame:-4,fans:11,spirit:14},{lazy:8,promise:6},{crab:-20},10,{unlock:'蟹老闆還錢梗'})]},
- {key:'nonolive',year:2018,age:26,era:'第二幕｜起圈喜劇宇宙',title:'橘子島的第一張船票',tone:'purple',fact:PUBLIC,
-  text:'他與一批創作者遷往橘子島平台（Nonolive 原型）。合約帶來穩定收入，觀眾卻必須重新註冊；後來平台退出市場。第一次平台遷移教會他：合約能保證一段收入，不能保證一個平台永遠存在。',
-  choices:[
-   O('帶著核心觀眾一起搬','收入、平台經驗與跨站能力上升。','聊天室一邊抱怨，一邊還是跟過來。當橘子島熄燈時，你至少帶走了一批知道怎麼跨平台找人的觀眾。',{credit:5,fans:9,fame:3},{platform:7},{},32,{unlock:'第一次平台遷移'}),
-   O('只吃合約，不強迫搬家','短期收入高，平台結束時損失較大。','簽約金很實在，留存率很殘酷。平台關閉那天，你終於看見「觀眾屬於誰」不是哲學題。',{credit:-4,fans:-3,fame:2},{platform:12},{},40,{unlock:'橘子島漂流者'})]},
- {key:'asian_games',year:2018,age:26,era:'第三幕｜國手、失格與冬季之王',title:'國手門票',tone:'gold',fact:PUBLIC,
-  text:'他入選亞運電競代表名單，卻未能由資格賽晉級正式八強。曾經連大學都沒報到的人，如今向國家隊報到；米特姨第一次主動把比賽消息告訴親友。',
-  choices:[
-   O('把國家隊當最高規格準備','練習、家人信任與名聲上升。','資格賽沒有通過，但隊服與名單是真實的。失敗沒有抹掉那張國手門票。',{practice:12,spirit:-5,credit:7,integrity:5,fame:14,fans:8},{lazy:-5},{mother:15,shaxy:4},6,{unlock:'國手報到'}),
-   O('保持自己的節奏','壓力較低，準備量較少。','你沒有讓國手身分改變生活節奏。結果停在資格賽，聊天室則把「差一點」留進往後每一場國際賽。',{practice:5,spirit:5,fame:9,fans:8},{lazy:2},{mother:9},6,{unlock:'國手報到'})]},
- {key:'ladder_case',year:2018,age:26,era:'第三幕｜國手、失格與冬季之王',title:'看不見的排名之手',tone:'bad',fact:PUBLIC,
-  text:'朋友、排名利益與制度漏洞交疊，官方後續調查認定他參與影響天梯排名的事件；處理通知因內部溝通延遲，但制度記憶沒有消失。',
-  choices:[
-   O('拒絕任何排名協調','「如果當時」可改寫；史實模式仍留下官方紀錄。','你試著把手從排名之外收回。史實時間線裡，官方調查仍記下參與；架空時間線則從這裡分岔。',{credit:4,integrity:8,fame:-8,fans:-2},{},{shaxy:-2},0,{altOut:'你明確拒絕參與，保存對話並主動詢問賽事方。制度記憶沒有留下污點，但朋友關係出現裂縫。',altMods:{integrity:15,fame:4}}),
-   O('大家都這樣，先幫再說','關係短期安全，長期信用債極重。','排名看起來只是數字，後來卻變成邀請名單上的一道門。你第一次理解：制度的記憶比聊天室更久。',{credit:-8,integrity:-22,fame:-15,fans:3},{pollution:3},{shaxy:4},0,{unlock:'制度記憶'})]},
- {key:'hgg',year:2018,age:26,era:'第三幕｜國手、失格與冬季之王',title:'延遲十五分鐘的未來',tone:'bad',fact:PUBLIC,
-  text:'世界團體賽期間，隊伍使用延遲官方轉播資訊影響決策，最終全隊失格。正式判決針對整隊；遊戲不把觀看者身分錯寫成主角個人。',
-  choices:[
-   O('制止並留下反對紀錄','史實模式仍全隊失格；架空模式可避免。','你在語音裡說了不該看。史實線裡，資訊仍進入團隊決策，全隊共同承擔；至少個人責任敘事有所不同。',{credit:3,integrity:6,fame:-15,fans:-5},{},{shaxy:-5},0,{altOut:'你堅持停止討論並回報裁判，隊伍避開失格。這是明示的架空分支。',altMods:{integrity:18,fame:12}}),
-   O('沉默跟著團隊走','不是主謀，也沒有阻止。','十五分鐘後才公開的資訊，提前進入了語音。判決下來時，主角、隊友與臺灣隊名一起出現在失格公告。',{credit:-10,integrity:-20,fame:-22,fans:-8},{platform:3,pollution:4},{shaxy:-10},0,{unlock:'全隊失格'})]},
- {key:'winter_king',year:2019,age:27,era:'第三幕｜國手、失格與冬季之王',title:'冬季之王',tone:'gold',fact:PUBLIC,
-  text:'敗部復活後，他在四強與決賽連續打出 3：0，拿下冬季冠軍、五萬美元與世界賽資格。綠色核心卡、一輪杰與怠惰的嘲笑仍在聊天室，最後被冠軍畫面蓋過。',
-  choices:[
-   O('關掉聊天室，完整準備','高練習、高精神的正規冠軍路。','每一輪你都先確認核心卡是否真的亮起。最後一張牌落下，冠軍不是迷因，也不是效果。你確實贏了。',{sense:14,practice:15,spirit:-8,credit:10,integrity:5,fame:28,fans:25},{lazy:-7},{mother:15,shaxy:8},154,{unlock:'冬季之王'}),
-   O('帶著所有迷因一起上場','壓力更高，節目效果與人氣最大。','「綠色的卡」、「一輪杰」、「右手借我」刷滿聊天室。你沒有逃離舊梗，而是帶著它們把決賽打成 3：0。',{sense:16,practice:10,spirit:-14,credit:5,fame:25,fans:31},{pollution:7},{mother:12,shaxy:10},154,{unlock:'冬季之王'})]},
- {key:'taipei_worlds',year:2019,age:27,era:'第三幕｜國手、失格與冬季之王',title:'臺北主場與沒有寄來的邀請函',tone:'bad',fact:PUBLIC,
-  text:'世界冠軍賽回到臺北，他以 1：3 止步 16 強。另一封更安靜的信也沒有寄來：即使剛奪冬季冠軍，舊競技事件仍讓他未受邀首屆頂級聯賽。勝利證明實力，不能要求制度失憶。',
-  choices:[
-   O('接受結果，從公開賽重來','信用與精神回升，冠軍不被否定。','你說已經盡力、沒有遺憾。邀請函仍未寄到，但冬季冠軍的獎盃也沒有因此消失。',{practice:7,spirit:8,credit:8,integrity:5,fame:5,fans:8},{lazy:-3},{mother:8},77,{unlock:'沒有寄來的邀請函'}),
-   O('把不甘心變成開台素材','競技路轉向實況與戰場。','你把制度拒絕、主場失利和聊天室舊帳都搬上直播。牌桌的門變窄，另一扇觀眾入口卻變大。',{sense:6,credit:-2,fame:3,fans:15},{promise:3,platform:4},{},77,{unlock:'冠軍也洗不掉的帳'})]},
- {key:'battlegrounds',year:2020,age:28,era:'第四幕｜平台流放與水蛇重生',title:'月底屍速列車',tone:'purple',fact:MEMORY,
-  text:'競技重心轉向英雄戰場、月底排名與長時間直播。水蛇洞精華文化成熟：原台像素材庫，剪輯後的事故才是完整作品。',
-  choices:[
-   O('平日練習，月底穩定收尾','排名比較穩，直播爆點較少。','你第一次沒有等到月底最後三天才衝刺。剪輯師有點失望，排名卻很感動。',{sense:8,practice:12,spirit:-4,credit:8,fans:6},{lazy:-8,promise:-3},{shaxy:5},12,{unlock:'戰場傳奇'}),
-   O('月底連播，屍速列車啟動','疲勞與人氣同時衝高。','日期越接近結算，你越像一列沒有煞車的車。聊天室輪班睡覺，你還在找下一場。',{sense:9,practice:7,spirit:-18,credit:-3,fans:16},{lazy:7,promise:4,platform:3},{shaxy:3},18,{unlock:'床場傳奇'})]},
- {key:'rank_17',year:2020,age:28,era:'第四幕｜平台流放與水蛇重生',title:'第十七名與「我比你紅」',tone:'bad',fact:MEMORY,
-  text:'主角競逐戰場資格落在第 17 名，薛西拿到資格。復盤變成人氣比較，私訊裡爆出「老子就是比你紅」。技術競爭、兄弟情與自尊一次撞在一起。',
-  choices:[
-   O('先恭喜，再檢討第十七名','很難，但能保住關係與信用。','你把那句話吞回去，改問自己的分數少在哪裡。薛西仍會戳你，卻不是用沉默。',{practice:10,spirit:-5,credit:9,fame:2,fans:5},{lazy:-4},{shaxy:10},0,{unlock:'第十七名'}),
-   O('老子就是比你紅','人氣真的高，關係真的會痛。','私訊外流後，聊天室把這句話做成萬用勝負判定。你沒拿到資格，卻拿到一個永不退環境的台詞。',{practice:2,credit:-11,fame:-4,fans:18},{pollution:7},{shaxy:-13},0,{unlock:'我就是比你紅'})]},
- {key:'pyramid',year:2021,age:29,era:'第四幕｜平台流放與水蛇重生',title:'金字塔 728 天',tone:'bad',fact:PUBLIC,
-  text:'紫色學院（Twitch 原型）長期封禁，具體原因沒有完整公開。他轉往紅色學院（YouTube 原型）重建直播；從封禁到解除約 728 天，而兩次在紫色平台開播相隔約 772 天。社群把流放叫作去埃及、進金字塔。',
-  choices:[
-   O('把核心觀眾搬進金字塔','跨平台能力與粉絲黏著上升。','平台歸零，聊天室沒有。你在紅色學院重新排桌椅，精華、會員與老傑寶一批批搬進來。',{credit:6,fame:-8,fans:20,spirit:4},{platform:18},{},24,{unlock:'金字塔流放者'}),
-   O('等待解封，偶爾開台','精神壓力較低，成長較慢。','你沒有放棄原平台，也沒有完全經營新家。時間一天天累積，728 成為比任何賽季都長的倒數。',{credit:-3,fame:-10,fans:8,spirit:8},{lazy:8,platform:14},{},12,{unlock:'埃及居民'})]},
- {key:'gogoro',year:2022,age:30,era:'第四幕｜平台流放與水蛇重生',title:'機車抽給免費仔',tone:'purple',fact:MEME,
-  text:'工商抽獎送機車，結果得主不是付費會員。訂閱者集體暴動，抽獎公信力卻因此上升：至少沒有為了安撫付費者而重抽。',
-  choices:[
-   O('照規則頒獎','訂閱者不爽，公信力上升。','「免費仔也能中？」聊天室瘋狂抗議。你把鑰匙交出去，這次沒有人能說黑箱。',{credit:12,integrity:10,fans:6},{promise:-3},{},-7,{unlock:'免費仔之神'}),
-   O('加碼補償訂閱者','現金下降，社群衝突緩和。','機車照送，再加一輪會員獎。你用錢證明抽獎公平，也證明聊天室永遠還能再要一輪。',{credit:8,integrity:8,fans:10},{promise:2},{},-15,{unlock:'抽獎大中計'})]},
- {key:'return_104',year:2023,age:31,era:'第四幕｜平台流放與水蛇重生',title:'772 天後的回歸與一百零四萬',tone:'gold',fact:PUBLIC,
-  text:'解封後，他與熊班長重返紫色平台；不久又在娛樂牌類節目拿下第一與 Jackpot，共 104.2 萬元。最能傳播的畫面不是職業獎盃，而是一張簽領文件。',
-  choices:[
-   O('先處理稅務，再慶祝','現金與信用最大化。','你盯著簽領單的表情成為新精華。獎金扣完稅仍很香，米特姨終於不用問這是不是詐騙。',{credit:12,fame:14,fans:18,spirit:8},{platform:-4},{mother:10,nl:8},104.2,{unlock:'一百零四萬勞報單'}),
-   O('直播秀單據，效果拉滿','人氣上升，隱私與平台風險增加。','鏡頭拉近，聊天室比會計師更早開始算稅。這張紙成為又一個比本人更有名的畫面。',{credit:5,fame:12,fans:23},{platform:4,pollution:5},{nl:8},104.2,{unlock:'百萬大中計'})]},
- {key:'company',year:2024,age:32,era:'第五幕｜從被管理者到管理者',title:'叉叉娛樂',tone:'good',fact:PUBLIC,
-  text:'熊班長離開原經紀體系，與羅正男共同成立叉叉娛樂（叉滴娛樂原型）。薛西、V 老大等合作圈加入。當年的問題選手開始排別人的商案、時程與平台風險，終於看見蟹老闆帳本的另一面。',
-  choices:[
-   O('建立規則，也保留創作者彈性','管理成本高，但公司信任穩定。','你把「準時」寫進合約，又在後面加上可協調條款。蟹老闆看到新聞，只在聊天室留下一句：還我錢。',{practice:6,credit:14,integrity:7,fame:13,fans:10,spirit:-8},{lazy:-3,promise:-5,platform:-4},{crab:13,shaxy:8,nl:16},-30,{unlock:'從選手到老闆'}),
-   O('先靠兄弟默契運作','節目效果高，承諾債進入公司帳。','公司群組像放大版宿舍語音。合作很快、梗很多，排程表每天都在求救。',{credit:3,fame:11,fans:16,spirit:-4},{promise:10,platform:3},{crab:7,shaxy:10,nl:12},-18,{unlock:'下一個蟹老闆'})]},
- {key:'friends',year:2024,age:32,era:'第五幕｜從被管理者到管理者',title:'腳煞車、ATM 與 V 老大爆噴',tone:'purple',fact:MEME,
-  text:'朋友把舊聚會翻成精華：阿威騎車用腳煞車、誰又被當成移動 ATM；合作打牌時，V 老大受不了主角持續碎念，直接把說教停掉。成功創業沒有讓朋友失去制衡功能。',
-  choices:[
-   O('閉嘴，讓合作夥伴自己打','信用與關係回升。','V 老大終於安靜地打完一局。你第一次發現，不講每一步也可能是一種專業。',{credit:9,fame:3,fans:7,spirit:3},{promise:-2},{nl:5,shaxy:3},0,{unlock:'男媽媽閉麥'}),
-   O('繼續碎念，素材不能停','人氣與精華上升，耐心下降。','「你可不可以閉嘴！」一聲爆噴，剪輯師立刻找到標題。合作效果很好，合作心情另計。',{credit:-7,fans:15},{pollution:5},{nl:-3,shaxy:2},0,{unlock:'V 老大爆噴'})]},
- {key:'threat',year:2025,age:33,era:'第五幕｜從被管理者到管理者',title:'聊天室一句話飛過太平洋',tone:'bad',fact:MEMORY,
-  text:'一名觀眾留下危險威脅字句，平台通報後牽動美方與臺灣警方。羅正男是配合說明的證人，不是威脅策劃者；聊天室的話第一次跨出螢幕，變成警政成本。',
-  choices:[
-   O('停台、存證、聯絡平台與警方','損失當晚收入，保住法律與公司信用。','你不再把每句危險留言都當效果。紀錄完整保存，警方很快確認你的角色。',{credit:14,integrity:12,fame:-3,fans:-2,spirit:-10},{platform:-5,pollution:-5},{nl:8},-3,{unlock:'聊天室不是法外之地'}),
-   O('先當成樂子，晚點再處理','史實上仍配合調查，風險與成本更高。','笑聲停得太晚。當電話真的打來，你才發現平台風險不是一條只會嚇人的紅色進度條。',{credit:-12,integrity:-8,fame:-10,fans:5,spirit:-14},{platform:15,pollution:10},{nl:-8},-8,{unlock:'跨國大中計'})]},
- {key:'clones',year:2026,age:34,era:'第六幕｜一萬個羅正男',title:'頭貼軍團',tone:'purple',fact:PUBLIC,
-  text:'Threads 類短文平台上，大量帳號使用羅正男的頭像、姓名變體與圈內語彙四處發言。部分使用者只是匿名玩梗，部分則挑釁攻擊；圈外人越來越難分辨哪一個才是本人。',
-  choices:[
-   O('建立官方帳號清單並蒐證','主流辨識提高，必須付出管理成本。','你把真正帳號一個個列出來，保存冒名截圖。澄清讓更多人知道風波，也讓第一次看見的人至少有辨識入口。',{credit:12,integrity:8,fame:4,fans:4,spirit:-8},{platform:-3,pollution:-10},{nl:7},-6,{unlock:'正版羅正男'}),
-   O('讓迷因自己跑','核心人氣上升，分身污染暴增。','每個假帳號都像你，又都不是你。演算法不在乎來源，只知道這張臉能讓人停下來。',{credit:-8,fame:-12,fans:20},{platform:7,pollution:22},{},3,{unlock:'一萬個羅正男'})]},
- {key:'police_clone',year:2026,age:34,era:'第六幕｜一萬個羅正男',title:'被自己的頭貼叫去說明',tone:'bad',fact:MEMORY,
-  text:'圈外人與冒名帳號爭執，責任卻一路追到真人身上。主角必須整理官方帳號、時間線與發言紀錄，到案說明那些話不是自己說的。',
-  choices:[
-   O('請律師發聲明，建立證據包','現金下降，身份邊界恢復。','你第一次需要用法律文件證明「我不是網路上的我」。聲明很冷靜，聊天室當然還是拿來做梗。',{credit:14,integrity:10,fame:5,spirit:-8},{pollution:-12,platform:-4},{nl:8},-12,{unlock:'我不是他'}),
-   O('自己開台解釋到底','核心觀眾懂了，圈外辨識有限。','你講了兩小時，老傑寶都懂；沒看直播的人只看到又一段被剪短的怒吼。',{credit:3,fame:-4,fans:9,spirit:-12},{pollution:-3,platform:3},{},1,{unlock:'本尊到案'})]},
- {key:'home',year:2026,age:34,era:'第六幕｜一萬個羅正男',title:'家不再是存檔點',tone:'bad',fact:PUBLIC,
-  text:'直播意外暴露居住資訊，社會住宅承租與直播使用受到查核。主角表示會配合，後來搬往新住處重新開台；公開資料不足以把事件定性成已判決的非法入住。',
-  choices:[
-   O('搬家並做好隔音與隱私','資產下降，家人與公司風險大幅降低。','新房租更高，鏡頭後方卻終於不再連著家人的生活。米特姨送來最後一餐，這次不用走進直播畫面。',{credit:13,integrity:7,fame:-2,spirit:10},{platform:-10,pollution:-8},{mother:18,nl:6},-36,{unlock:'家仍是存檔點'}),
-   O('先搬進去，之後再調整','較省時間，噪音與隱私風險保留。','新背景很快上線，隔音與鄰里問題也很快進入聊天室。搬家解決地址，沒有自動解決直播的音量。',{credit:-6,fame:-4,fans:6,spirit:5},{lazy:5,platform:8,pollution:3},{mother:5},-24,{unlock:'新家第一吼'})]},
- {key:'marathon',year:2026,age:34,era:'第六幕｜一萬個羅正男',title:'28.5 小時，還在爬',tone:'gold',fact:MEMORY,
-  text:'他重新投入標準天梯，連播約 28.5 小時挑戰前百，最後仍差一步。第一幕用六天登上傳說；三十多歲後，用一天多證明自己還願意坐在牌桌前。',
-  choices:[
-   O('設定休息節點，打完挑戰','沒有前百，卻保住健康與長期狀態。','你在 28.5 小時後停下。排名沒有亮起想要的數字，但沒有人再能只用「怠惰」解釋這一天。',{sense:10,practice:15,spirit:-12,credit:8,fame:8,fans:14},{lazy:-14,promise:-5},{mother:7,shaxy:6},4,{unlock:'28.5 小時還在爬'}),
-   O('右手借我，再排一場','極限人氣，精神幾乎歸零。','下一場沒有奇蹟。鏡頭裡的臉很累，聊天室卻第一次安靜幾秒，然後刷滿「辛苦了」。',{sense:12,practice:13,spirit:-24,credit:3,fame:7,fans:19},{lazy:-8,platform:6},{mother:3,shaxy:5},6,{unlock:'右手借我'})]},
- {key:'finale',year:2026,age:34,era:'最終章｜到底哪一個是我',title:'羅正男演算法',tone:'purple',fact:FICTION,
-  text:'比賽獎盃、舊隊服、米特姨的便當、蟹老闆的帳本、封禁通知與數千張相同頭貼同時浮在畫面上。最終 Boss 沒有血條，只會把你過去選過的台詞重新拼成另一個羅正男。',
-  choices:[
-   O('關閉聊天室，重新定義自己','走向「家仍是存檔點」。','你讓畫面安靜下來。第一次沒有觀眾替這個選擇命名。',{credit:12,integrity:10,spirit:15,fans:-5},{platform:-8,pollution:-15},{mother:12},0,{finalChoice:'self'}),
-   O('把分身納入品牌','走向「娛樂帝國」或「完全羅正男」。','你替混亂建立規則、授權與邊界。若控制成功，它會成為公司資產；若失敗，你只是其中一個帳號。',{credit:5,fame:12,fans:15},{platform:5,pollution:12},{nl:12},8,{finalChoice:'brand'}),
-   O('回到牌桌，只用結果說話','走向「冬季之王」或架空世界冠軍。','你關掉社群分頁，打開牌組。右手仍不可靠，判斷仍然屬於你。',{sense:12,practice:14,spirit:-6,fame:5},{lazy:-8,pollution:-5},{shaxy:8},0,{finalChoice:'cards'}),
-   O('什麼都不做，繼續開台','史實模式的開放結局。','等待畫面結束，聊天室問今天玩什麼。你看了看副螢幕：「等一下啦。」',{spirit:5,fans:10},{promise:3,pollution:5},{},3,{finalChoice:'continue'})]}
-];
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-card">
+      <button id="modal-close" class="modal-close" aria-label="關閉">×</button>
+      <div id="modal-kicker" class="card-kicker"></div>
+      <h2 id="modal-title"></h2>
+      <div id="modal-body" class="modal-body"></div>
+      <div id="modal-actions" class="modal-actions"></div>
+    </section>
+  </div>
 
-const INTERLUDES=[
- {title:'米特姨送飯',tone:'good',text:'門被推開，米特姨把便當放到桌邊。聊天室先叫阿姨，再叫你不肖子。',mods:{spirit:8,credit:2},rel:{mother:4},chat:['阿姨好！','先吃飯啦 ==','米特姨才是台主']},
- {title:'高金生到案',tone:'purple',text:'聊天室把名字換成「高金生」集體報到。這不是詐騙案，只是諧音角色又來佔據畫面。',mods:{fans:5},hidden:{pollution:3},chat:['高金生：真假','冷靜，有料','2486']},
- {title:'水蛇洞開工',tone:'good',text:'剪輯師把三小時發呆濃縮成八分鐘大中計。原台提供素材，精華替記憶定型。',mods:{fame:3,fans:6},chat:['精華才是本體','素材工具人','這段記得剪']},
- {title:'怎麼辦啦薛西',tone:'purple',text:'場面快崩盤時，主角下意識向語音求救。多年後，這句話已經不需要薛西真的在線。',mods:{sense:2,fans:4},rel:{shaxy:2},chat:['怎麼辦啦薛喜','右手借我','大中計']},
- {title:'蟹老闆來了',tone:'purple',text:'蟹老闆在聊天室只留四個字：「阿傑還錢。」主角回覆可以上船捕魚慢慢抵。',mods:{fans:5,credit:-1},rel:{crab:3},chat:['三千萬！','那是整隊投資啦','上船了']},
- {title:'V 老大的制止',tone:'bad',text:'主角又開始逐步指導，V 老大一句話把說教模式關掉。朋友耐心下降，節目效果上升。',mods:{credit:-2,fans:5},chat:['男媽媽又來了','閉嘴啦','==']},
- {title:'免費仔的勝利',tone:'purple',text:'沒有訂閱的觀眾抽中獎品。付費會員暴動，抽獎程式保持沉默。',mods:{integrity:3,fans:3},chat:['免費仔憑什麼！','沒黑箱就給推','訂閱小丑']},
- {title:'日麻睡著',tone:'bad',text:'牌局還在走，鏡頭前的人已經短暫進入待機。這段只採用公開直播迷因，不延伸成未證實的私生活故事。',mods:{spirit:6,credit:-3},hidden:{lazy:4},chat:['醒醒','床場傳奇','斷訊？']}
-];
-const TACTIC_SETS={
- early:[
-  O('先查攻略再行動','花 1 格時間，把未知變成可以計算的風險。','你沒有立刻押上右手，而是先看完攻略與前人的失敗紀錄。結果不華麗，下一步卻明顯穩了。',{practice:7,sense:3},{lazy:-2},{},0,{id:'early-guide',life:{time:-1,energy:-3},routes:{pro:4}}),
-  O('把計畫說給米特姨聽','需要米特姨關係 35；家庭線會明顯成長。','你第一次把「我想靠這件事生活」說成一份聽得懂的計畫。她仍然擔心，但不再只看到你待在電腦前。',{credit:7,spirit:4},{promise:-2},{mother:9},0,{id:'early-family',requires:{rel:{mother:35}},routes:{family:5,manager:1}}),
-  O('孤注一擲相信右手','約五成成功；成功很快，失敗會重傷精神。','關鍵牌真的來了。你把這次神抽解讀成命運發出的邀請函。',{sense:11,fame:4,fans:5},{},{},5,{id:'early-gamble',chance:{base:27,stats:{sense:.38,spirit:.12}},life:{energy:-7,stress:8},routes:{chaos:5,pro:2},failOut:'右手沒有借到。投入的時間與錢同時沉下去，只留下「差一點」三個字。',failMods:{spirit:-12,credit:-4},failCash:-5}),
-  O('先去打工存一筆本金','消耗體力，換取現金、信用與生活經驗。','你把幾張班表撐完，存下第一筆可以自由支配的本金。這條路很慢，卻讓未來的選擇不必全部靠運氣。',{credit:6,spirit:-2},{lazy:-4},{mother:4},10,{id:'early-work',life:{energy:-10,health:-1,time:-1},routes:{manager:4,family:2}}),
-  O('熬夜把進度追回來','高風險捷徑；體力與健康都會支付代價。','你在天亮前追回了落後進度，螢幕上的數字很好看，鏡子裡的人卻像剛打完延長賽。',{practice:10,sense:5},{lazy:3},{},0,{id:'early-night',chance:{base:35,stats:{practice:.28,spirit:.16}},life:{energy:-15,health:-5,stress:10},routes:{pro:4,chaos:3},failOut:'注意力先投降了。你把同一個錯誤練熟三次，隔天還得花時間拆掉壞習慣。',failMods:{practice:-3,spirit:-9},failHidden:{lazy:4}})
- ],
- team:[
-  O('照戰隊表操課一週','需要 2 格時間；可靠但會消耗大量體力。','你準時出現在每一次復盤與訓練。隊友沒有鼓掌，因為這本來就該做到；信用卻第一次穩定累積。',{practice:10,credit:8},{lazy:-8,promise:-4},{crab:6,shaxy:3},0,{id:'team-schedule',requires:{life:{time:2,energy:16}},life:{time:-2,energy:-12,stress:4},routes:{pro:4,manager:4}}),
-  O('拉薛西一起復盤','需要薛西關係 20；判定成功會得到大量牌感。','兩個人把爭執拆成每一手牌。最後沒有人完全認輸，但下一次遇到同樣局面，你們都知道該怎麼辦。',{sense:9,practice:7,credit:3},{},{shaxy:7},0,{id:'team-review',requires:{rel:{shaxy:20}},chance:{base:30,stats:{sense:.25,credit:.22},rel:{shaxy:.18}},life:{energy:-7,time:-1},routes:{pro:5,family:1},failOut:'復盤變成抓戰犯大會。你們記住了對方說錯的每一句，卻沒記住正確打法。',failMods:{credit:-5,spirit:-5},failRel:{shaxy:-8},failHidden:{pollution:3}}),
-  O('把衝突剪成節目效果','流量成功率高；關係與信用可能被消耗。','剪輯把火藥味變成笑點，聊天室開始等下一次互噴。你得到觀眾，也讓私人衝突更難離開鏡頭。',{fame:7,fans:11},{pollution:6,promise:2},{shaxy:-3},4,{id:'team-content',chance:{base:44,stats:{fame:.25,fans:.15}},life:{stress:7},routes:{creator:6,chaos:4},failOut:'玩笑沒有落在安全範圍。片段出圈了，但上下文沒有一起出去。',failMods:{credit:-10,fame:-4},failRel:{shaxy:-8,crab:-4},failHidden:{pollution:8}}),
-  O('跟蟹老闆重談工作規則','需要蟹老闆關係 15；經營線的重要投資。','你們把「彈性」拆成可以檢查的行程、產出與休假。自由少了一點，怨氣也少了一點。',{credit:10,spirit:4},{promise:-8,lazy:-3},{crab:8},0,{id:'team-contract',requires:{rel:{crab:15}},life:{time:-1,stress:-3},routes:{manager:7}}),
-  O('先消失，等風頭過去','立即恢復體力，但承諾債與隊友不滿會累積。','你關掉通知睡了一整天。精神回來了，未接來電與未讀訊息也整齊排在螢幕上。',{spirit:9,credit:-5},{lazy:9,promise:8},{crab:-5,shaxy:-2},0,{id:'team-vanish',life:{energy:16,health:3,stress:-10},routes:{chaos:5,family:1}})
- ],
- competitive:[
-  O('封閉集訓，不開台','需要體力 22；競技成長最大，短期人氣下降。','你把直播排程清空，只留下練牌、睡眠與復盤。聊天室抱怨無聊，對手卻開始找不到明顯破口。',{practice:14,sense:9,integrity:4,fans:-5},{lazy:-8,promise:-3},{shaxy:4},-2,{id:'pro-camp',requires:{life:{energy:22}},life:{energy:-18,health:-2,time:-2,stress:6},routes:{pro:8}}),
-  O('逐條研究賽制與紀錄','消耗 2 格時間；降低制度型事故。','你把規章、延遲、裝置與檢錄流程全部做成清單。這次沒有任何灰色地帶能靠「我不知道」混過去。',{integrity:11,credit:8,practice:4},{platform:-4},{crab:3},0,{id:'pro-rules',life:{time:-2,energy:-7},routes:{manager:5,pro:4}}),
-  O('帶一套沒人敢帶的牌','高風險比賽策略；成功可能直接寫進精華。','冷門卡在關鍵回合完成了唯一用途。你不是靠運氣躲過風險，而是把風險帶進了計畫。',{sense:15,fame:10,fans:8},{},{shaxy:3},18,{id:'pro-offmeta',chance:{base:22,stats:{sense:.42,practice:.28}},life:{energy:-10,stress:11},routes:{pro:7,chaos:3},failOut:'冷門牌沒有等到它的回合。對手贏得很普通，你的牌組卻會被聊天室記很多年。',failMods:{fame:-7,spirit:-10,credit:-3},failHidden:{pollution:5}}),
-  O('賽前開台炒熱氣氛','人氣與收入成長，疲勞會直接帶上賽場。','觀眾數一路上升，你在關台時才發現正式比賽只剩幾小時。流量已經到帳，專注力仍在路上。',{fans:12,fame:7,practice:-2},{promise:2},{},12,{id:'pro-hype',life:{energy:-13,health:-3,stress:8},routes:{creator:7,chaos:2}}),
-  O('請隊友擁有否決權','需要平均隊友關係 35；降低災難但犧牲個人自由。','關鍵決定必須得到第二個人確認。你少了一些任性操作，也第一次感到團隊不是只在輸牌時才存在。',{credit:8,integrity:9,sense:4},{lazy:-2},{crab:4,shaxy:7},0,{id:'pro-veto',requires:{team:35},life:{time:-1,stress:3},routes:{pro:4,manager:5,family:2}})
- ],
- platform:[
-  O('建立多平台備援','需要資產 12 萬；平台事故不再一次帶走全部觀眾。','你把會員名單、公告管道、精華備份與替代直播頁整理好。下一次平台地震時，觀眾知道要去哪裡找你。',{credit:9,fans:5},{platform:-14,promise:-3},{},-12,{id:'platform-backup',requires:{cash:12},life:{time:-2,energy:-6},routes:{manager:7,creator:3}}),
-  O('先把欠的承諾做完','承諾債越高收益越大；消耗時間與體力。','你真的把欠下的節目、抽獎與合作一件件清掉。聊天室不習慣這麼有效率，甚至懷疑是不是代打。',{credit:12,fans:6},{promise:-18,lazy:-5},{},-4,{id:'platform-deliver',life:{time:-2,energy:-13,stress:-3},routes:{manager:5,creator:3}}),
-  O('把平台事故做成大中計','高人氣時成功率較高；失敗會讓風險擴散。','你把危機解釋、迷因與搬家公告剪成一場特別節目。觀眾笑完之後，真的跟著搬了。',{fame:10,fans:13,credit:3},{pollution:7,platform:2},{},9,{id:'platform-meme',chance:{base:30,stats:{fans:.35,fame:.22,credit:.1}},life:{stress:8},routes:{creator:8,chaos:5},failOut:'觀眾只記得笑點，沒記得新網址。危機變成精華，核心問題仍然留在原地。',failMods:{credit:-9,fans:-6},failHidden:{platform:12,pollution:8}}),
-  O('守住核心觀眾，不追熱搜','成長較慢；信用、健康與長期黏著提高。','你縮小節目規模，固定時間、固定內容、固定回覆。數字沒有爆炸，聊天室卻第一次像一個能長住的地方。',{credit:10,fans:7,spirit:7},{platform:-6,pollution:-4},{mother:3},3,{id:'platform-core',life:{energy:5,health:3,stress:-8},routes:{family:5,creator:4}}),
-  O('搶下短期高價合約','需要名聲 45；立即賺錢但增加平台依賴。','合約數字非常漂亮，排他條款也非常完整。你把未來幾個月賣得很好，至於半年後在哪裡開台，沒人回答。',{fame:7,credit:-2},{platform:16,promise:5},{},45,{id:'platform-contract',requires:{stats:{fame:45}},life:{energy:-7,stress:6},routes:{manager:3,chaos:4}})
- ],
- business:[
-  O('先做制度，再簽新人','消耗 2 格時間與資金；經營線最穩定。','你把合約、排程、請假、分潤與危機處理寫成真正能執行的制度。這份文件意外地像蟹老闆當年想給你的東西。',{credit:13,integrity:9,fame:3},{promise:-9},{crab:6,nl:7},-18,{id:'biz-system',requires:{cash:18},life:{time:-2,energy:-10,stress:4},routes:{manager:9}}),
-  O('押上資產簽天才新人','高風險投資；成功會加速娛樂帝國路線。','新人第一個月就做出爆紅企劃。你在報表前露出微笑，接著發現他也開始睡到下午。',{fame:12,fans:10,credit:4},{promise:4},{nl:8},35,{id:'biz-talent',requires:{cash:25},chance:{base:24,stats:{credit:.25,fame:.22},routes:{manager:.35}},life:{stress:12},routes:{manager:8,creator:4},failOut:'新人沒有爆紅，固定成本卻每天準時報到。你第一次在凌晨三點打開現金流表。',failMods:{credit:-10,spirit:-9},failCash:-35,failRel:{nl:-5}}),
-  O('所有工作主播自己來','不花錢，但體力與健康會被快速消耗。','企劃、開台、剪片、回信與核帳全部由你完成。成本壓下來了，生活也被壓成一條細線。',{practice:7,credit:5,fame:5},{lazy:-3},{nl:-2},10,{id:'biz-solo',life:{energy:-20,health:-7,stress:16,time:-2},routes:{creator:5,manager:3,chaos:3}}),
-  O('暫停擴張，先顧健康','失去一季成長，換取健康與長期穩定。','你把一部分邀約推掉，重新安排睡眠、運動與家人時間。聊天室說你變無聊了，身體卻終於不再一直發出警告。',{spirit:12,credit:5,fame:-4},{lazy:-4,promise:-5},{mother:6,nl:3},-5,{id:'biz-health',life:{energy:22,health:14,stress:-20},routes:{family:8,manager:2}}),
-  O('讓聊天室投票決定公司方向','流量很高，決策品質完全隨機。','投票結果在最後十秒被免費仔逆轉。企劃真的上線了；它究竟是天才還是災難，要等演算法判決。',{fans:16,fame:7},{pollution:12,promise:4},{nl:-4},6,{id:'biz-chat',chance:{base:34,stats:{fans:.24,integrity:.1}},life:{stress:9},routes:{creator:7,chaos:8},failOut:'投票製造了話題，卻沒有製造能執行的計畫。公司花一週解釋一個晚上做出的決定。',failMods:{credit:-13,fame:-4},failHidden:{pollution:12,promise:8},failCash:-10})
- ],
- identity:[
-  O('公開說清楚哪些梗不是事實','信用與界線上升，短期娛樂性下降。','你把迷因、公開紀錄與私人邊界分開說明。不是所有人都想聽，但至少往後的合作對象知道哪條線不能跨。',{credit:13,integrity:8,fans:-4},{pollution:-13,promise:-3},{mother:5,nl:4},0,{id:'identity-boundary',life:{stress:-5,time:-1},routes:{family:5,manager:5}}),
-  O('建立正式迷因授權與分潤','需要經營路線 20、資產 20 萬。','你替圖像、剪輯與商業合作建立授權規則。分身仍然很多，但第一次有人知道什麼可以玩、什麼需要負責。',{credit:10,fame:12,fans:9},{pollution:-6,platform:-3},{nl:8},25,{id:'identity-license',requires:{cash:20,routes:{manager:20}},life:{time:-2,energy:-9},routes:{manager:8,creator:6}}),
-  O('斷網一週陪家人','大幅恢復生命資源；人氣會短暫流失。','你沒有發失蹤公告，也沒有承諾回歸時間。網路照常運轉，家裡卻第一次沒有直播倒數。',{spirit:14,credit:4,fans:-8},{pollution:-7,platform:-4,lazy:-3},{mother:12},-3,{id:'identity-offline',life:{energy:25,health:13,stress:-22},routes:{family:10}}),
-  O('回牌桌做最後一次完整集訓','需要競技路線 20、健康 35；世界冠軍線的重要選擇。','你重新接受固定作息、復盤與敗局紀錄。這一次不是為了證明以前沒退步，而是看看現在還能走多遠。',{sense:13,practice:15,integrity:5,fans:3},{lazy:-10,promise:-3},{shaxy:7},-8,{id:'identity-cards',requires:{routes:{pro:20},life:{health:35}},chance:{base:24,stats:{sense:.3,practice:.34},life:{health:.12}},life:{energy:-18,health:-5,stress:9,time:-2},routes:{pro:10},failOut:'長期離開競技的代價沒有因為情懷消失。你輸掉資格，卻完成了多年來最誠實的一次復盤。',failMods:{fame:-3,spirit:-7,credit:5},failRoutes:{pro:3,family:2}}),
-  O('讓分身繼續長大','最混亂的路線；失去控制也可能得到最高流量。','你不再逐一澄清，甚至開始回收分身創造的梗。品牌擴張速度超過公司的管理速度，本尊和角色逐漸變成兩個不同的生命。',{fame:14,fans:18},{pollution:18,platform:7},{mother:-5,nl:2},15,{id:'identity-clones',life:{stress:12},routes:{creator:7,chaos:10}})
- ]
-};
-
-const RANDOM_EVENTS=[
- {id:'meal',title:'米特姨把門推開',tone:'good',text:'便當抵達，但你正卡在一場不能暫停的牌局。這是一個動態模擬事件，處理方式會改變家庭、健康與節目效果。',when:s=>s.rel.mother>25,choices:[
-  O('先吃飯，牌局晚點再說','恢復健康；當下觀眾數略降。','你把牌局交給時間，飯還是熱的。聊天室第一次看到主播主動離開螢幕。',{spirit:7,fans:-2},{},{mother:7},0,{life:{energy:12,health:7,stress:-7},routes:{family:5}}),
-  O('請她在鏡頭外等一下','維持直播，但關係會支付代價。','牌局結束時便當已經涼了。你贏下這局，也聽見門關上的聲音。',{sense:3,fans:5},{lazy:2},{mother:-7},0,{life:{energy:-5,stress:4},routes:{pro:2,chaos:2}}),
-  O('把送飯變成特別節目','需要家庭關係 55；成功時流量與關係雙贏。','你沒有把家人變成笑料，只讓聊天室向鏡頭外說聲謝謝。短短幾分鐘成為最溫暖的精華。',{credit:6,fans:10},{pollution:-2},{mother:5},3,{requires:{rel:{mother:55}},chance:{base:38,stats:{credit:.3,fans:.12}},routes:{creator:4,family:4},failOut:'鏡頭與家人的界線沒有先說清楚，氣氛突然變得很尷尬。',failMods:{credit:-5},failRel:{mother:-8}})]},
- {id:'algorithm',title:'演算法改版之夜',tone:'purple',text:'推薦流量突然腰斬。沒有人知道是暫時波動、內容疲乏，還是平台規則真的變了。',choices:[
-  O('研究數據，調整節目時段','消耗 2 格時間；最穩定的處理。','你從觀眾留存與回訪找到真正下滑的位置，調整後核心觀眾慢慢回來。',{practice:5,credit:6,fans:4},{platform:-5},{},0,{life:{time:-2,energy:-6},routes:{manager:5,creator:3}}),
-  O('連開十二小時硬撞流量','高風險，可能爆量也可能爆掉。','後半夜演算法終於把直播推上首頁；你也在觀眾最高點失去正常語言能力。',{fame:9,fans:13},{promise:2},{},8,{chance:{base:28,stats:{spirit:.24,fans:.18}},life:{energy:-20,health:-6,stress:13},routes:{creator:6,chaos:4},failOut:'演算法沒有回頭，身體先結束推播。十二小時只留下幾段恍神精華。',failMods:{spirit:-10,fans:-5},failHidden:{platform:8,lazy:3}}),
-  O('啟動備援平台','需要平台風險低於 75 或「多平台備援」能力。','公告發出後，核心觀眾沿著備援連結抵達。這次搬家不是逃難，而是演練。',{credit:8,fans:7},{platform:-10},{},2,{requires:{any:[{hiddenMax:{platform:74}},{perk:'多平台備援'}]},routes:{manager:4,creator:3}})]},
- {id:'right_hand',title:'右手只剩一張牌',tone:'gold',text:'晉級局最後一抽：牌庫裡有解答，也有完全不能用的綠色卡。你可以押機率，也可以接受保守線。',choices:[
-  O('計算牌庫後再抽','牌感與練習越高越穩。','機率沒有保證答案，但這次計算與右手站在同一邊。',{sense:8,practice:5,fame:4},{},{},6,{chance:{base:16,stats:{sense:.45,practice:.28}},life:{stress:6},routes:{pro:5},failOut:'計算沒有錯，抽到的仍是牌庫裡最沉默的那張。你輸得合理，聊天室笑得不合理。',failMods:{spirit:-6,fame:-2},failHidden:{pollution:3}}),
-  O('聊天室，右手借我！','流量判定高，競技判定低。','整排彈幕在抽牌瞬間停住。答案來了，尖叫聲比勝利畫面更早抵達。',{fans:12,fame:8,sense:3},{pollution:5},{},4,{chance:{base:34,stats:{fans:.22,sense:.12}},life:{stress:8},routes:{creator:5,chaos:5},failOut:'聊天室借來九千多隻右手，沒有一隻抽到答案。',failMods:{spirit:-7},failHidden:{pollution:6}}),
-  O('不演了，走保守線','幾乎沒有爆點，但能保護長期狀態。','你放棄華麗斬殺，選擇提高下一回合存活率。沒有精華，卻有下一局。',{credit:4,integrity:5,spirit:3},{},{},0,{life:{stress:-5},routes:{pro:3,manager:2}})]},
- {id:'crab_call',title:'蟹老闆凌晨來電',tone:'purple',text:'電話那頭先沉默三秒，接著問起一份多年前的帳。聊天室當然只聽見「三千萬」。',when:s=>s.rel.crab!==0,choices:[
-  O('把舊帳逐項說清楚','需要 1 格時間；關係與信用上升。','你們第一次沒有用梗帶過，真的把戰隊投入、工作責任與離隊情緒拆開來談。',{credit:9,integrity:4},{promise:-3},{crab:9},-3,{life:{time:-1,stress:3},routes:{manager:5,family:2}}),
-  O('答應上船捕魚抵債','高節目效果的風險企劃。','企劃真的成行。你暈船的畫面替三千萬迷因續命，也讓蟹老闆終於笑出來。',{fame:8,fans:10,credit:3},{pollution:4},{crab:6},7,{chance:{base:36,stats:{spirit:.25,credit:.15}},life:{energy:-12,health:-3},routes:{creator:5,chaos:4},failOut:'你在集合時間仍然沒有出現。捕魚企劃變成放鳥企劃。',failMods:{credit:-10},failRel:{crab:-12},failHidden:{promise:8,lazy:6}}),
-  O('裝作斷訊','立即逃過對話，之後代價加倍。','畫面定格得很有表演感，未接來電卻不會隨著下播消失。',{fans:5,credit:-7},{promise:9,pollution:3},{crab:-9},0,{life:{stress:5},routes:{chaos:6}})]},
- {id:'sponsor',title:'工商腳本臨時改版',tone:'bad',text:'開台前二十分鐘，廠商傳來新版需求；舊稿已經全部不能用。',choices:[
-  O('延期並重新準備','信用上升，當天收入歸零。','你主動承認準備時間不足。工商延後，聊天室少看一場災難，廠商多得到一場能交付的直播。',{credit:11,practice:4},{promise:-3},{nl:3},-12,{life:{time:-2,energy:-6,stress:2},routes:{manager:6}}),
-  O('硬著頭皮直接上','成功率取決於練習與信用。','你靠臨場反應把新版需求全部帶完。觀眾知道你很慌，廠商只看到數字達標。',{credit:7,fame:7,fans:5},{},{},18,{chance:{base:20,stats:{practice:.3,credit:.25,spirit:.12}},life:{energy:-12,stress:14},routes:{creator:5,manager:2},failOut:'新手教學卡了五分鐘，畫面上的箭頭比主播更清楚下一步。',failMods:{credit:-14,fame:-5},failCash:-8,failHidden:{promise:5}}),
-  O('找團隊緊急代打企劃','需要熊班長關係 30；經營能力越高越穩。','團隊把腳本拆成段落，在倒數結束前完成救援。你第一次不是靠自己硬撐過工商。',{credit:9,fame:5},{},{nl:8},15,{requires:{rel:{nl:30}},chance:{base:28,stats:{credit:.2},routes:{manager:.5}},life:{stress:6},routes:{manager:5,family:2},failOut:'每個人都以為別人會處理最後一段，開台後才發現結尾仍是空白。',failMods:{credit:-8},failRel:{nl:-5}})]},
- {id:'sleep',title:'睡眠債追上直播',tone:'bad',text:'連續幾天行程後，鏡頭開始捕捉到你失去專注的瞬間。再硬撐可能出事。',when:s=>s.life.energy<55||s.life.stress>48,choices:[
-  O('直接休台一天','承諾可能受損，但健康優先。','你沒有想出漂亮理由，只公告今天需要休息。醒來後，世界沒有因為少一場直播而結束。',{spirit:10,credit:3,fans:-3},{promise:2,lazy:-3},{mother:3},0,{life:{energy:28,health:10,stress:-20},routes:{family:6}}),
-  O('喝咖啡繼續播','短期保住排程，高機率累積健康代價。','咖啡讓聲音醒著，判斷卻持續掉幀。你撐完了排程，也把疲勞帶進下一章。',{fans:7,credit:2},{lazy:2},{},4,{life:{energy:-8,health:-9,stress:12},routes:{creator:4,chaos:3}}),
-  O('改成輕鬆聊天台','把高強度內容換成低風險互動。','你坦白今天沒有力氣打排名。聊天室反而開始分享自己的大中計，節目自己長了出來。',{fans:8,spirit:5},{pollution:2},{},3,{life:{energy:10,health:4,stress:-9},routes:{creator:5,family:2}})]},
- {id:'power',title:'直播中突然斷電',tone:'bad',text:'整間房瞬間安靜。未儲存的設定、正在進行的牌局與聊天室同時消失。',choices:[
-  O('啟用備援電源與手機公告','需要資產 8 萬；損失最小。','備援設備撐住網路，你用手機完成公告。這次斷訊不是逃跑，聊天室反而有點失望。',{credit:7,practice:3},{platform:-4},{},-8,{requires:{cash:8},routes:{manager:4}}),
-  O('等電來，明天再解釋','恢復體力，但承諾債增加。','黑暗替你強制下班。隔天電回來，聊天室已經替斷訊寫了九種陰謀論。',{spirit:7,credit:-4},{promise:6,pollution:3},{},0,{life:{energy:14,stress:-4},routes:{chaos:3,family:2}}),
-  O('衝去朋友家續播','需要任一好友關係 45；成功會成為事故精華。','你抱著設備抵達朋友家，重新開台時聊天室還在原地。停電變成了一場跨區接力。',{fans:11,fame:6,credit:4},{},{shaxy:2,nl:2},3,{requires:{friend:45},chance:{base:35,stats:{credit:.18,spirit:.2}},life:{energy:-12,stress:8},routes:{creator:5,family:3},failOut:'你抵達時才發現少帶一條關鍵線材。今天最努力的部分成了白跑一趟。',failMods:{spirit:-7,credit:-3}})]},
- {id:'viral_clip',title:'精華突然衝上熱門',tone:'good',text:'一段失誤剪輯在你睡覺時爆紅。新觀眾湧入，卻只認識那十七秒的你。',choices:[
-  O('順勢做新手入坑特別台','把短期流量轉成核心觀眾。','你用一場完整直播補上那十七秒前後的人生。有人為笑點來，最後為故事留下。',{fans:14,fame:8,credit:4},{pollution:3},{},8,{chance:{base:28,stats:{fans:.25,credit:.18}},life:{energy:-10,stress:6},routes:{creator:7},failOut:'新觀眾只想看你重演同一個失誤。完整節目被十七秒的期待壓扁。',failMods:{spirit:-5},failHidden:{pollution:7}}),
-  O('讓精華自己跑，不追流量','沒有額外風險，成長較小。','你照原排程開台。熱門慢慢退去，留下的人比數字少，卻知道你不只是一張迷因圖。',{fans:6,credit:5},{pollution:-2},{},2,{life:{stress:-3},routes:{family:2,creator:2}}),
-  O('馬上接同款工商','需要名聲 50；賺錢快，形象會被固定。','商案在熱門退去前上線。收入很好，接下來一個月每個人都要求你再做一次那個表情。',{fame:10,fans:6},{pollution:10,promise:3},{},28,{requires:{stats:{fame:50}},life:{stress:8},routes:{manager:3,chaos:5}})]},
- {id:'giveaway',title:'大獎抽中免費仔',tone:'purple',text:'抽獎程式停在一個沒有訂閱徽章的名字。聊天室付費觀眾開始暴動。',choices:[
-  O('照規則把獎送出去','競技誠信與信用上升。','你沒有重抽。免費仔得到大獎，訂閱者得到一堂沒有人想上的公平課。',{integrity:12,credit:8,fans:5},{},{},-15,{routes:{manager:5,family:2}}),
-  O('加抽一份訂閱者獎','需要資產 20 萬；兼顧公平與社群情緒。','原得主保留獎品，付費觀眾另有一輪。成本增加，黑箱疑雲卻沒有生存空間。',{integrity:9,credit:10,fans:11},{promise:-3},{},-20,{requires:{cash:20},routes:{manager:6,creator:3}}),
-  O('假裝程式斷線重抽','高流量、高污染、低誠信。','畫面卡住三秒後換了一個名字。沒有人相信是巧合，所有人都得到一場大戲。',{fame:8,fans:10,integrity:-16,credit:-12},{pollution:12,promise:5},{},3,{routes:{chaos:9,creator:4}})]},
- {id:'clone',title:'新的羅正男分身出現',tone:'purple',text:'一個使用相同頭貼的帳號發出爭議留言，路人開始把責任算到本尊身上。',when:s=>s.hidden.pollution>18,choices:[
-  O('蒐證、澄清並檢舉冒名','消耗 2 格時間，穩定降低污染。','你留下截圖、時間與帳號差異，讓澄清可以被轉傳。分身沒有消失，但本尊有了能重複使用的處理流程。',{credit:10,integrity:6},{pollution:-14},{nl:3},-2,{life:{time:-2,energy:-7,stress:5},routes:{manager:6}}),
-  O('把它收編成官方二創','需要實況路線 22；成功可把污染變成品牌。','帳號公開標示二創並加入規則。混亂沒有歸零，卻第一次產生清楚邊界。',{fame:10,fans:9,credit:3},{pollution:-6},{nl:5},8,{requires:{routes:{creator:22}},chance:{base:26,stats:{credit:.22,fame:.2},routes:{manager:.25}},life:{stress:5},routes:{creator:6,manager:4},failOut:'收編邀請被截成另一張迷因，分身反而證明自己不受控制。',failMods:{credit:-7},failHidden:{pollution:14}}),
-  O('本尊親自加入亂講','流量最高，身分污染也最高。','沒有人再能分辨哪句是反串、哪句是本尊。爭議與笑點一起成長。',{fame:12,fans:14},{pollution:18,platform:5},{mother:-4},6,{routes:{chaos:10,creator:5}})]},
- {id:'health',title:'身體跳出警告視窗',tone:'bad',text:'手腕、腰背與睡眠同時要求更新。你可以忽略一次，但系統會記得。',when:s=>s.life.health<65||s.life.energy<42,choices:[
-  O('安排檢查與復健','需要資產 10 萬；健康大幅恢復。','你把看診排進行事曆，而且真的出門了。治療沒有迷因效果，長期數值卻最誠實。',{credit:5,spirit:7},{lazy:-5},{mother:3},-10,{requires:{cash:10},life:{energy:15,health:24,stress:-12,time:-2},routes:{family:7,manager:2}}),
-  O('調整設備與直播時數','中等恢復，人氣短期下降。','新椅子不能替你生活，但至少不再每天提醒你昨天坐了多久。',{practice:3,fans:-4,credit:5},{promise:-2},{},-5,{life:{energy:10,health:12,stress:-8},routes:{manager:3,family:4}}),
-  O('還能打，繼續排','危險；成功會得到意志力，失敗可能提前結局。','你靠意志撐過這次行程。聊天室看到的是毅力，身體記住的仍是債。',{practice:6,fans:7},{lazy:2},{},4,{chance:{base:22,stats:{spirit:.35},life:{health:.2}},life:{energy:-16,health:-14,stress:15},routes:{pro:3,chaos:5},failOut:'警告視窗變成強制關機。剩下的行程全部取消。',failMods:{spirit:-12,credit:-5},failLife:{health:-14,stress:12}})]},
- {id:'tournament',title:'臨時收到邀請賽名額',tone:'gold',text:'主辦方有人退賽，兩天後就要上場。準備不足，但這種機會不會等待完整狀態。',when:s=>s.stats.sense>40,choices:[
-  O('接受，兩天封閉備戰','需要體力 28；高難度競技判定。','你把兩天切成睡眠、練習與復盤。上場時牌組沒有秘密，判斷卻恢復了熟悉的速度。',{sense:13,practice:11,fame:12,integrity:4},{},{shaxy:3},24,{requires:{life:{energy:28}},chance:{base:17,stats:{sense:.34,practice:.34},life:{health:.1}},life:{energy:-24,health:-5,stress:14,time:-2},routes:{pro:9},failOut:'準備時間終究不夠。你在第二輪出局，但每一場都留下可復盤的答案。',failMods:{spirit:-7,fame:-2},failCash:5,failRoutes:{pro:4}}),
-  O('接受，邊開台邊練','流量較高，勝率較低。','備戰過程比賽事本身更紅。你沒有奪冠，卻把每一場失誤變成觀眾參與的連載。',{fans:14,fame:8,practice:5},{pollution:4},{},15,{chance:{base:20,stats:{sense:.22,fans:.16}},life:{energy:-18,health:-5,stress:12},routes:{creator:6,pro:4},failOut:'觀眾看完所有備戰，也看完你在首輪把熟悉錯誤再演一次。',failMods:{spirit:-8,fame:-3},failHidden:{pollution:5}}),
-  O('婉拒，把名額讓給新人','名聲小降，信用與經營路線上升。','你向主辦方推薦了準備更完整的新人。聊天室說你怕了，圈內人卻記住這次選擇。',{credit:10,integrity:6,fame:-4},{},{nl:6},0,{life:{energy:8,stress:-4},routes:{manager:5,family:2}})]},
- {id:'bet',title:'聊天室發起極限挑戰',tone:'purple',text:'傑寶提議：今天不到目標分數就不能下播。斗內與觀眾數正在快速上升。',choices:[
-  O('接受，但設定最晚結束時間','仍有挑戰，也保留健康底線。','倒數結束時你差一點達標，卻照約定關台。第一次有人發現「停下」也能成為節目的一部分。',{credit:8,fans:8,practice:5},{promise:-3},{},6,{life:{energy:-10,health:-2,stress:5},routes:{manager:4,creator:4}}),
-  O('不到分數絕不下播','究極高風險；成功會成為長篇精華。','時間跨過日出與下一餐，目標終於亮起。你完成挑戰，也把下一章的體力提前用完。',{sense:10,practice:12,fame:12,fans:16},{lazy:5},{},14,{chance:{base:18,stats:{sense:.24,practice:.2,spirit:.2}},life:{energy:-32,health:-12,stress:22},routes:{pro:5,creator:6,chaos:6},failOut:'目標沒有亮起，你先失去判斷。挑戰以斷訊結束，斗內則留下完整紀錄。',failMods:{credit:-12,spirit:-15},failHidden:{promise:12,lazy:7},failLife:{health:-10,stress:15}}),
-  O('不接挑戰，改成觀眾投票牌組','風險較低，迷因污染小幅上升。','目標分數換成一晚奇怪牌組。沒有人破紀錄，但每一局都有人負責。',{fans:9,spirit:4},{pollution:4},{},4,{life:{energy:-5,stress:-2},routes:{creator:5,chaos:2}})]},
- {id:'collab',title:'朋友臨時揪一場連動',tone:'good',text:'語音頻道突然亮起。加入可能打亂個人排程，拒絕則可能錯過一段只有朋友能創造的內容。',when:s=>Math.max(s.rel.shaxy,s.rel.nl)>20,choices:[
-  O('加入，但先說明下播時間','兼顧友情與排程。','你在開始前說好只打一小時，最後真的準時離開。朋友驚訝得像看見傳說卡。',{credit:7,fans:7,spirit:5},{promise:-3},{shaxy:4,nl:4},3,{life:{energy:-6,stress:-4},routes:{family:5,manager:3}}),
-  O('一路玩到天亮','節目效果高，生命資源損耗大。','笑聲一路延續到窗外變亮。精華很多，隔天所有人的行程一起大中計。',{fans:13,fame:6,spirit:6},{lazy:5,promise:5},{shaxy:7,nl:5},5,{life:{energy:-20,health:-6,stress:8},routes:{creator:5,chaos:5}}),
-  O('拒絕，完成自己的排程','信用上升，朋友關係小幅下降。','你把原定內容做完。這不是最有趣的一晚，卻是行事曆第一次打贏語音頻道。',{practice:6,credit:8},{lazy:-4},{shaxy:-2,nl:-2},4,{life:{energy:-7,stress:2},routes:{manager:5,pro:2}})]}
-];
-const safeImul=Math.imul.bind(Math),safeStringify=JSON.stringify.bind(JSON);
-function entropyWords(n){
-  const out=new Uint32Array(n);
-  if(globalThis.crypto&&typeof globalThis.crypto.getRandomValues==='function')globalThis.crypto.getRandomValues(out);
-  else for(let i=0;i<n;i++)out[i]=((Date.now()+i*2654435761)^(Math.random()*0x100000000))>>>0;
-  return out;
-}
-const entropy=Array.from(entropyWords(4),n=>n.toString(36)).join(':');
-let rngState=0;
-function initRandom(text){rngState=1779033703;for(let i=0;i<text.length;i++){rngState=safeImul(rngState^text.charCodeAt(i),3432918353);rngState=rngState<<13|rngState>>>19;}}
-function random(){rngState|=0;rngState=rngState+0x6D2B79F5|0;let t=safeImul(rngState^rngState>>>15,1|rngState);t=t+safeImul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
-const pick=a=>a[Math.floor(random()*a.length)],ri=(a,b)=>a+Math.floor(random()*(b-a+1)),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-initRandom(entropy);
-try{if(location.search)history.replaceState(null,'',location.pathname+location.hash);}catch(_){}
-
-const $=id=>document.getElementById(id);
-let selectedMode='history',selectedDifficulty='local',S=null,apexActive=false,lastEra='';
-function stateSignature(text,salt){let h=(2166136261^salt)>>>0;for(let i=0;i<text.length;i++){h=safeImul(h^text.charCodeAt(i),16777619)>>>0;h=(h^h>>>13)>>>0;}return safeImul(h^h>>>16,2246822507)>>>0;}
-const IntegrityVault=(()=>{
-  const keys=entropyWords(4),encoder=new TextEncoder();
-  let mirror=new Uint8Array(0),sigA=0,sigB=0,armed=false,locked=false,depth=0;
-  const serialize=state=>safeStringify(state);
-  function pack(text){const src=encoder.encode(text),out=new Uint8Array(src.length);let x=keys[2]>>>0;for(let i=0;i<src.length;i++){x=(safeImul(x^i,1664525)+1013904223)>>>0;out[i]=src[i]^(x&255);}return out;}
-  function same(a,b){if(a.length!==b.length)return false;let diff=0;for(let i=0;i<a.length;i++)diff|=a[i]^b[i];return diff===0;}
-  function seal(state){const text=serialize(state);mirror=pack(text);sigA=(stateSignature(text,keys[0])^keys[2])>>>0;sigB=(stateSignature([...text].reverse().join(''),keys[1])^keys[3])>>>0;armed=true;}
-  function valid(state){if(!armed||!state)return true;const text=serialize(state);return same(pack(text),mirror)&&((stateSignature(text,keys[0])^keys[2])>>>0)===sigA&&((stateSignature([...text].reverse().join(''),keys[1])^keys[3])>>>0)===sigB;}
-  function lock(){if(locked)return;locked=true;const a=$('actions');a.style.display='block';a.innerHTML='<div class="prompt">狀態完整性檢查失敗</div><div class="card bad">偵測到非預期資料修改，本局已停止。請重新開始。</div>';document.querySelectorAll('button').forEach(b=>{if(b.id!=='restart')b.disabled=true;});}
-  function run(action){if(locked)return;if(depth)return action();if(S&&!valid(S)){lock();return;}depth++;try{return action();}finally{depth--;if(S){if(apexActive)applyApex();seal(S);renderBoard();}}}
-  setInterval(()=>{if(!locked&&S&&!valid(S))lock();},1800);
-  return Object.freeze({run});
-})();
-
-function freshState(name,mode,difficulty){return{
-  name,mode,difficulty,index:0,year:1992,age:0,cash:0,finalChoice:null,forcedEnding:null,ended:false,
-  stats:{sense:24,practice:8,spirit:62,credit:48,integrity:65,fame:4,fans:2},
-  hidden:{lazy:24,promise:0,platform:0,pollution:0},
-  life:{energy:78,health:82,stress:18,time:3},routes:{pro:0,creator:0,manager:0,family:0,chaos:0},
-  rel:{mother:48,crab:0,shaxy:0,nl:0},memes:[],perks:[],history:[],seenSide:[],seenEvents:[],usedTactics:[],
-  randomEvents:0,successes:0,failures:0,closeCalls:0,lastUpkeep:-1
-};}
-function applyApex(){if(!S)return;Object.keys(S.stats).forEach(k=>S.stats[k]=100);Object.keys(S.rel).forEach(k=>S.rel[k]=100);Object.keys(S.routes).forEach(k=>S.routes[k]=100);S.life.energy=100;S.life.health=100;S.life.stress=0;S.life.time=9;S.hidden.lazy=0;S.hidden.promise=0;S.hidden.platform=0;S.hidden.pollution=0;S.cash=Math.max(S.cash,9527);}
-function modify(target,mods){if(!mods)return;Object.entries(mods).forEach(([k,v])=>target[k]=clamp((target[k]||0)+v,0,100));}
-function modifyLife(mods){if(!mods)return;Object.entries(mods).forEach(([k,v])=>S.life[k]=clamp((S.life[k]||0)+v,0,k==='time'?9:100));}
-function modifyRoutes(mods){if(!mods)return;modify(S.routes,mods);}
-const PERK_RULES=[
- {id:'六天牌感',route:'pro',need:16,text:'競技判定 +5%，失敗時仍獲得少量練習。'},
- {id:'冬季王者',route:'pro',need:38,text:'競技判定再 +7%，世界冠軍結局解鎖。'},
- {id:'精華體質',route:'creator',need:16,text:'高風險失敗也會獲得人氣。'},
- {id:'萬人聊天室',route:'creator',need:38,text:'實況事件成功時額外獲得名聲與人氣。'},
- {id:'多平台備援',route:'manager',need:16,text:'平台事故成功率提高，平台風險成長降低。'},
- {id:'行事曆之王',route:'manager',need:38,text:'每章多 1 格時間，承諾債會自然下降。'},
- {id:'回家存檔',route:'family',need:16,text:'每章開始恢復體力並降低壓力。'},
- {id:'家人邊界',route:'family',need:38,text:'家庭事件效果提高，分身污染成長降低。'},
- {id:'大中計體質',route:'chaos',need:16,text:'判定失敗會轉化成流量與迷因。'},
- {id:'完全羅化',route:'chaos',need:38,text:'極端風險獎勵提高，但壓力也更難下降。'}
-];
-function inferRoutes(ch,o){
-  const text=(o.t+' '+(o.s||'')+' '+ch.title);
-  const routes={};
-  if(/牌|練|賽|抽|右手|天梯|冠軍/.test(text))routes.pro=2;
-  if(/直播|聊天室|觀眾|節目|精華|流量|分身/.test(text))routes.creator=2;
-  if(/合約|制度|規則|交接|公司|管理|備援/.test(text))routes.manager=2;
-  if(/家|米特|朋友|休息|健康|留白|道歉/.test(text))routes.family=2;
-  if(/效果|熬夜|硬闖|裝死|什麼都不做|右手/.test(text))routes.chaos=2;
-  return routes;
-}
-function checkPerks(){
-  PERK_RULES.forEach(p=>{if(S.routes[p.route]<p.need||S.perks.includes(p.id))return;S.perks.push(p.id);const d=document.createElement('article');d.className='card perk-card';d.innerHTML=`<div class="perk-icon">◆</div><div><small>${ROUTE_NAMES[p.route]}路線能力解鎖</small><br><b>${p.id}</b><p>${p.text}</p></div>`;$('log').appendChild(d);});
-}
-function requirementReason(req){
-  if(!req)return'';const fail=[];
-  if(req.cash!=null&&S.cash<req.cash)fail.push(`資產需 ${req.cash} 萬`);
-  Object.entries(req.stats||{}).forEach(([k,v])=>{if(S.stats[k]<v)fail.push(`${STAT_NAMES[k]}需 ${v}`);});
-  Object.entries(req.rel||{}).forEach(([k,v])=>{if(S.rel[k]<v)fail.push(`${REL_NAMES[k]}需 ${v}`);});
-  Object.entries(req.life||{}).forEach(([k,v])=>{if(S.life[k]<v)fail.push(`${LIFE_NAMES[k]}需 ${v}`);});
-  Object.entries(req.routes||{}).forEach(([k,v])=>{if(S.routes[k]<v)fail.push(`${ROUTE_NAMES[k]}路線需 ${v}`);});
-  if(req.team!=null&&(S.rel.crab+S.rel.shaxy)/2<req.team)fail.push(`隊友平均關係需 ${req.team}`);
-  if(req.friend!=null&&Math.max(S.rel.shaxy,S.rel.nl,S.rel.crab)<req.friend)fail.push(`任一好友關係需 ${req.friend}`);
-  if(req.hiddenMax)Object.entries(req.hiddenMax).forEach(([k,v])=>{if(S.hidden[k]>v)fail.push(`${HIDDEN_NAMES[k]}需低於 ${v+1}`);});
-  if(req.perk&&!S.perks.includes(req.perk))fail.push(`需要能力「${req.perk}」`);
-  if(req.any&&req.any.length&&!req.any.some(x=>!requirementReason(x)))fail.push('替代條件皆未達成');
-  return fail.join('、');
-}
-function estimateChance(o){
-  if(!o.chance)return null;if(apexActive)return 99;
-  const c=o.chance;let p=c.base||0;
-  Object.entries(c.stats||{}).forEach(([k,w])=>p+=S.stats[k]*w);
-  Object.entries(c.rel||{}).forEach(([k,w])=>p+=S.rel[k]*w);
-  Object.entries(c.routes||{}).forEach(([k,w])=>p+=S.routes[k]*w);
-  Object.entries(c.life||{}).forEach(([k,w])=>p+=S.life[k]*w);
-  p-=DIFFICULTIES[S.difficulty].risk;
-  if(S.life.energy<25)p-=8;if(S.life.health<25)p-=10;if(S.life.stress>78)p-=9;
-  if(S.perks.includes('六天牌感')&&((c.stats||{}).sense!=null||(c.stats||{}).practice!=null))p+=5;
-  if(S.perks.includes('冬季王者')&&((c.stats||{}).sense!=null||(c.stats||{}).practice!=null))p+=7;
-  if(S.perks.includes('多平台備援')&&((o.id||'').includes('platform')||(o.id||'').includes('backup')))p+=8;
-  return clamp(Math.round(p),8,95);
-}
-function choiceMeta(o){
-  const tags=[];const chance=estimateChance(o),locked=requirementReason(o.requires);
-  if(o.routes){const lead=Object.entries(o.routes).sort((a,b)=>b[1]-a[1])[0];if(lead)tags.push(`<span class="choice-tag">${ROUTE_NAMES[lead[0]]} +${lead[1]}</span>`);}
-  if(chance!=null)tags.push(`<span class="choice-tag risk">成功率 ${chance}%</span>`);
-  if(o.life?.time<0)tags.push(`<span class="choice-tag cost">時間 ${o.life.time}</span>`);
-  if(o.life?.energy<0)tags.push(`<span class="choice-tag cost">體力 ${o.life.energy}</span>`);
-  if(o.requires?.cash)tags.push(`<span class="choice-tag cost">需 ${o.requires.cash} 萬</span>`);
-  if(locked)tags.push(`<span class="choice-tag locked">🔒 ${locked}</span>`);
-  return{html:tags.length?`<span class="choice-meta">${tags.join('')}</span>`:'',locked};
-}
-function legendScore(){if(!S)return 0;const x=S.stats;return clamp(Math.round(x.sense*.22+x.practice*.10+x.credit*.12+x.integrity*.10+x.fame*.18+x.fans*.23+S.memes.length*1.3-S.hidden.platform*.05),0,100);}
-function titleFor(){if(!S)return'';const i=S.index;if(i<2)return'北投未報到青年';if(i<5)return'天梯怪物新人';if(i<13)return'起圈五唬將・怠惰擔當';if(i<18)return'國手／冬季之王';if(i<23)return'金字塔流放實況主';if(i<26)return'叉叉娛樂共同創辦人';return'本尊與一萬個分身';}
-function fmtCash(v){const n=Math.round(v*10)/10;if(n>=10000)return(n/10000).toFixed(2)+'億';return n.toLocaleString('zh-TW');}
-function renderBoard(){
-  if(!S)return;
-  const ch=CHAPTERS[Math.min(S.index,CHAPTERS.length-1)];
-  $('name-view').textContent=S.name+(apexActive?' ★':'');$('subtitle').textContent=titleFor();$('era-badge').textContent=ch?ch.era.split('｜')[0]:S.mode;
-  $('year-view').textContent=S.year;$('age-view').textContent=S.age;$('cash-view').textContent=fmtCash(S.cash);$('legend-view').textContent=legendScore();
-  $('progress-bar').style.width=((S.ended?1:S.index/CHAPTERS.length)*100).toFixed(1)+'%';
-  const life=[['難度',DIFFICULTIES[S.difficulty].label,''],['體力',S.life.energy,S.life.energy<25?'danger':S.life.energy>74?'good':''],['健康',S.life.health,S.life.health<30?'danger':S.life.health>79?'good':''],['壓力',S.life.stress,S.life.stress>75?'danger':S.life.stress<25?'good':''],['時間',S.life.time,S.life.time<1?'danger':'']];
-  $('life-line').innerHTML=life.map(([n,v,c])=>`<span class="life-chip ${c}">${n}<b>${v}</b></span>`).join('');
-  $('stat-grid').innerHTML=Object.entries(STAT_NAMES).map(([k,n])=>`<div class="stat"><span>${n}</span><span class="meter"><i style="width:${S.stats[k]}%"></i></span><strong>${S.stats[k]}</strong></div>`).join('');
-  const chips=[['怠惰',S.hidden.lazy,S.hidden.lazy>60?'hot':''],['承諾債',S.hidden.promise,S.hidden.promise>40?'hot':''],['平台風險',S.hidden.platform,S.hidden.platform>55?'hot':''],['分身污染',S.hidden.pollution,S.hidden.pollution>55?'hot':''],['米特姨',S.rel.mother,S.rel.mother>70?'good':''],['蟹老闆',S.rel.crab,S.rel.crab>60?'good':''],['薛西',S.rel.shaxy,S.rel.shaxy>60?'good':''],['熊班長',S.rel.nl,S.rel.nl>60?'good':'']];
-  const routeChips=Object.entries(ROUTE_NAMES).map(([k,n])=>[n,S.routes[k],S.routes[k]>=38?'good':'']);
-  $('shadow-line').innerHTML=chips.concat(routeChips).map(([n,v,c])=>`<span class="chip ${c}">${n} ${v}</span>`).join('')+S.perks.map(p=>`<span class="chip good">◆ ${p}</span>`).join('');
-}
-function scrollBottom(){requestAnimationFrame(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}));}
-function eraHead(text){const d=document.createElement('div');d.className='era-head';d.textContent=text;$('log').appendChild(d);}
-function appendCard(cls,kicker,title,html,fact){const d=document.createElement('article');d.className='card '+(cls||'');d.innerHTML=`<h4>${kicker}</h4>${title?`<h3>${title}</h3>`:''}${html}${fact?`<span class="fact ${fact.cls}">${fact.label}</span>`:''}`;$('log').appendChild(d);scrollBottom();return d;}
-function setActions(prompt,buttons){const a=$('actions');a.style.display='block';a.innerHTML=prompt?`<div class="prompt">${prompt}</div>`:'';buttons.forEach(o=>{const b=document.createElement('button');b.className='btn'+(o.main?' main':'')+(o.warn?' warn':'');b.innerHTML=`<span>${o.t}</span>`+(o.s?`<small>${o.s}</small>`:'')+(o.meta||'');b.disabled=!!o.disabled;b.onclick=o.f;a.appendChild(b);});}
-function tacticSetFor(){if(S.index<5)return'early';if(S.index<13)return'team';if(S.index<18)return'competitive';if(S.index<24)return'platform';if(S.index<28)return'business';return'identity';}
-function expandedChoices(ch){
-  const list=[...ch.choices];if(ch.key==='finale')return list;
-  const target=S.difficulty==='story'?3:S.difficulty==='hell'?5:4,pool=TACTIC_SETS[tacticSetFor()];
-  let candidates=pool.filter(o=>!S.usedTactics.includes(o.id));if(candidates.length<target-list.length)candidates=[...pool];
-  while(list.length<target&&candidates.length){const idx=Math.floor(random()*candidates.length),o=candidates.splice(idx,1)[0];list.push(o);if(o.id&&!S.usedTactics.includes(o.id))S.usedTactics.push(o.id);}
-  return list;
-}
-function applyChapterUpkeep(){
-  if(S.lastUpkeep===S.index)return'';S.lastUpkeep=S.index;const d=DIFFICULTIES[S.difficulty];
-  const eraBreak=S.index>0&&CHAPTERS[S.index-1].era!==CHAPTERS[S.index].era;if(eraBreak)modifyLife({energy:16,health:5,stress:-14});
-  S.life.time=3+(S.perks.includes('行事曆之王')?1:0);let energy=-Math.ceil((1+random()*3)*d.drain),stress=Math.ceil((1+random()*2)*d.drain);
-  if(S.perks.includes('回家存檔')){energy+=6;stress-=4;modify(S.stats,{spirit:2});}
-  if(S.perks.includes('行事曆之王'))modify(S.hidden,{promise:-2});
-  modifyLife({energy,stress});
-  if(S.life.energy<24||S.life.stress>76)modifyLife({health:-Math.ceil(2*d.drain)});
-  if(S.life.health<35)modify(S.stats,{spirit:-2});
-  return `${eraBreak?'幕間恢復已套用 · ':''}章節消耗：體力 ${energy>=0?'+':''}${energy} · 壓力 ${stress>=0?'+':''}${stress} · 可用時間 ${S.life.time}`;
-}
-function showChapter(){
-  const ch=CHAPTERS[S.index];if(!ch){endGame();return;}
-  S.year=ch.year;S.age=ch.age;const upkeep=applyChapterUpkeep();
-  if(ch.era!==lastEra){lastEra=ch.era;eraHead(ch.era);}
-  appendCard(ch.tone,`第 ${String(S.index).padStart(2,'0')} 章`,ch.title,`<div class="yearline">${ch.year} 年 · ${ch.age} 歲</div><p>${ch.text}</p><div class="delta">${upkeep}</div>`,ch.fact);
-  const choices=expandedChoices(ch),buttons=choices.map((o,i)=>{const meta=choiceMeta(o);return{t:o.t,s:o.s,meta:meta.html,disabled:!!meta.locked,main:i===0&&!meta.locked,warn:!!o.chance||/風險|流失|受損|暴增|歸零|重傷/.test(o.s||''),f:()=>IntegrityVault.run(()=>resolveChoice(ch,o))};});
-  setActions(`這一刻，你怎麼做？（${choices.length} 種人生路線）`,buttons);renderBoard();
-}
-function takeSnapshot(){return{stats:{...S.stats},life:{...S.life},routes:{...S.routes},hidden:{...S.hidden},cash:S.cash};}
-function scaledReward(mods){if(!mods)return mods;const mult=DIFFICULTIES[S.difficulty].reward,out={};Object.entries(mods).forEach(([k,v])=>out[k]=v>0?Math.round(v*mult):v);return out;}
-function applyChoice(o,ch,status='success',altSuccess=false){
-  const success=status!=='failure',statMods=success?o.mods:o.failMods,hiddenMods=success?o.hidden:o.failHidden,relMods=success?o.rel:o.failRel;
-  modify(S.stats,success?scaledReward(statMods):statMods);modify(S.hidden,hiddenMods);modify(S.rel,relMods);modifyLife(o.life);if(!success)modifyLife(o.failLife);
-  const routeMods=success?o.routes:(o.failRoutes||Object.fromEntries(Object.entries(o.routes||{}).map(([k,v])=>[k,Math.max(1,Math.floor(v/2))])));modifyRoutes(routeMods);modifyRoutes(inferRoutes(ch,o));
-  S.cash=Math.max(0,S.cash+(success?(o.cash||0):(o.failCash||0)));if(altSuccess&&o.altMods)modify(S.stats,o.altMods);
-  if(success&&S.perks.includes('萬人聊天室')&&(o.routes?.creator||0)>0)modify(S.stats,{fame:2,fans:3});
-  if(!success&&S.perks.includes('精華體質'))modify(S.stats,{fans:4});
-  if(!success&&S.perks.includes('大中計體質')){modify(S.stats,{fame:3,fans:6});modify(S.hidden,{pollution:2});}
-  if(S.perks.includes('家人邊界')&&hiddenMods?.pollution>0)modify(S.hidden,{pollution:-Math.ceil(hiddenMods.pollution/3)});
-  if(S.perks.includes('多平台備援')&&hiddenMods?.platform>0)modify(S.hidden,{platform:-Math.ceil(hiddenMods.platform/3)});
-  if(S.perks.includes('完全羅化')&&o.chance){modify(S.stats,{fans:3});modifyLife({stress:2});}
-}
-function deltaHtml(before){
-  const parts=[];Object.entries(S.stats).forEach(([k,v])=>{const d=v-before.stats[k];if(d)parts.push(`<span class="${d>0?'up':'down'}">${STAT_NAMES[k]} ${d>0?'+':''}${d}</span>`);});
-  Object.entries(S.life).forEach(([k,v])=>{const d=v-before.life[k];if(d)parts.push(`<span class="${k==='stress'?(d<0?'up':'down'):(d>0?'up':'down')}">${LIFE_NAMES[k]} ${d>0?'+':''}${d}</span>`);});
-  Object.entries(S.routes).forEach(([k,v])=>{const d=v-before.routes[k];if(d)parts.push(`<span class="gold">${ROUTE_NAMES[k]} +${d}</span>`);});
-  const cd=Math.round((S.cash-before.cash)*10)/10;if(cd)parts.push(`<span class="${cd>0?'up':'down'}">資產 ${cd>0?'+':''}${cd}萬</span>`);
-  return parts.length?`<div class="delta">${parts.join(' · ')}</div>`:'';
-}
-const CHAT_BASE=['==','真假','確實','冷靜，有料','大中計','好了啦','2486','右手借我','免費仔說話！'];
-function chatFor(ch,o){const lines=[];if(o.unlock)lines.push(`系統：已記錄「${o.unlock}」`);lines.push(pick(CHAT_BASE),pick(CHAT_BASE));if(S.hidden.promise>35)lines.push('老傑寶：你上次答應的咧？');if(S.hidden.pollution>55)lines.push('高金生：本尊你好');if(ch.key==='thirty_million')lines.push('蟹老闆：阿傑還錢');if(ch.key==='rank_17')lines.push('薛西：所以現在要怎麼辦？');return lines.slice(0,4);}
-function appendChat(lines){const d=document.createElement('div');d.className='chat';d.innerHTML=lines.map((x,i)=>`<span class="${i===0&&x.startsWith('系統')?'system':''}"><b>${i===0?'聊天室':'傑寶'+ri(1,9527)}：</b>${x.replace(/^系統：/,'')}</span>`).join('');$('log').appendChild(d);}
-function unlockMeme(name){if(!name||S.memes.includes(name))return;S.memes.push(name);const d=document.createElement('article');d.className='card meme-card';d.innerHTML=`<div class="meme-icon">🐍</div><div><small>迷因鍊金完成</small><br><b>${name}</b></div>`;$('log').appendChild(d);}
-function thresholdMemes(){if(S.hidden.promise>=35)unlockMeme('承諾債券商');if(S.hidden.pollution>=45)unlockMeme('分身母體');if(S.stats.fans>=85)unlockMeme('傑寶召喚師');if(S.stats.integrity<=30)unlockMeme('制度記憶');if(S.hidden.lazy>=75)unlockMeme('怠惰本尊');}
-function setContinue(){setActions('人生不會停在這張卡上。',[{t:'繼續下一章 ▸',main:true,f:()=>IntegrityVault.run(()=>{S.index++;showChapter();})}]);}
-function checkCollapse(){
-  if(S.life.health<=3){S.forcedEnding='health';endGame();return true;}
-  if(S.life.stress>=99){S.forcedEnding='stress';endGame();return true;}
-  if(S.stats.credit<=3&&S.hidden.promise>=94){S.forcedEnding='credit';endGame();return true;}
-  if(S.hidden.platform>=99){S.forcedEnding='platform';endGame();return true;}
-  return false;
-}
-function randomEventButtons(e){return e.choices.map((o,i)=>{const meta=choiceMeta(o);return{t:o.t,s:o.s,meta:meta.html,disabled:!!meta.locked,main:i===0&&!meta.locked,warn:!!o.chance,f:()=>IntegrityVault.run(()=>resolveRandomChoice(e,o))};});}
-function maybeRandomEvent(){
-  if(S.index<2||S.index>=CHAPTERS.length-1)return false;const cfg=DIFFICULTIES[S.difficulty];
-  const pressure=(S.life.stress>65?.08:0)+(S.hidden.pollution>55?.05:0)+(S.hidden.promise>55?.04:0),chance=clamp(cfg.event+pressure-S.seenEvents.length*.012,.2,.88);
-  if(random()>chance)return false;
-  const eligible=RANDOM_EVENTS.filter(e=>!S.seenEvents.includes(e.id)&&(!e.when||e.when(S)));if(!eligible.length)return false;
-  const e=pick(eligible);S.seenEvents.push(e.id);
-  appendCard(`event-card ${e.tone||'purple'}`,'動態人生事故',e.title,`<p>${e.text}</p><div class="delta">本局第 ${S.seenEvents.length} 個隨機事件 · ${DIFFICULTIES[S.difficulty].label}事件率</div>`,FICTION);
-  setActions('突發狀況！你要怎麼處理？',randomEventButtons(e));renderBoard();return true;
-}
-function resolveRandomChoice(e,o){
-  const before=takeSnapshot(),chance=estimateChance(o),roll=chance==null?0:random()*100,success=chance==null||roll<chance;if(chance!=null&&Math.abs(chance-roll)<=5)S.closeCalls++;
-  applyChoice(o,{title:e.title},success?'success':'failure');success?S.successes++:S.failures++;S.randomEvents++;
-  const outcome=success?o.out:(o.failOut||'計畫沒有照預期發展，代價已經寫進這段人生。');
-  appendCard(success?'good':'bad',success?'事故處理成功':'事故處理失敗',o.t,`<p>${outcome}</p>${deltaHtml(before)}`,FICTION);appendChat([success?'系統：你撐過了這次突發事件':'系統：大中計寫入人生紀錄',pick(CHAT_BASE),pick(CHAT_BASE)]);
-  thresholdMemes();checkPerks();S.history.push({key:`event:${e.id}`,choice:o.t,result:success?'success':'failure'});
-  if(checkCollapse())return;setContinue();renderBoard();
-}
-function resolveChoice(ch,o){
-  const before=takeSnapshot(),chance=estimateChance(o),roll=chance==null?0:random()*100,riskSuccess=chance==null||roll<chance;let altSuccess=false;if(chance!=null&&Math.abs(chance-roll)<=5)S.closeCalls++;
-  if(riskSuccess&&S.mode==='whatif'&&o.altOut){const score=S.stats.integrity+S.stats.credit+S.stats.practice*.35+ri(-18,18)-DIFFICULTIES[S.difficulty].risk;altSuccess=score>=112;}
-  applyChoice(o,ch,riskSuccess?'success':'failure',altSuccess);riskSuccess?S.successes++:S.failures++;
-  if(o.unlock&&riskSuccess)unlockMeme(o.unlock);thresholdMemes();
-  const outcome=!riskSuccess?(o.failOut||'你押下的路線沒有成功。失敗不是空白，它會改變下一次判定。'):(altSuccess?o.altOut:o.out);
-  const kicker=!riskSuccess?'高風險判定失敗':altSuccess?'架空分歧成立':chance!=null?'高風險判定成功':'你的選擇';
-  appendCard(!riskSuccess?'bad':altSuccess||chance!=null?'good':'',kicker,o.t,`<p>${outcome}</p>${deltaHtml(before)}`,altSuccess||chance!=null?FICTION:null);
-  appendChat(chatFor(ch,o));
-  checkPerks();S.history.push({key:ch.key,choice:o.t,alt:altSuccess,result:riskSuccess?'success':'failure'});if(o.finalChoice)S.finalChoice=o.finalChoice;
-  if(ch.key==='finale'){if(!checkCollapse())endGame();return;}
-  if(checkCollapse())return;if(!maybeRandomEvent())setContinue();renderBoard();
-}
-function endingData(){
-  const x=S.stats,h=S.hidden,r=S.rel,f=S.finalChoice,l=S.life,p=S.routes,minRoute=Math.min(...Object.values(p));
-  if(S.forcedEnding==='health')return{id:'forced-health',rank:'C',rarity:'危機結局',title:'強制休台',text:'身體替你按下了主播一直不肯按的停止鍵。這不是死亡結局，而是一段必須重新安排生活的長期休台。'};
-  if(S.forcedEnding==='stress')return{id:'forced-stress',rank:'C',rarity:'危機結局',title:'訊號過熱',text:'壓力抵達上限，所有承諾、合作與牌局一起失去優先順序。你第一次不是因為平台，而是因為自己需要離線。'};
-  if(S.forcedEnding==='credit')return{id:'forced-credit',rank:'D',rarity:'危機結局',title:'承諾信用破產',text:'沒有一個單獨的謊言摧毀頻道；真正讓人離開的，是每一次「明天一定」加在一起。聊天室還在，沒有人再等時間表。'};
-  if(S.forcedEnding==='platform')return{id:'forced-platform',rank:'C',rarity:'危機結局',title:'無限平台流浪',text:'最後一個備援頁面也失去作用。你仍可以開台，卻得重新從「羅正男是誰」開始。'};
-  if(S.mode==='whatif'&&f==='cards'&&p.pro>=45&&x.sense>=78&&x.practice>=70&&x.integrity>=70&&l.health>=32)return{id:'world-champion',rank:'SS',rarity:'傳說結局',title:'如果當時・世界冠軍',text:'你在制度分岔點留下不同紀錄，又用完整集訓回到決賽。這不是史實補寫，而是許多次選擇與判定同時成立後，才開啟的架空答案。'};
-  if(minRoute>=17&&x.credit>=68&&l.health>=45&&l.stress<72)return{id:'whole-life',rank:'SS',rarity:'隱藏平衡結局',title:'不只是一張迷因圖',text:'競技、直播、公司、朋友與家人都沒有被你單獨犧牲。你沒有成為任何單一路線最極端的版本，卻第一次擁有一段不用剪輯才能成立的完整人生。'};
-  if(f==='brand'&&p.manager>=42&&p.creator>=30&&x.credit+x.fame+r.nl>=190&&h.platform<72)return{id:'empire',rank:'S',rarity:'經營結局',title:'娛樂帝國',text:'叉叉娛樂把混亂變成制度、把迷因變成資產。新簽的天才選手每天睡到下午，你終於完全理解蟹老闆。'};
-  if(f==='self'&&p.family>=38&&r.mother>=72&&x.credit>=62&&h.pollution<65)return{id:'home-save',rank:'S',rarity:'家庭結局',title:'家仍是存檔點',text:'你建立真正隔音、真正保護家人的工作空間。這是最安靜、最不像迷因，卻最完整的結局。'};
-  if(p.creator>=48&&p.chaos>=32&&S.failures>=5)return{id:'clip-god',rank:'S',rarity:'實況結局',title:'水蛇洞素材之神',text:'成功替你帶來觀眾，失敗替你帶來更多觀眾。剪輯師不再等待精華，因為你的人生已經是一條全天候素材輸送帶。'};
-  if(h.pollution>=76||p.chaos>=55||x.fans>=98)return{id:'complete-luo',rank:'S?',rarity:'混亂結局',title:'完全羅正男',text:'網路上沒有人在乎哪一個帳號是真的。本人不再是唯一版本，只是這個共同角色最早的素材來源。真假、確實、有料。'};
-  if(f==='cards'&&p.pro>=42&&x.sense+x.practice>=145)return{id:'winter-king',rank:'A+',rarity:'競技結局',title:'冬季之王還沒離桌',text:'你把社群分頁縮小，重新回到牌桌。世界冠軍仍是問號，但每一次訓練與復盤都證明那座冬季冠軍不是偶然。'};
-  if(p.manager>=42&&r.crab+r.shaxy+r.nl>=175)return{id:'team-lead',rank:'A+',rarity:'團隊結局',title:'終於成為蟹老闆',text:'你開始替別人的遲到、天賦與承諾傷腦筋。當新人說「明天一定」時，你沉默了很久，然後把行事曆傳給他。'};
-  if(p.family>=45&&l.health>=72&&l.stress<38)return{id:'quiet-retire',rank:'A',rarity:'生活結局',title:'安靜退役不是失蹤',text:'你仍偶爾開台、偶爾打牌，卻不再把每一天都交給演算法。網路把它叫退燒，你知道那叫生活重新長回來。'};
-  if(h.promise>=78&&x.credit<38)return{id:'promise-king',rank:'B-',rarity:'失約結局',title:'五六日套餐永久延期',text:'公告仍然寫著明天、下週與近期公開。聊天室學會不再問日期，只把每一次承諾當成新貼圖的預告。'};
-  if(h.platform>=78)return{id:'wanderer',rank:'B',rarity:'平台結局',title:'第七次搬家',text:'你熟悉每一種匯出訂閱、重新公告與教觀眾註冊的方法。平台沒有一個是家，搬家本身卻成了你的專業。'};
-  if(f==='brand'&&p.manager>=24)return{id:'company-open',rank:'A',rarity:'經營結局',title:'叉叉娛樂持續營業',text:'公司沒有成為帝國，卻成功活過下一季。管理者羅正男與實況主羅正男仍每天在行事曆裡互相打架。'};
-  if(p.pro>=35)return{id:'ladder-keeper',rank:'A-',rarity:'競技結局',title:'天梯最後守門員',text:'你沒有回到最高峰，卻一直站在每個新人通往頂端的路上。有人因為打贏你出道，也有人因為被你神抽開始認識這個名字。'};
-  if(S.randomEvents>=9&&S.failures>S.successes)return{id:'local-survivor',rank:'B+',rarity:'事故結局',title:'Local 宇宙生還者',text:'計畫成功的次數沒有事故多，但每一次大中計都沒有真正結束這段人生。你不是最穩定的版本，卻是最難被關掉的版本。'};
-  return{id:'still-live',rank:legendScore()>=75?'A':'B',rarity:'開放結局',title:'還在開台',text:'2026 年沒有真正的人生終點。等待畫面結束，聊天室問今天玩什麼。你看著剩下的體力、承諾與朋友名單，回答：「等一下啦。」'};
-}
-function rememberEnding(id){try{const key='jimmidog-luozhengnan-endings-v3',old=JSON.parse(localStorage.getItem(key)||'[]'),next=[...new Set([...old,id])];localStorage.setItem(key,JSON.stringify(next));return next.length;}catch(_){return 1;}}
-function endGame(){
-  if(S.ended)return;S.ended=true;const e=endingData(),collection=rememberEnding(e.id),top=Object.entries(S.stats).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${STAT_NAMES[k]} ${v}`).join('、');
-  const routes=Object.entries(ROUTE_NAMES).map(([k,n])=>`<div class="route">${n}<b>${S.routes[k]}</b></div>`).join('');
-  appendCard('ending',`生涯結算 · ${e.rarity}`,e.title,`<div class="rank">${e.rank}</div><p>${e.text}</p><div class="ending-grid"><div>難度<b>${DIFFICULTIES[S.difficulty].label}</b></div><div>羅傑指數<b>${legendScore()}</b></div><div>動態事件<b>${S.randomEvents} 次</b></div><div>判定戰績<b>${S.successes} 成功 / ${S.failures} 失敗</b></div><div>生命狀態<b>健康 ${S.life.health} / 壓力 ${S.life.stress}</b></div><div>結局圖鑑<b>已發現 ${collection} 種</b></div></div><div class="route-grid">${routes}</div><ul><li>最高能力：${top}</li><li>總資產：約 ${fmtCash(S.cash)} 萬</li><li>收集迷因：${S.memes.length} 個</li><li>解鎖路線能力：${S.perks.length} 個</li></ul>`,FICTION);
-  const summary=`《羅正男的一生》結局：${e.title}\n${e.rarity}｜評價 ${e.rank}｜${DIFFICULTIES[S.difficulty].label}\n羅傑指數 ${legendScore()}｜隨機事件 ${S.randomEvents}｜判定 ${S.successes} 成功 ${S.failures} 失敗\n${e.text}`;
-  setActions('這段人生暫時播完了。',[{t:'複製結算摘要',main:true,f:()=>copyText(summary)},{t:'重新開一段人生',f:()=>location.reload()}]);renderBoard();scrollBottom();
-}
-async function copyText(text){try{await navigator.clipboard.writeText(text);const b=$('actions').querySelector('.btn');const old=b.textContent;b.textContent='✓ 已複製';setTimeout(()=>b.textContent=old,1300);}catch(_){prompt('手動複製：',text);}}
-
-function startGame(){
-  const name=$('player-name').value.trim()||'羅正男';S=freshState(name,selectedMode,selectedDifficulty);if(apexActive)applyApex();lastEra='';$('start').style.display='none';$('app').style.display='block';$('actions').style.display='block';$('log').innerHTML='';renderBoard();
-  appendCard('purple','開台前聲明','你不是在讀時間線，而是在活這段人生',`<p>世界規則：${selectedMode==='history'?'史實':'如果當時'}模式；人生難度：${DIFFICULTIES[selectedDifficulty].label}。每章會出現 3–5 種做法，高風險行動依能力、關係、體力與難度判定；動態事件必須由你親自處理。競技、實況、經營、家庭與混亂五條路線會解鎖能力及不同結局。</p>`,FICTION);showChapter();
-}
-
-document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{document.querySelectorAll('.mode').forEach(x=>x.classList.remove('on'));b.classList.add('on');selectedMode=b.dataset.mode;});
-document.querySelectorAll('.difficulty').forEach(b=>b.onclick=()=>{document.querySelectorAll('.difficulty').forEach(x=>x.classList.remove('on'));b.classList.add('on');selectedDifficulty=b.dataset.difficulty;});
-$('start-btn').onclick=()=>IntegrityVault.run(startGame);
-$('status-toggle').onclick=()=>{$('stats').classList.toggle('open');$('status-toggle').textContent=$('stats').classList.contains('open')?'收合':'狀態';};
-$('restart').onclick=()=>{if(confirm('確定要放棄這段人生，重新開始嗎？'))location.reload();};
-$('logo').onclick=()=>$('info-modal').classList.add('open');$('modal-close').onclick=()=>$('info-modal').classList.remove('open');$('info-modal').onclick=e=>{if(e.target===$('info-modal'))$('info-modal').classList.remove('open');};
-
-const ACCESS_PROOF=Uint8Array.of(28,146,12,95,115,130,37,152,184,168,25,110,3,182,26,177,175,75,231,13,196,115,228,175,52,247,81,87,159,97,16,42);
-let accessBuffer='';
-async function testAccess(candidate){if(apexActive||!globalThis.crypto?.subtle)return;const digest=new Uint8Array(await globalThis.crypto.subtle.digest('SHA-256',new TextEncoder().encode(candidate)));let diff=digest.length^ACCESS_PROOF.length;for(let i=0;i<ACCESS_PROOF.length;i++)diff|=(digest[i]||0)^ACCESS_PROOF[i];if(diff)return;accessBuffer='';IntegrityVault.run(()=>{apexActive=true;if(S)applyApex();const mark=$('logo')||$('name-view');if(mark.animate)mark.animate([{filter:'brightness(1)'},{filter:'brightness(2.8)'},{filter:'brightness(1)'}],{duration:650});});}
-document.addEventListener('keydown',e=>{const t=e.target;if(e.ctrlKey||e.metaKey||e.altKey||e.key.length!==1||t?.matches?.('input,textarea,select,[contenteditable="true"]'))return;accessBuffer=(accessBuffer+e.key.toLowerCase()).slice(-18);void testAccess(accessBuffer);},true);
-})();
-</script>
+  <template id="action-template">
+    <button class="action-card">
+      <span class="action-key"></span><span class="action-icon"></span>
+      <span class="action-copy"><b></b><small></small></span><span class="action-cost"></span>
+    </button>
+  </template>
+  <script src="game.js"></script>
 </body>
 </html>
