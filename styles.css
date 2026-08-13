@@ -20,12 +20,8 @@
   --serif: "Noto Serif TC", "PMingLiU", serif;
 }
 
-* { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: #8f642f #100c0b; }
-*::-webkit-scrollbar { width: 9px; height: 9px; }
-*::-webkit-scrollbar-track { background: #100c0b; border-left: 1px solid rgba(232,221,194,.06); }
-*::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#b58039,#69421f); border: 2px solid #100c0b; border-radius: 999px; }
-*::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg,#d9a441,#8f2c23); }
-*::-webkit-scrollbar-corner { background: #100c0b; }
+* { box-sizing: border-box; scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; width: 0; height: 0; }
 html { min-height: 100%; background: #0d0908; scroll-behavior: smooth; }
 body { min-height: 100vh; margin: 0; color: var(--cream); background: radial-gradient(circle at 50% -20%, #3c241c 0, #170f0d 42%, #090706 100%); font: 16px/1.6 var(--sans); }
 button, input { font: inherit; }
@@ -94,8 +90,8 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
 
 .game-grid { display: grid; grid-template-columns: 280px minmax(480px, 1fr) 300px; min-height: calc(100vh - 66px); max-width: 1800px; margin: auto; }
 .character-panel, .stream-panel { background: #130e0d; }
-.character-panel { border-right: 1px solid var(--line); padding: 22px 18px; position: sticky; top: 66px; height: calc(100vh - 66px); overflow-y: auto; scrollbar-gutter: stable; }
-.stream-panel { border-left: 1px solid var(--line); position: sticky; top: 66px; height: calc(100vh - 66px); overflow-y: auto; scrollbar-gutter: stable; }
+.character-panel { border-right: 1px solid var(--line); padding: 22px 18px; position: sticky; top: 66px; height: calc(100vh - 66px); overflow-y: auto; }
+.stream-panel { border-left: 1px solid var(--line); position: sticky; top: 66px; height: calc(100vh - 66px); overflow-y: auto; }
 .character-card { display: grid; grid-template-columns: 70px 1fr; gap: 14px; align-items: center; }
 .portrait { width: 70px; height: 84px; position: relative; overflow: hidden; background: linear-gradient(150deg,#9a7957,#3d2b24 54%,#17100e 55%); border: 1px solid rgba(232,221,194,.22); }
 .portrait-image { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center top; }
@@ -451,7 +447,6 @@ blockquote { margin: 28px 0 0; padding: 12px 18px; border-left: 3px solid var(--
   .map-nav { grid-template-columns: repeat(3,1fr); }
   .actions-grid { grid-template-columns: 1fr 1fr; }
   .modal-card { padding: 28px 22px; }
-  *::-webkit-scrollbar { width: 6px; height: 6px; }
 }
 @media (max-width: 480px) {
   .feature-row span:nth-child(4) { display: none; }
