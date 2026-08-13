@@ -27,6 +27,22 @@
   const MOUNTAIN_GOAT_RATE = .00001;
   const TREE_SENTINEL_RATE = .00001;
 
+  const CHARACTER_ART = {
+    master: { src:'糖之漢.png', name:'糖之漢', focus:'50% 20%' },
+    krapy: { src:'大師兄.png', name:'糖虧皮', focus:'50% 18%' },
+    toyz: { src:'2師兄.png', name:'糖偉健', focus:'50% 23%' },
+    eason: { src:'3師兄.png', name:'糖政銘', focus:'50% 17%' },
+    overload: { src:'四師兄.png', name:'糖負荷', focus:'50% 17%' },
+    nl: { src:'小師妹nl.png', name:'糖汶銨', focus:'50% 18%' },
+    vivi: { src:'夏侯芝.png', name:'夏侯芝', focus:'50% 18%' },
+    tangxi: { src:'糖喜.png', name:'糖喜', focus:'50% 15%' },
+    longgeng: { src:'龍耿.png', name:'龍耿', focus:'50% 20%' }
+  };
+  const CAST_ART = {
+    '糖之漢':'master', '糖虧皮':'krapy', '糖偉健':'toyz', '糖政銘':'eason', '糖負荷':'overload',
+    '糖汶銨':'nl', '夏侯芝':'vivi', '糖喜':'tangxi', '龍耿':'longgeng'
+  };
+
   const LOCATIONS = {
     outer: {
       name: '糖門外院', region: '糖門 · 山腳', danger: 1, stamp: '安', icon: '門',
@@ -45,7 +61,7 @@
     },
     villa: {
       name: '起丘山莊', region: '江湖 · 戰隊舊址', danger: 2, stamp: '練', icon: '丘',
-      description: '老蟹的帳本、薛喜的軍師圖與一張永遠沒人照表出席的班表，都還留在山莊。',
+      description: '老蟹的帳本、糖喜拿來整人的軍師圖與一張永遠沒人照表出席的班表，都還留在山莊。',
       effects: ['身法修行 +1', '任務報酬 +20%'], unlock: s => s.bossIndex >= 1
     },
     market: {
@@ -102,7 +118,7 @@
       ]
     },
     {
-      number:'第三章', title:'金銀雙烏壓境', summary:'張家雙煞封住山路。單人數值再高，也頂不住兩個人的連招。', cast:['糖之漢','糖負荷','龍耿','金烏上豬','銀烏下豬'],
+      number:'第三章', title:'金銀雙烏壓境', summary:'張家雙煞封住山路。單人數值再高，也頂不住兩個人的連招。', cast:['糖之漢','糖負荷','糖喜','龍耿','金烏上豬','銀烏下豬'],
       sections:[
         { number:'第一回', title:'雙烏封山', summary:'山路斷糧，外院每個人都得先學會自保。', requirements:[
           {label:'累積擊敗 10 隻野怪',check:s=>s.metrics.wins>=10,value:s=>`${s.metrics.wins}/10`},
@@ -273,12 +289,12 @@
   ];
 
   const BROTHER_SESSIONS = [
-    { id:'krapy', icon:'🗡️', role:'大師兄', name:'糖虧皮', title:'三招滑劍拆解', effect:'身法 +1・35% 心眼 +1', quote:'大師兄先笑你三次，第四次才把真正的步法教給你。' },
-    { id:'toyz', icon:'🧪', role:'二師兄', name:'糖偉健', title:'藥爐辨丹', effect:'心眼 +1・機率獲得回氣丹', quote:'桌上四十顆丹只有一顆是真的；這次不准看到亮光就吞。' },
-    { id:'eason', icon:'📋', role:'三師兄', name:'糖政銘', title:'門規晨操', effect:'力道或根骨 +1・自律 +2', quote:'他拿著點名簿站在旁邊，動作做錯可以重來，遲到不行。' },
-    { id:'overload', icon:'📦', role:'四師兄', name:'糖負荷', title:'黑心搬貨術', effect:'根骨 +1・賺糖錢・心火上升', quote:'箱子寫著易碎，他說真正易碎的是免費仔的錢包。' },
-    { id:'nl', icon:'🪭', role:'小師妹・NL', name:'糖汶銨', title:'閃刀步法陪練', effect:'身法或心眼 +1・人情 +2', quote:'小師妹一句「再來一次」，比掌門吼十句都有用。', unlock:()=>true },
-    { id:'vivi', icon:'☂️', role:'雪山師姐・VIVI', name:'夏侯芝', title:'雪傘逆風課', effect:'心眼 +1・身法機率 +1・自律 +2', quote:'夏侯芝把傘尖抵在你腳邊：「再碎念一句，就自己滾下山。」', unlock:s=>s.bossIndex>=2 }
+    { id:'krapy', art:'krapy', icon:'🗡️', role:'大師兄', name:'糖虧皮', title:'三招滑劍拆解', effect:'身法 +1・35% 心眼 +1', quote:'大師兄先笑你三次，第四次才把真正的步法教給你。' },
+    { id:'toyz', art:'toyz', icon:'🧪', role:'二師兄', name:'糖偉健', title:'藥爐辨丹', effect:'心眼 +1・機率獲得回氣丹', quote:'桌上四十顆丹只有一顆是真的；這次不准看到亮光就吞。' },
+    { id:'eason', art:'eason', icon:'📋', role:'三師兄', name:'糖政銘', title:'門規晨操', effect:'力道或根骨 +1・自律 +2', quote:'他拿著點名簿站在旁邊，動作做錯可以重來，遲到不行。' },
+    { id:'overload', art:'overload', icon:'📦', role:'四師兄', name:'糖負荷', title:'黑心搬貨術', effect:'根骨 +1・賺糖錢・心火上升', quote:'箱子寫著易碎，他說真正易碎的是免費仔的錢包。' },
+    { id:'nl', art:'nl', icon:'🪭', role:'小師妹・NL', name:'糖汶銨', title:'閃刀步法陪練', effect:'身法或心眼 +1・人情 +2', quote:'小師妹一句「再來一次」，比掌門吼十句都有用。', unlock:()=>true },
+    { id:'vivi', art:'vivi', icon:'☂️', role:'雪山師姐・VIVI', name:'夏侯芝', title:'雪傘逆風課', effect:'心眼 +1・身法機率 +1・自律 +2', quote:'夏侯芝把傘尖抵在你腳邊：「再碎念一句，就自己滾下山。」', unlock:s=>s.bossIndex>=2 }
   ];
 
   const MISSIONS = [
@@ -377,7 +393,7 @@
       { name:'麻將桌精', icon:'🀄', hp:110, attack:16, reward:64, xp:45, style:'trick', flavor:'每一手都像在等你打錯那張。' },
       { name:'合約墨怪', icon:'🖋️', hp:118, attack:17, reward:68, xp:47, style:'trick', flavor:'條款會自己換行，心眼不夠很容易中招。' },
       { name:'戰隊椅妖', icon:'🪑', hp:128, attack:18, reward:70, xp:49, style:'guard', flavor:'坐得比選手久，架勢也穩得離譜。' },
-      { name:'軍師沙盤鬼', icon:'♟️', hp:122, attack:18, reward:72, xp:50, style:'brute', flavor:'薛喜沒說話，沙盤倒是自己殺過來了。' }
+      { name:'軍師沙盤鬼', icon:'♟️', hp:122, attack:18, reward:72, xp:50, style:'brute', flavor:'糖喜沒說話，沙盤倒是自己殺過來了。' }
     ],
     market: [
       { name:'工商刺客', icon:'💼', hp:115, attack:17, reward:72, xp:48, style:'swift', flavor:'開口先報價，拔刀才說品項。' },
@@ -475,7 +491,7 @@
       ]
     },
     crows: {
-      kicker:'第三章・第四回・同門', title:'贏的是糖門，不是單挑王', text:'金銀雙烏倒下時，糖之漢才從山羌屏風後走出來。老蟹的帳、薛喜的軍師圖與小師妹的飯盒，哪一樣才是宗門真正的武器？',
+      kicker:'第三章・第四回・同門', title:'贏的是糖門，不是單挑王', text:'金銀雙烏倒下時，糖之漢才從山羌屏風後走出來。老蟹的帳、糖喜的軍師圖與小師妹的飯盒，哪一樣才是宗門真正的武器？',
       choices:[
         { label:'把戰功分給所有同門', sub:'人情 +7、信義 +3｜取得「同門心印」', apply:s=>{s.routes.ties+=7;s.routes.integrity+=3;addVow(s,'同門心印');} },
         { label:'接下山莊的爛帳', sub:'信義 +6、糖錢 +120｜取得「擔當心印」', apply:s=>{s.routes.integrity+=6;s.coins+=120;addVow(s,'擔當心印');} },
@@ -543,7 +559,7 @@
     }
   };
 
-  const CHATTERS = ['老傑寶2486','免費仔9527','薛喜軍師','米特姨守護者','糖門雜役','高金生本尊','剪輯水鬼','冷靜有料'];
+  const CHATTERS = ['老傑寶2486','免費仔9527','糖喜軍師','米特姨守護者','糖門雜役','高金生本尊','剪輯水鬼','冷靜有料'];
   const CHAT_LINES = ['真假','確實','這把有料','先看需求好嗎','又在明天一定','右手借我','不要貪刀！','先吃飯啦','這可以剪精華','泰山在笑你','所以現在要怎麼辦？'];
   const INTENTS = {
     attack: { icon:'⚔️', name:'平砍', hint:'普通攻勢。防禦可減傷。' },
@@ -858,7 +874,7 @@
         {icon:'帖',name:'承接任務',desc:'查看能推進故事的江湖委託。',cost:'依任務',fn:openMissions}, commonEnd
       ],
       villa: [
-        {icon:'影',name:'薛喜陪練',desc:'身法修行必定額外 +1，心火稍高。',cost:'行動 -1',fn:()=>quickTrain('agility')},
+        {icon:'影',name:'糖喜找碴',desc:'糖喜專堵門欺負主角；看穿她的絆腿，或當眾把路撞開。',cost:'選擇後行動 -1',fn:openTangXiEncounter},
         {icon:'獵',name:'山莊掃蕩',desc:'從盤踞山莊的怪物中選擇對手。',cost:'選擇後行動 -1',fn:openWildEncounter},
         {icon:'帳',name:'整理老蟹帳本',desc:'提升信義、人情與少量糖錢。',cost:'行動 -1',fn:ledgerAction},
         {icon:'帖',name:'承接任務',desc:'山莊任務能解鎖關鍵道具。',cost:'依任務',fn:openMissions}, commonEnd
@@ -949,6 +965,7 @@
       btn.onclick = action.onClick; $('modal-actions').appendChild(btn);
     });
     $('modal').hidden = false;
+    const modalCard=$('modal').querySelector('.modal-card');if(modalCard)modalCard.scrollTop=0;
     if (afterOpen) afterOpen();
   }
   function closeModal() { if (!modalClosable) return; $('modal').hidden = true; currentBattle = null; }
@@ -976,9 +993,57 @@
     });
   }
 
-  function clanCard({ id, icon, role='', name, title='', focus='', effect='' }, type) {
+  function characterImage(id, className='') {
+    const art=CHARACTER_ART[id];if(!art)return '';
+    return `<img class="${esc(className)}" src="${esc(art.src)}" alt="${esc(art.name)}" loading="lazy" style="object-position:${esc(art.focus)}">`;
+  }
+
+  function characterFeature(id, label, text='', tone='') {
+    const art=CHARACTER_ART[id];if(!art)return '';
+    const toneClass=['danger','romance'].includes(tone)?` ${tone}`:'';
+    return `<section class="character-feature${toneClass}">${characterImage(id,'character-feature-art')}<div><small>${esc(label)}</small><b>${esc(art.name)}</b>${text?`<p>${esc(text)}</p>`:''}</div></section>`;
+  }
+
+  function chapterCastHtml(cast) {
+    return `<div class="chapter-cast" aria-label="本章登場人物">${cast.map(name=>{
+      const artId=CAST_ART[name],portrait=artId?characterImage(artId,'cast-portrait'):`<span class="cast-portrait cast-portrait-placeholder">${esc(name.slice(0,1))}</span>`;
+      return `<div class="cast-card">${portrait}<span>${esc(name)}</span></div>`;
+    }).join('')}</div>`;
+  }
+
+  function openTangXiEncounter() {
+    if(state.ap<=0)return toast('今日行動已用完');
+    openModal({
+      kicker:'起丘山莊・糖喜找碴',title:'她不是來陪練，是來欺負你的',
+      body:`${characterFeature('tangxi','山莊惡役・堵門找碴','糖喜笑著擋在前廊，先踢走你的拐杖，再故意把軍師圖丟到泥裡。她只是想看你狼狽。','danger')}<div class="story-box"><h4>這不是友善切磋</h4><p>糖喜專挑你落單時伸腿、搶路、拿傷腿開玩笑。你可以忍住火氣看穿她的步法，也可以當眾硬闖，但兩條路都得付出代價。</p></div>`,
+      actions:[
+        {label:'看穿絆腿，忍住不回嘴',sub:'身法 +2、自律 +2；受少量傷',primary:true,onClick:()=>resolveTangXiBullying('evade')},
+        {label:'當眾回嘴，硬把路撞開',sub:'力道、身法 +1、節目 +2；傷勢與心火較高',onClick:()=>resolveTangXiBullying('clash')},
+        {label:'繞路離開',sub:'不消耗行動，但糖喜會在後面笑',onClick:forceCloseModal}
+      ]
+    });
+  }
+
+  function resolveTangXiBullying(style) {
+    forceCloseModal();runAction(()=>{
+      let damage,xp,delta,note;
+      if(style==='evade'){
+        state.stats.agility+=2;state.routes.discipline+=2;damage=roll(4,9);state.stress=clamp(state.stress+7,0,100);xp=gainXp(state,30);
+        delta=`身法 +2 · 自律 +2 · 經驗 +${xp} · 氣血 -${damage} · 心火 +7`;note='你沒讓她看見想要的失態，但糖喜仍從背後踢中你一次。';
+      }else{
+        state.stats.strength++;state.stats.agility++;state.routes.show+=2;state.routes.chaos++;damage=roll(9,18);state.stress=clamp(state.stress+13,0,100);xp=gainXp(state,34);
+        delta=`力道 +1 · 身法 +1 · 節目 +2 · 混沌 +1 · 經驗 +${xp} · 氣血 -${damage} · 心火 +13`;note='你撞開了路，也正中糖喜下懷：整座山莊都看見這場鬧劇。';
+      }
+      state.hp=Math.max(1,state.hp-damage);state.metrics.training++;
+      addLog('bad','糖喜找碴・前廊惡作劇','糖喜不是你的陪練。她堵路、絆腿，只為拿傷腿欺負主角。',delta);pushChat('',style==='evade'?'這次沒有被她激到':'山莊前廊直接開打');
+      return {result:{kicker:'起丘山莊・找碴結算',title:'從糖喜的惡作劇脫身',art:'tangxi',icon:'影',quote:'糖喜笑著拍掉袖上的灰；她沒有道歉，只在盤算下次要從哪裡伸腿。',delta,note,returnToClan:false}};
+    });
+  }
+
+  function clanCard({ id, art='', icon, role='', name, title='', focus='', effect='' }, type) {
     const bond=type==='partner'?`友好 ${state.companionBond[id]||0} · `:'';
-    return `<button class="clan-card" data-clan-${type}="${id}" ${state.ap>0?'':'disabled'}><span class="clan-avatar">${icon}</span><span class="clan-card-copy">${role?`<small>${esc(role)}</small>`:''}<b>${esc(name)}</b>${title?`<em>${esc(title)}</em>`:''}<span>${esc(focus||effect)}</span></span><i>${bond}行動 -1</i></button>`;
+    const avatar=art?characterImage(art,'clan-avatar-art'):icon;
+    return `<button class="clan-card" data-clan-${type}="${id}" ${state.ap>0?'':'disabled'}><span class="clan-avatar${art?' has-art':''}">${avatar}</span><span class="clan-card-copy">${role?`<small>${esc(role)}</small>`:''}<b>${esc(name)}</b>${title?`<em>${esc(title)}</em>`:''}<span>${esc(focus||effect)}</span></span><i>${bond}行動 -1</i></button>`;
   }
 
   function openClanTraining() {
@@ -986,7 +1051,7 @@
     openModal({
       kicker:'糖門外院・同門修行堂',
       title:'今天要跟誰練？',
-      body:`<div class="clan-summary"><span>掌門健身 <b>${state.metrics.masterSessions}</b></span><span>掌門料理 <b>${state.metrics.mentorMeals}</b></span><span>同門搭檔 <b>${state.trainingPartners.length}/${BROTHER_SESSIONS.length}</b></span></div><h3 class="clan-section-title">掌門・糖之漢</h3><div class="clan-grid">${clanCard({id:'gym',icon:'🏋️',role:'師父',name:'糖之漢',title:'猛男健身房',effect:'五種器械訓練，各自鍛鍊不同能力'},'master')}${clanCard({id:'kitchen',icon:'🥩',role:'師父',name:'糖之漢',title:'掌門鐵板伙房',effect:'六種現煎料理，各有不同補養效果'},'master')}</div><h3 class="clan-section-title">師兄妹互動陪練</h3><div class="clan-grid">${visiblePartners.map(x=>clanCard(x,'partner')).join('')}</div>`,
+      body:`<div class="clan-summary"><span>掌門健身 <b>${state.metrics.masterSessions}</b></span><span>掌門料理 <b>${state.metrics.mentorMeals}</b></span><span>同門搭檔 <b>${state.trainingPartners.length}/${BROTHER_SESSIONS.length}</b></span></div><h3 class="clan-section-title">掌門・糖之漢</h3><div class="clan-grid">${clanCard({id:'gym',art:'master',icon:'🏋️',role:'師父',name:'糖之漢',title:'猛男健身房',effect:'五種器械訓練，各自鍛鍊不同能力'},'master')}${clanCard({id:'kitchen',art:'master',icon:'🥩',role:'師父',name:'糖之漢',title:'掌門鐵板伙房',effect:'六種現煎料理，各有不同補養效果'},'master')}</div><h3 class="clan-section-title">師兄妹互動陪練</h3><div class="clan-grid">${visiblePartners.map(x=>clanCard(x,'partner')).join('')}</div>`,
       actions:[{label:'先自己修行',sub:'返回糖門外院，不消耗行動',onClick:forceCloseModal}],
       afterOpen:()=>{
         document.querySelectorAll('[data-clan-master]').forEach(btn=>btn.onclick=()=>btn.dataset.clanMaster==='gym'?openMasterGym():openMasterKitchen());
@@ -999,7 +1064,7 @@
     openModal({
       kicker:'糖之漢・猛男健身房',
       title:'器械不會因為你瘸就變輕',
-      body:`<p>每項訓練主屬性必定成長，另有機率練到第二屬性。普通訓練傷害最多讓你剩 1 點氣血。</p><div class="clan-grid workout-grid">${MASTER_WORKOUTS.map(x=>clanCard({...x,role:'師父監督',effect:x.focus},'workout')).join('')}</div>`,
+      body:`${characterFeature('master','糖門掌門・親自監督','每項訓練主屬性必定成長，另有機率練到第二屬性。普通訓練傷害最多讓你剩 1 點氣血。')}<div class="clan-grid workout-grid">${MASTER_WORKOUTS.map(x=>clanCard({...x,role:'師父監督',effect:x.focus},'workout')).join('')}</div>`,
       actions:[{label:'返回同門修行堂',sub:'改找師兄妹或去掌門伙房',onClick:openClanTraining}],
       afterOpen:()=>document.querySelectorAll('[data-clan-workout]').forEach(btn=>btn.onclick=()=>runMasterWorkout(btn.dataset.clanWorkout))
     });
@@ -1009,7 +1074,7 @@
     openModal({
       kicker:'糖之漢・掌門鐵板伙房',
       title:'今天師父煎什麼？',
-      body:`<p>糖之漢親自掌鍋，每道料理都有不同的恢復、補給或養成效果。</p><div class="clan-grid food-grid">${MASTER_FOODS.map(x=>clanCard({...x,role:'現點現煎',title:x.effect,effect:x.quote},'food')).join('')}</div>`,
+      body:`${characterFeature('master','糖門掌門・親自掌鍋','每道料理都有不同的恢復、補給或養成效果。')}<div class="clan-grid food-grid">${MASTER_FOODS.map(x=>clanCard({...x,role:'現點現煎',title:x.effect,effect:x.quote},'food')).join('')}</div>`,
       actions:[{label:'返回同門修行堂',sub:'突然不餓也沒有關係',onClick:openClanTraining}],
       afterOpen:()=>document.querySelectorAll('[data-clan-food]').forEach(btn=>btn.onclick=()=>runMasterMeal(btn.dataset.clanFood))
     });
@@ -1021,11 +1086,14 @@
     const changeHtml=changes.map(change=>`<div class="action-change ${change.tone}"><span>${esc(change.label)}</span><b>${esc(change.value)}</b></div>`).join('');
     const actions = followup
       ? [{label:followup.label,sub:followup.sub,primary:true,onClick:()=>{forceCloseModal();followup.run();}}]
-      : [{label:'繼續找同門修行',sub:state.ap>0?`今日還有 ${state.ap} 行動`:'今日行動已耗盡，仍可查看項目',primary:state.ap>0,onClick:openClanTraining},{label:'收下成果',sub:'回到糖門外院',onClick:forceCloseModal}];
+      : result.returnToClan===false
+        ? [{label:'離開山莊前廊',sub:'糖喜還在後面笑',primary:true,onClick:forceCloseModal}]
+        : [{label:'繼續找同門修行',sub:state.ap>0?`今日還有 ${state.ap} 行動`:'今日行動已耗盡，仍可查看項目',primary:state.ap>0,onClick:openClanTraining},{label:'收下成果',sub:'回到糖門外院',onClick:forceCloseModal}];
+    const resultVisual=result.art?`<div class="training-result-art">${characterImage(result.art,'training-result-portrait')}</div>`:`<div class="training-result-icon">${result.icon}</div>`;
     openModal({
       kicker:result.kicker,
       title:result.title,
-      body:`<div class="training-result"><div class="training-result-icon">${result.icon}</div><p>${esc(result.quote)}</p>${result.note?`<small>${esc(result.note)}</small>`:''}</div><div class="action-result clan-result-changes"><h3>本次變化</h3><div class="action-change-grid">${changeHtml}</div>${unlocked.length?`<div class="result-notice achievement-pop">新成就：${unlocked.map(esc).join('、')}</div>`:''}</div>`,
+      body:`<div class="training-result">${resultVisual}<p>${esc(result.quote)}</p>${result.note?`<small>${esc(result.note)}</small>`:''}</div><div class="action-result clan-result-changes"><h3>本次變化</h3><div class="action-change-grid">${changeHtml}</div>${unlocked.length?`<div class="result-notice achievement-pop">新成就：${unlocked.map(esc).join('、')}</div>`:''}</div>`,
       actions,
       closable:false
     });
@@ -1041,7 +1109,7 @@
       state.routes.discipline++;state.metrics.training++;state.metrics.masterSessions++;
       const xp=gainXp(state,workout.xp),delta=`${STAT_NAMES[workout.stat]} +${primaryGain}${secondaryGain?` · ${STAT_NAMES[workout.secondary]} +1`:''} · 經驗 +${xp} · 氣血 -${damage}`;
       addLog('good',`掌門健身・${workout.name}`,workout.quote,delta);pushChat('',primaryGain>1?'掌門親傳！這組爆擊成長':'師父真的沒有在放水');
-      return {result:{kicker:'糖之漢・健身結算',title:`完成 ${workout.name}`,icon:workout.icon,quote:workout.quote,delta,note:`心火 +${workout.stress}・自律 +1`}};
+      return {result:{kicker:'糖之漢・健身結算',title:`完成 ${workout.name}`,art:'master',icon:workout.icon,quote:workout.quote,delta,note:`心火 +${workout.stress}・自律 +1`}};
     });
   }
 
@@ -1065,7 +1133,7 @@
       state.metrics.mentorMeals++;if(!state.mealsEaten.includes(food.id))state.mealsEaten.push(food.id);
       const xp=gainXp(state,16),extras=[`氣血 +${heal}`,`經驗 +${xp}`];if(statGain)extras.push(`${STAT_NAMES[food.stat]} +1`);if(food.qi)extras.push(`真氣 +${food.qi}`);if(food.rice)extras.push(`飯盒 +${food.rice}`);if(food.discipline)extras.push(`自律 +${food.discipline}`);
       const delta=extras.join(' · ');addLog('good',`掌門料理・${food.name}`,food.quote,delta);pushChat('',food.id==='steak'?'師父牛排有料':'這桌是增肌餐還是流水席');
-      return {result:{kicker:'掌門鐵板伙房・出菜結算',title:food.name,icon:food.icon,quote:food.quote,delta,note:`料理圖鑑 ${state.mealsEaten.length}/${MASTER_FOODS.length}`}};
+      return {result:{kicker:'掌門鐵板伙房・出菜結算',title:food.name,art:'master',icon:food.icon,quote:food.quote,delta,note:`料理圖鑑 ${state.mealsEaten.length}/${MASTER_FOODS.length}`}};
     });
   }
 
@@ -1087,7 +1155,7 @@
   function openRomanceBeat(id,next=null) {
     const scene=ROMANCE_SCENES[id];if(!scene){next?.();return;}
     openModal({
-      kicker:scene.kicker,title:scene.title,body:`<p>${esc(scene.text)}</p><div class="story-box"><h4>關係不是一次選項</h4><p>這一幕由長期陪練、章節進度與先前選擇共同開啟。選定心上人後，本世不會再開啟另一條感情線。</p></div>`,closable:false,
+      kicker:scene.kicker,title:scene.title,body:`${characterFeature(scene.line,scene.kicker,scene.text,'romance')}<div class="story-box"><h4>關係不是一次選項</h4><p>這一幕由長期陪練、章節進度與先前選擇共同開啟。選定心上人後，本世不會再開啟另一條感情線。</p></div>`,closable:false,
       actions:scene.choices.map(choice=>({
         label:choice.label,sub:choice.sub,disabled:!!choice.choose&&!!state.romance.heart&&state.romance.heart!==choice.choose,
         onClick:()=>{
@@ -1119,7 +1187,7 @@
       }
       state.metrics.training++;state.metrics.brotherTraining++;state.companionBond[id]=(state.companionBond[id]||0)+1;if(!state.trainingPartners.includes(id))state.trainingPartners.push(id);
       addLog('good',`${partner.role}互動・${partner.title}`,partner.quote,delta);pushChat('',id==='overload'?'搬這個到底有沒有勞健保':'糖門團練，感情有料');
-      return {result:{kicker:`${partner.role}・互動訓練結算`,title:`${partner.name}｜${partner.title}`,icon:partner.icon,quote:partner.quote,delta,note:`${note}・同門圖鑑 ${state.trainingPartners.length}/${BROTHER_SESSIONS.length}`},romanceBeat:romanceBeatFor(id)};
+      return {result:{kicker:`${partner.role}・互動訓練結算`,title:`${partner.name}｜${partner.title}`,art:partner.art,icon:partner.icon,quote:partner.quote,delta,note:`${note}・同門圖鑑 ${state.trainingPartners.length}/${BROTHER_SESSIONS.length}`},romanceBeat:romanceBeatFor(id)};
     });
   }
 
@@ -1404,7 +1472,7 @@
     const ch=chapter(),section=currentSection(),boss=currentBoss();
     const roadmap=ch.sections.map((part,index)=>`<div class="chapter-step ${index<state.chapterStep?'done':index===state.chapterStep?'current':'locked'}"><i>${index<state.chapterStep?'✓':index+1}</i><div><b>${part.number}・${esc(part.title)}</b><small>${index<state.chapterStep?'已完成':index===state.chapterStep?esc(part.summary):'尚未開啟'}</small></div></div>`).join('');
     const sectionReqs=section.boss?boss.requirements:(section.requirements||[]);
-    openModal({kicker:`${chapterDisplay(ch,section)}・江湖進度`,title:`${ch.title}｜${section.title}`,body:`<div class="chapter-overview"><span>全篇規模</span><b>五大章・二十小回</b><em>目前第 ${state.bossIndex+1} 章，章內 ${state.chapterStep+1} / ${ch.sections.length}</em></div><div class="story-box"><h4>本回故事</h4><p>${esc(section.summary)}</p><p>登場：${ch.cast.join('、')}</p></div><div class="chapter-roadmap">${roadmap}</div><div class="requirements-box"><h4>${section.boss?'守關特殊素質':'本回推進條件'}</h4><ul>${sectionReqs.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><p>${section.boss?'所有特殊素質達標後，才能自行決定何時挑戰守關者。':'條件達成後，再完成一次有效行動就會推進下一小回；每次只推進一回，不會連跳劇情。'}</p>`});
+    openModal({kicker:`${chapterDisplay(ch,section)}・江湖進度`,title:`${ch.title}｜${section.title}`,body:`<div class="chapter-overview"><span>全篇規模</span><b>五大章・二十小回</b><em>目前第 ${state.bossIndex+1} 章，章內 ${state.chapterStep+1} / ${ch.sections.length}</em></div><div class="story-box"><h4>本回故事</h4><p>${esc(section.summary)}</p><h4>本章登場</h4>${chapterCastHtml(ch.cast)}</div><div class="chapter-roadmap">${roadmap}</div><div class="requirements-box"><h4>${section.boss?'守關特殊素質':'本回推進條件'}</h4><ul>${sectionReqs.map(r=>`<li class="${r.check(state)?'ok':''}"><span>${r.check(state)?'✓':'○'} ${r.label}</span><b>${r.value(state)}</b></li>`).join('')}</ul></div><p>${section.boss?'所有特殊素質達標後，才能自行決定何時挑戰守關者。':'條件達成後，再完成一次有效行動就會推進下一小回；每次只推進一回，不會連跳劇情。'}</p>`});
   }
 
   function openBossChallenge() {
